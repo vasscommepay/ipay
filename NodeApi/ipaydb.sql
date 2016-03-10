@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 10 Mar 2016 pada 09.49
+-- Generation Time: 10 Mar 2016 pada 10.32
 -- Versi Server: 10.1.9-MariaDB
 -- PHP Version: 5.6.15
 
@@ -543,7 +543,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`username`, `password`, `email`, `created_at`, `updated_at`, `member_id`) VALUES
 ('bagus', 'bagus', 'bagus@vascomm.com', '2016-03-01 00:00:00', '2016-03-09 00:00:00', 'm20001'),
-('sarah', 'sarah', 'sarah@vascomm.com', '2016-03-02 00:00:00', '2016-03-09 00:00:00', 'm20001');
+('sarah', 'sarah', 'sarah@vascomm.com', '2016-03-02 00:00:00', '2016-03-09 00:00:00', 'm30001');
 
 -- --------------------------------------------------------
 
