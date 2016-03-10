@@ -1,0 +1,60 @@
+Level Member
+1 Company (iPay)
+2 Korwil
+3 Koordinator agen
+4 agen
+
+Transaksi
+- Korwil hanya membeli dari company
+- koordinator hanya membeli dari korwil
+- agen hanya membeli dari korwil
+- member bisa membeli produk sebagai stok
+- penjualan produk hanya di agen kepada end customer
+- pembelian produk oleh member menjadi penjualan produk untuk member pemilik produk
+- pembelian otomatis mengurangi saldo
+- saldo dicatat pada mutasi
+- harga jual dan harga beli setiap produk berbeda untuk setiap member
+- Satu order bisa beberapa transaksi
+- Tujuan transaksi hanya diisi untuk penjualan 
+- Tujuan transaksi untuk transaksi pembelian, otomatis ke stok produk
+- Transaksi dengan status berhasil yang akan mengurangi saldo
+- Interaksi dengan biler hanya dilakukan oleh akun ipay
+- 1 transaksi biller hanya untuk 1 satuan produk
+
+DB:
+- Master produk digunakan untuk menyamakan info dasar produk
+- Pembelan master produk untuk menyimpan interaksi dengan biller
+
+Pertanyaan:
+- Bagaimana untuk produk pascabayar (PDAM, Halo)?:
+	- keuntungannya
+	- stoknya
+	- pembelian stoknya
+	- pembelian stok ke biller
+- Proses penambahan saldo member
+- Adakah aturan untuk pencairan komisi? 
+- Apakah 1 member bisa memiliki beberapa akun login?
+
+NEW:
+- Transaction management -> Transaksi pembelian dan penjualan produk ipay
+- Stock management -> Penambahan stok dari biller atau dari ipay.
+- Biller Management -> BUAT BARU COY!
+- Authorization -> Manajemen akun member
+- Administration -> Pencatatan transaksi, log sistem
+- Acc/ finance -> Pencatatan mutasi saldo
+- Billing management -> Gimana komunikasi dengan biller
+- Titip Barang -> API untuk menitipkan barang
+- Beli dari iPay -> API bagi sistem lain untuk beli dari ipay
+
+Tahapan Dev:
+- SRS
+	- Fungsi2 dari website 
+	- Fungsi2 dari yang lama 
+	- Fungsi2 dari yang baru (brainstorming)
+- Desain
+	- Sistem
+	- Architecture
+	- Infrastructure
+	- database
+- Coding
+	- 

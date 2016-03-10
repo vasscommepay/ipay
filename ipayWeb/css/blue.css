@@ -1,0 +1,10 @@
+		/*color: #F08519;*/
+#footmenu a, #main-menu a, #mini-menu a {color: #424A91!important; }
+.transaksitextunder{color: #424A91!important;}
+#main-menu a,#searchsubmitbutton, #foottext, #footmenu a {color: #424A91!important;}
+.iconcart,.iconkey,.iconedit, .transkrgbutton, main-menu img{-webkit-filter:hue-rotate(200deg);
+  filter: hue-rotate(200deg);
+  filter: saturate(10%);}
+.transbutton, .transaksitext{ background-color:#424A91!important;}
+#main-menu img{-webkit-filter:hue-rotate(200deg) brightness(30%);
+  filter: hue-rotate(200deg) brightness(30%);}

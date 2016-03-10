@@ -1,0 +1,9 @@
+		/*color: #F08519;*/
+#footmenu a, #main-menu a, #mini-menu a {color: #747474!important; }
+.transaksitextunder{color: #747474!important;}
+#main-menu a, #searchsubmitbutton, #foottext, #footmenu a {color: #747474!important;}
+.iconcart,.iconkey,.iconedit, .transkrgbutton, main-menu img{-webkit-filter:saturate(10%);
+  filter:saturate(10%);}
+.transbutton, .transaksitext{ background-color:#747474!important;}
+#main-menu img{-webkit-filter:saturate(10%);
+  filter:saturate(10%);}
