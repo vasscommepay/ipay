@@ -130,9 +130,9 @@ var connection = mysql.createConnection({
 
 
 
-// var app = express();
-// app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(bodyParser.json());
+var app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // connection.connect(function(err){
 // 	if(!err) {
@@ -142,10 +142,10 @@ var connection = mysql.createConnection({
 // 	}
 // });
 
-router.get("/",function(req,res,next){
+router.get("/",function(req,res,next) {
 //var get_member = {sql : 'SELECT * from member'}
 
-connection.query('SELECT * from users', function(err, rows, fields) {
+	connection.query('SELECT * from users', function(err, rows, fields) {
 		if (err){
 		   console.log(err);
 		}else{
@@ -154,19 +154,17 @@ connection.query('SELECT * from users', function(err, rows, fields) {
 	});
 });
 
-//router.post("/member/:id",function(req,res,next){
-//res.send('ambil id');
+router.post("/",function(req,res,next) {
 //var post_id_member = {sql : 'SELECT * from member where id_member ="'+req.body.id_member+'"'}
 
-// connection.query('SELECT * from member where id_member ="'+req.body.id_member+'"', function(err, rows, fields) {
-// 		if (err){
-// 		   console.log(err);
-// 		}else{
-// 			//console.log(rows)
-// 			res.json(rows);
-// 		}
-// 	});
-//});
+	connection.query('SELECT * from users where member_id ="'+req.body.member_id+'"', function(err, rows, fields) {
+		if (err){
+		   console.log(err);
+		}else{
+			res.json(rows);
+		}
+	});
+});
 
 //app.listen(3000);
 module.exports = router;
