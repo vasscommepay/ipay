@@ -33,7 +33,7 @@ router.post("/",function(req,res,next) {
 					check = checkSession(session);
 				}
 				setSession(username,session);
-				res.json({"username":username,"session":session});
+				res.json({"isLogin":"true","username":username,"session":session});
 				return true;
 			}else{
 				res.json({"status":queryString});
@@ -64,6 +64,7 @@ function checkSession(session){
 }
 function setSession(username, session){
 	connection.query('UPDATE users SET session ="'+session+'" WHERE username = "'+username+'" ',function(err, rows, fields){
+
 		if(err){
 			console.log(err);
 		}else{
