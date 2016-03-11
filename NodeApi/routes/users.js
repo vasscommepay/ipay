@@ -166,5 +166,17 @@ router.post("/",function(req,res,next) {
 	});
 });
 
+router.post("/",function(req,res,next) {
+//var post_id_member = {sql : 'SELECT * from member where id_member ="'+req.body.id_member+'"'}
+
+	connection.query('SELECT * from users where member_id ="'+req.body.member_id+'"', function(err, rows, fields) {
+		if (err){
+		   console.log(err);
+		}else{
+			res.json(rows);
+		}
+	});
+});
+
 //app.listen(3000);
 module.exports = router;
