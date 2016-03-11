@@ -1,12 +1,12 @@
-var express = require('express');
-var routes = require('routes');
-var http = require('http');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var mysql = require('mysql');
+var express       = require('express');
+var routes        = require('routes');
+var http          = require('http');
+var path          = require('path');
+var favicon       = require('serve-favicon');
+var logger        = require('morgan');
+var cookieParser  = require('cookie-parser');
+var bodyParser    = require('body-parser');
+var mysql         = require('mysql');
 // var connection = mysql.createConnection({
 //    host     : 'localhost',
 //    user     : 'root',
@@ -14,14 +14,14 @@ var mysql = require('mysql');
 //    database : 'ipaydb'
 // });
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
-var member = require('./routes/member');
+var routes  = require('./routes/index'),
+    users   = require('./routes/users'),
+    member  = require('./routes/member');
 
 var app = express();
 
 // view engine setup
-app.set('port', process.env.PORT || 5000);
+app.set('port', process.env.PORT || 5000, '11.0.0.48');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -75,3 +75,7 @@ app.use(function(err, req, res, next) {
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+// app.listen(5000, '11.0.0.48', function() {
+//     console.log('Listening to port:  ' + 5000);
+// });
