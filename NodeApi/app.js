@@ -14,7 +14,6 @@ var mysql         = require('mysql');
 //    database : 'ipaydb'
 // });
 
-
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var member = require('./routes/member');
@@ -79,6 +78,3 @@ http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
-// app.listen(5000, '11.0.0.48', function() {
-//     console.log('Listening to port:  ' + 5000);
-// });
