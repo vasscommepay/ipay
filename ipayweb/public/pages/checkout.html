@@ -1,0 +1,128 @@
+<script type="text/javascript">
+ $('#midformwiz li').on('click', function(){
+    $('#midformwiz li').removeClass('wizactive');
+    $(this).addClass('wizactive');
+});
+$('#prev').on('click', function(){
+    $('#midformwiz li').removeClass('wizactive');
+    $('#1').addClass('wizactive');
+});
+$('#next2').on('click', function(){
+    $('#midformwiz li').removeClass('wizactive');
+    $('#2').addClass('wizactive');
+});
+$('#next3').on('click', function(){
+    $('#midformwiz li').removeClass('wizactive');
+    $('#3').addClass('wizactive');
+});
+$('#finish').on('click', function(){
+    $('#midformwiz li').removeClass('wizactive');
+    $('#3').addClass('wizactive');
+});
+		  
+</script>
+<div id="transpage" class="row row-centered">
+<div id="transpagewrapp" class="col-md-12 dashboard">
+<div id="transpagehead" class="row"><img src="images/carticon2.png" /><span>PEMBAYARAN</span></div>
+<div id="transline" class="row"></div>
+<div id="categoryleft" class="row pull-left">
+</div>
+<div id="categoryright" class="row pull-right">
+</div>
+<div id="midformwiz" class="row row-centered">
+<ul>
+<a href="#step1"><li id="1" class="bullet wizactive">1</li></a>
+<a href="#step2"><li id="2" class="bullet">2</li></a>
+<a href="#step3"><li id="3" class="bullet">3</li></a>
+</ul>
+<div id="border" class="col-md-12"></div>
+</div>
+<div id="midformpayment" class="row">
+<div id="step1" class="midformcheckout col-md-12">
+<span class="headcheckout row">LIST PEMBAYARAN</span>
+<span class="checkouttanggal row">Tanggal Transaksi: 06-09-2015</span>
+<div id="stepwrapp" class="col-md-12">
+<div id="stepwrappmain" class="col-md-12">
+<div id="invgroup" class="col-md-12">
+<span class="detlogo col-md-1"><img src="images/garudaicon.png" /></span>
+<span class="dettext col-md-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span>
+<span class="detprice col-md-4 col-centered">Rp. 20.000,00</span
+><span><i class="glyphicon glyphicon-remove-circle"></i></span>
+</div>
+<div id="invgroup" class="col-md-12">
+<span class="detlogo col-md-1"><img src="images/bpjsicon.png" /></span><span class="dettext col-md-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-centered">Rp. 20.000,00</span><span><i class="glyphicon glyphicon-remove-circle"></i></span>
+</div>
+<div id="invgroup" class="col-md-12">
+<span class="detlogo col-md-1"><img src="images/gameicon.png" /></span><span class="dettext col-md-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-centered">Rp. 20.000,00</span><span><i class="glyphicon glyphicon-remove-circle"></i></span>
+</div>
+<div id="invgroup" class="col-md-12">
+<span class="detlogo col-md-1"><img src="images/plnicon.png" /></span><span class="dettext col-md-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-centered">Rp. 20.000,00</span><span><i class="glyphicon glyphicon-remove-circle"></i></span>
+</div>
+<div id="invgroup" class="col-md-12">
+<span class="detlogo col-md-1"><img src="images/garudaicon.png" /></span><span class="dettext col-md-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-centered">Rp. 20.000,00</span><span><i class="glyphicon glyphicon-remove-circle"></i></span>
+</div>
+<div id="invgroup" class="col-md-12">
+<span class="detlogo col-md-1"><img src="images/bpjsicon.png" /></span><span class="dettext col-md-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-centered">Rp. 20.000,00</span><span><i class="glyphicon glyphicon-remove-circle"></i></span>
+</div>
+<div id="invgroup" class="col-md-12">
+<span class="detlogo col-md-1"><img src="images/gameicon.png" /></span><span class="dettext col-md-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-centered">Rp. 20.000,00</span><span><i class="glyphicon glyphicon-remove-circle"></i></span>
+</div>
+<div id="invgroup" class="col-md-12">
+<span class="detlogo col-md-1"><img src="images/plnicon.png" /></span><span class="dettext col-md-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-centered">Rp. 20.000,00</span><span><i class="glyphicon glyphicon-remove-circle"></i></span>
+</div>
+</div>
+<div id="footwrapper" class="col-md-12">
+<div id="stepwrapptotal" class="col-md-3">
+<span class="totaltext">Total yang harus dibayar:</span>
+<span class="totalnum col-md-12">Rp.195.000</span>
+</div><a href="#step2">
+<div id="next2" class="col-md-3"><span class="nextbutton">
+<img src="images/nextbutton.png"  />Berikutnya</span>
+</div></a>
+</div>
+
+</div>
+</div>
+<div id="step2" class="midformcheckout checkactive col-md-12">
+
+<span class="headcheckout row">METODE PEMBAYARAN</span>
+<span class="checkouttanggal row">Tanggal Transaksi: 06-09-2015</span>
+<div id="stepwrapp" class="col-md-12">
+<div id="stepwrappmain" class="col-md-12 secondstep">
+
+</div>
+<div id="footwrapper" class="col-md-12">
+<a href="#step1">
+<div id="prev" class="col-md-3"><span class="nextbutton">
+<img src="images/prevbutton.png"  />Kembali</span>
+</div></a>
+<a href="#step3">
+<div id="next3" class="col-md-3"><span class="nextbutton">
+<img src="images/nextbutton.png"  />Berikutnya</span>
+</div></a>
+</div>
+
+</div>
+
+</div>
+
+
+<div id="step3" class="midformcheckout col-md-12">
+
+
+<span class="checkouttanggal row">Tanggal Transaksi: 06-09-2015</span>
+<div id="stepwrapp" class="col-md-12">
+<div id="stepwrappmain" class="row laststep">
+
+</div>
+<div id="footwrapper" class="col-md-12">
+<a href="#">
+<div id="finish" class="row><span class="nextbutton">
+<img src="images/finishbutton.png"  />Finish</span>
+</div></a>
+</div>
+
+</div>
+
+</div>
+</div>

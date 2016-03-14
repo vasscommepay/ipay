@@ -1,0 +1,7 @@
+		/*color: #F08519;*/
+#footmenu a, #main-menu a, #mini-menu a {color: #F08519!important; }
+.transaksitextunder, {color: #F08519!important;}
+#main-menu a, #searchsubmitbutton, #foottext, #footmenu a {color: #F08519!important;}
+.iconcart,.iconkey, .iconedit, .transkrgbutton, main-menu img{ filter:hue-rotate(100deg)!important;}
+.transbutton, .transaksitext{ background-color:#F08519!important;}
+
