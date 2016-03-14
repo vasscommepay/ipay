@@ -17,35 +17,29 @@ router.post("/",function(req,res,next) {
 //var post_id_member = {sql : 'SELECT * from member where id_member ="'+req.body.id_member+'"'}
 	var session = req.body.session;
 	if(session!=null){
-		if(checkSession(session)){
-			connection.query('SELECT * from users where member_id ="'+req.body.member_id+'"', function(err, rows, fields) {
-				if (err){
-				   console.log(err);
+		connection.query('Select exists(Select * from users where session = "'+session+'") as result',function(err, rows, fields){
+			if(err){
+				console.log(err);
+			}else{
+				if(rows[0].result===1){
+					connection.query('SELECT * from member where id_member ="'+req.body.member_id+'"', function(err, rows, fields) {
+						if (err){
+						   console.log(err);
+						}else{
+							res.json(rows);
+						}
+					});
 				}else{
-					res.json(rows);
+					res.json({"status":"session tidak terdaftar"});
 				}
-			});
-		}else{
-			res.json({"status":"session tidak terdaftar"});
-		}
+			}
+		});
 		
 	}else{
 		res.json({"status":"tidak ada session"});
 	}
 });
 
-function checkSession(session){
-	connection.query('Select EXISTS(SELECT * from users Where session="'+session+'") as result',function(err, rows, fields){
-		if(err){
-			console.log(err);
-		}else{
-			if(rows.result===1){
-				return true;
-			}else{
-				return false;
-			}
-		}
-	});
-}
+
 
 module.exports = router;
