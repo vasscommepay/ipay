@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.1
+-- version 4.4.12
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 14 Mar 2016 pada 10.38
--- Versi Server: 10.1.9-MariaDB
--- PHP Version: 5.6.15
+-- Generation Time: Mar 14, 2016 at 09:49 AM
+-- Server version: 5.6.25
+-- PHP Version: 5.6.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -23,10 +23,10 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `berita`
+-- Table structure for table `berita`
 --
 
-CREATE TABLE `berita` (
+CREATE TABLE IF NOT EXISTS `berita` (
   `idberita` int(11) NOT NULL,
   `judul_berita` varchar(45) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
@@ -38,10 +38,10 @@ CREATE TABLE `berita` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `contact_channel`
+-- Table structure for table `contact_channel`
 --
 
-CREATE TABLE `contact_channel` (
+CREATE TABLE IF NOT EXISTS `contact_channel` (
   `id` varchar(10) NOT NULL,
   `name` varchar(45) DEFAULT NULL,
   `isinternet` tinyint(4) DEFAULT NULL
@@ -50,10 +50,10 @@ CREATE TABLE `contact_channel` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `data_bank`
+-- Table structure for table `data_bank`
 --
 
-CREATE TABLE `data_bank` (
+CREATE TABLE IF NOT EXISTS `data_bank` (
   `kode` int(11) NOT NULL,
   `bank` varchar(10) DEFAULT NULL,
   `tgl_proses` datetime DEFAULT NULL,
@@ -71,10 +71,10 @@ CREATE TABLE `data_bank` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `histori_komisi`
+-- Table structure for table `histori_komisi`
 --
 
-CREATE TABLE `histori_komisi` (
+CREATE TABLE IF NOT EXISTS `histori_komisi` (
   `id_transaksi` int(11) NOT NULL,
   `id_member` int(11) NOT NULL,
   `jumlah_komisi` decimal(10,0) DEFAULT NULL,
@@ -84,16 +84,16 @@ CREATE TABLE `histori_komisi` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `jenis_mutasi`
+-- Table structure for table `jenis_mutasi`
 --
 
-CREATE TABLE `jenis_mutasi` (
+CREATE TABLE IF NOT EXISTS `jenis_mutasi` (
   `idjenis_mutasi` varchar(45) NOT NULL,
   `nama_jenis_mutasi` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `jenis_mutasi`
+-- Dumping data for table `jenis_mutasi`
 --
 
 INSERT INTO `jenis_mutasi` (`idjenis_mutasi`, `nama_jenis_mutasi`) VALUES
@@ -106,17 +106,17 @@ INSERT INTO `jenis_mutasi` (`idjenis_mutasi`, `nama_jenis_mutasi`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `jenis_transaksi`
+-- Table structure for table `jenis_transaksi`
 --
 
-CREATE TABLE `jenis_transaksi` (
+CREATE TABLE IF NOT EXISTS `jenis_transaksi` (
   `id` varchar(45) NOT NULL,
   `nama` varchar(45) DEFAULT NULL,
   `deskripsi` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `jenis_transaksi`
+-- Dumping data for table `jenis_transaksi`
 --
 
 INSERT INTO `jenis_transaksi` (`id`, `nama`, `deskripsi`) VALUES
@@ -126,10 +126,10 @@ INSERT INTO `jenis_transaksi` (`id`, `nama`, `deskripsi`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `kategori_tiket`
+-- Table structure for table `kategori_tiket`
 --
 
-CREATE TABLE `kategori_tiket` (
+CREATE TABLE IF NOT EXISTS `kategori_tiket` (
   `idkategori_tiket` varchar(45) NOT NULL,
   `nama_kategori` varchar(45) DEFAULT NULL,
   `keterangan` text
@@ -138,10 +138,10 @@ CREATE TABLE `kategori_tiket` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `komentar`
+-- Table structure for table `komentar`
 --
 
-CREATE TABLE `komentar` (
+CREATE TABLE IF NOT EXISTS `komentar` (
   `idkomentar` int(11) NOT NULL,
   `judul_komentar` varchar(45) DEFAULT NULL,
   `isi_komentar` text,
@@ -154,10 +154,10 @@ CREATE TABLE `komentar` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `level_member`
+-- Table structure for table `level_member`
 --
 
-CREATE TABLE `level_member` (
+CREATE TABLE IF NOT EXISTS `level_member` (
   `id_level` int(11) NOT NULL,
   `nama_member` varchar(45) DEFAULT NULL,
   `level` int(11) DEFAULT NULL,
@@ -165,7 +165,7 @@ CREATE TABLE `level_member` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `level_member`
+-- Dumping data for table `level_member`
 --
 
 INSERT INTO `level_member` (`id_level`, `nama_member`, `level`, `prefix`) VALUES
@@ -177,10 +177,10 @@ INSERT INTO `level_member` (`id_level`, `nama_member`, `level`, `prefix`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `master_produk`
+-- Table structure for table `master_produk`
 --
 
-CREATE TABLE `master_produk` (
+CREATE TABLE IF NOT EXISTS `master_produk` (
   `id` varchar(45) NOT NULL,
   `nama` text,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -195,10 +195,10 @@ CREATE TABLE `master_produk` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `member`
+-- Table structure for table `member`
 --
 
-CREATE TABLE `member` (
+CREATE TABLE IF NOT EXISTS `member` (
   `id_member` int(11) NOT NULL,
   `identity_number` varchar(45) DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -208,10 +208,10 @@ CREATE TABLE `member` (
   `total_saldo` decimal(15,4) DEFAULT NULL,
   `level_member` int(11) DEFAULT NULL,
   `reg_num` varchar(45) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `member`
+-- Dumping data for table `member`
 --
 
 INSERT INTO `member` (`id_member`, `identity_number`, `created_at`, `updated_at`, `npwp`, `total_komisi`, `total_saldo`, `level_member`, `reg_num`) VALUES
@@ -220,10 +220,11 @@ INSERT INTO `member` (`id_member`, `identity_number`, `created_at`, `updated_at`
 (6, '1234132413241324', '2016-03-14 15:48:40', '2016-03-14 15:48:40', '134123413241324', NULL, NULL, 1, '1432016hIHFtJFF');
 
 --
--- Trigger `member`
+-- Triggers `member`
 --
 DELIMITER $$
-CREATE TRIGGER `reg_code` BEFORE INSERT ON `member` FOR EACH ROW BEGIN
+CREATE TRIGGER `reg_code` BEFORE INSERT ON `member`
+ FOR EACH ROW BEGIN
 DECLARE tgl INT;
 DECLARE regnum VARCHAR(30);
 SELECT CONCAT(DAY(CURDATE()),MONTH(CURDATE()),YEAR(CURDATE())) INTO @tgl;
@@ -245,10 +246,10 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `member_address`
+-- Table structure for table `member_address`
 --
 
-CREATE TABLE `member_address` (
+CREATE TABLE IF NOT EXISTS `member_address` (
   `id` int(11) NOT NULL,
   `name` varchar(45) DEFAULT NULL,
   `jalan` text,
@@ -264,10 +265,10 @@ CREATE TABLE `member_address` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `member_agen`
+-- Table structure for table `member_agen`
 --
 
-CREATE TABLE `member_agen` (
+CREATE TABLE IF NOT EXISTS `member_agen` (
   `id` int(11) NOT NULL,
   `id_member` int(11) DEFAULT NULL,
   `id_koordinator` int(11) DEFAULT NULL,
@@ -279,10 +280,10 @@ CREATE TABLE `member_agen` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `member_contact`
+-- Table structure for table `member_contact`
 --
 
-CREATE TABLE `member_contact` (
+CREATE TABLE IF NOT EXISTS `member_contact` (
   `id_member` int(11) NOT NULL,
   `channel_id` varchar(10) NOT NULL,
   `channel_value` text,
@@ -293,10 +294,10 @@ CREATE TABLE `member_contact` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `member_internal`
+-- Table structure for table `member_internal`
 --
 
-CREATE TABLE `member_internal` (
+CREATE TABLE IF NOT EXISTS `member_internal` (
   `member_id` int(11) NOT NULL,
   `nama` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -304,10 +305,10 @@ CREATE TABLE `member_internal` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `member_koordinator`
+-- Table structure for table `member_koordinator`
 --
 
-CREATE TABLE `member_koordinator` (
+CREATE TABLE IF NOT EXISTS `member_koordinator` (
   `id` int(11) NOT NULL,
   `id_member` int(11) DEFAULT NULL,
   `nama` text,
@@ -319,10 +320,10 @@ CREATE TABLE `member_koordinator` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `member_korwil`
+-- Table structure for table `member_korwil`
 --
 
-CREATE TABLE `member_korwil` (
+CREATE TABLE IF NOT EXISTS `member_korwil` (
   `id` int(11) NOT NULL,
   `member_id` int(11) DEFAULT NULL,
   `users_id` int(11) DEFAULT NULL,
@@ -333,10 +334,10 @@ CREATE TABLE `member_korwil` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `member_order`
+-- Table structure for table `member_order`
 --
 
-CREATE TABLE `member_order` (
+CREATE TABLE IF NOT EXISTS `member_order` (
   `id_order` int(11) NOT NULL,
   `id_member` int(11) DEFAULT NULL,
   `biaya_total` decimal(10,0) DEFAULT NULL,
@@ -350,10 +351,10 @@ CREATE TABLE `member_order` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `mutasi_saldo_member`
+-- Table structure for table `mutasi_saldo_member`
 --
 
-CREATE TABLE `mutasi_saldo_member` (
+CREATE TABLE IF NOT EXISTS `mutasi_saldo_member` (
   `id` int(11) NOT NULL,
   `member_id` int(11) DEFAULT NULL,
   `saldo_awal` decimal(10,0) DEFAULT NULL,
@@ -366,10 +367,11 @@ CREATE TABLE `mutasi_saldo_member` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Trigger `mutasi_saldo_member`
+-- Triggers `mutasi_saldo_member`
 --
 DELIMITER $$
-CREATE TRIGGER `update_saldo` AFTER INSERT ON `mutasi_saldo_member` FOR EACH ROW begin
+CREATE TRIGGER `update_saldo` AFTER INSERT ON `mutasi_saldo_member`
+ FOR EACH ROW begin
 DECLARE isdebet TINYINT;
 SELECT NEW.debet INTO @isdebet;
 IF @isdebet = 0 
@@ -388,10 +390,10 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pembelian_master_produk`
+-- Table structure for table `pembelian_master_produk`
 --
 
-CREATE TABLE `pembelian_master_produk` (
+CREATE TABLE IF NOT EXISTS `pembelian_master_produk` (
   `id_pembelian` int(11) NOT NULL,
   `id_product` varchar(45) NOT NULL,
   `harga` decimal(10,0) DEFAULT NULL,
@@ -404,10 +406,10 @@ CREATE TABLE `pembelian_master_produk` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pertanyaan`
+-- Table structure for table `pertanyaan`
 --
 
-CREATE TABLE `pertanyaan` (
+CREATE TABLE IF NOT EXISTS `pertanyaan` (
   `id` int(11) NOT NULL,
   `id_member` int(11) DEFAULT NULL,
   `pertanyaan` text,
@@ -420,10 +422,10 @@ CREATE TABLE `pertanyaan` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `produk_member`
+-- Table structure for table `produk_member`
 --
 
-CREATE TABLE `produk_member` (
+CREATE TABLE IF NOT EXISTS `produk_member` (
   `product_id` varchar(45) NOT NULL,
   `member_id` int(11) NOT NULL,
   `harga_beli` decimal(10,0) DEFAULT NULL,
@@ -442,16 +444,16 @@ CREATE TABLE `produk_member` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `status_transaksi`
+-- Table structure for table `status_transaksi`
 --
 
-CREATE TABLE `status_transaksi` (
+CREATE TABLE IF NOT EXISTS `status_transaksi` (
   `id_status` varchar(45) NOT NULL,
   `nama_status` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data untuk tabel `status_transaksi`
+-- Dumping data for table `status_transaksi`
 --
 
 INSERT INTO `status_transaksi` (`id_status`, `nama_status`) VALUES
@@ -463,10 +465,10 @@ INSERT INTO `status_transaksi` (`id_status`, `nama_status`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tiket`
+-- Table structure for table `tiket`
 --
 
-CREATE TABLE `tiket` (
+CREATE TABLE IF NOT EXISTS `tiket` (
   `idtiket` varchar(45) NOT NULL,
   `nama_tiket` varchar(45) DEFAULT NULL,
   `kategori_tiket` varchar(45) DEFAULT NULL,
@@ -476,10 +478,10 @@ CREATE TABLE `tiket` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `transaksi`
+-- Table structure for table `transaksi`
 --
 
-CREATE TABLE `transaksi` (
+CREATE TABLE IF NOT EXISTS `transaksi` (
   `id_transaksi` int(11) NOT NULL,
   `id_order` int(11) NOT NULL,
   `id_produk` varchar(45) NOT NULL,
@@ -494,10 +496,10 @@ CREATE TABLE `transaksi` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `users`
+-- Table structure for table `users`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `username` varchar(45) NOT NULL,
   `password` varchar(45) NOT NULL,
   `email` varchar(45) NOT NULL,
@@ -506,20 +508,13 @@ CREATE TABLE `users` (
   `member_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data untuk tabel `users`
---
-
-INSERT INTO `users` (`username`, `password`, `email`, `created_at`, `updated_at`, `member_id`) VALUES
-('saya', '20c1a26a55039b30866c9d0aa51953ca', 'saya@ipay.co.id', '2016-03-10 00:00:00', '2016-03-11 00:00:00', 4);
-
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `wilayah`
+-- Table structure for table `wilayah`
 --
 
-CREATE TABLE `wilayah` (
+CREATE TABLE IF NOT EXISTS `wilayah` (
   `id` int(11) NOT NULL,
   `nama` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -731,7 +726,7 @@ ALTER TABLE `data_bank`
 -- AUTO_INCREMENT for table `member`
 --
 ALTER TABLE `member`
-  MODIFY `id_member` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_member` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT for table `member_address`
 --
@@ -778,71 +773,71 @@ ALTER TABLE `transaksi`
 ALTER TABLE `wilayah`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `histori_komisi`
+-- Constraints for table `histori_komisi`
 --
 ALTER TABLE `histori_komisi`
   ADD CONSTRAINT `komisi_id_member_fk` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `komisi_id_transaksi_fk` FOREIGN KEY (`id_transaksi`) REFERENCES `transaksi` (`id_transaksi`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `member`
+-- Constraints for table `member`
 --
 ALTER TABLE `member`
   ADD CONSTRAINT `mbmer_level_member_fk` FOREIGN KEY (`level_member`) REFERENCES `level_member` (`id_level`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `member_address`
+-- Constraints for table `member_address`
 --
 ALTER TABLE `member_address`
   ADD CONSTRAINT `address_id_member_fk` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `member_agen`
+-- Constraints for table `member_agen`
 --
 ALTER TABLE `member_agen`
   ADD CONSTRAINT `agen_member_id_fk` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `koordinator_id_agen_fk` FOREIGN KEY (`id_koordinator`) REFERENCES `member_koordinator` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `member_contact`
+-- Constraints for table `member_contact`
 --
 ALTER TABLE `member_contact`
   ADD CONSTRAINT `channel_id_contact` FOREIGN KEY (`channel_id`) REFERENCES `contact_channel` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `contact_username_fk` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `member_internal`
+-- Constraints for table `member_internal`
 --
 ALTER TABLE `member_internal`
   ADD CONSTRAINT `member_internal_id_member_fk` FOREIGN KEY (`member_id`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `member_koordinator`
+-- Constraints for table `member_koordinator`
 --
 ALTER TABLE `member_koordinator`
   ADD CONSTRAINT `koordinator_member_id_fk` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `korwil_id_koordinator_fk` FOREIGN KEY (`id_korwil`) REFERENCES `member_korwil` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `member_korwil`
+-- Constraints for table `member_korwil`
 --
 ALTER TABLE `member_korwil`
   ADD CONSTRAINT `korwil_member_id_fk` FOREIGN KEY (`member_id`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `wilayah_id_korwil_fk` FOREIGN KEY (`id_wilayah`) REFERENCES `wilayah` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `member_order`
+-- Constraints for table `member_order`
 --
 ALTER TABLE `member_order`
   ADD CONSTRAINT `order_username_fk` FOREIGN KEY (`username`) REFERENCES `users` (`username`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `transaction_from_member_id_fk` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `mutasi_saldo_member`
+-- Constraints for table `mutasi_saldo_member`
 --
 ALTER TABLE `mutasi_saldo_member`
   ADD CONSTRAINT `mutasi_id_transaksi_fk` FOREIGN KEY (`id_transaksi`) REFERENCES `transaksi` (`id_transaksi`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -850,33 +845,33 @@ ALTER TABLE `mutasi_saldo_member`
   ADD CONSTRAINT `mutasi_saldo_id_member_fk` FOREIGN KEY (`member_id`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `pembelian_master_produk`
+-- Constraints for table `pembelian_master_produk`
 --
 ALTER TABLE `pembelian_master_produk`
   ADD CONSTRAINT `id_product_product_order_fk` FOREIGN KEY (`id_product`) REFERENCES `master_produk` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `pertanyaan`
+-- Constraints for table `pertanyaan`
 --
 ALTER TABLE `pertanyaan`
   ADD CONSTRAINT `pertanyaan_id_member_fk` FOREIGN KEY (`id_member`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `pertanyaan_id_tiket_fk` FOREIGN KEY (`id_tiket`) REFERENCES `tiket` (`idtiket`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `produk_member`
+-- Constraints for table `produk_member`
 --
 ALTER TABLE `produk_member`
   ADD CONSTRAINT `product_member_id_member_fk` FOREIGN KEY (`member_id`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `product_member_product_id_fk` FOREIGN KEY (`product_id`) REFERENCES `master_produk` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `tiket`
+-- Constraints for table `tiket`
 --
 ALTER TABLE `tiket`
   ADD CONSTRAINT `tiket_id_kategori_fk` FOREIGN KEY (`kategori_tiket`) REFERENCES `kategori_tiket` (`idkategori_tiket`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `transaksi`
+-- Constraints for table `transaksi`
 --
 ALTER TABLE `transaksi`
   ADD CONSTRAINT `produk_transaksi_id_produk_fk` FOREIGN KEY (`id_produk`) REFERENCES `produk_member` (`product_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -886,7 +881,7 @@ ALTER TABLE `transaksi`
   ADD CONSTRAINT `transaksi_status_fk` FOREIGN KEY (`status`) REFERENCES `status_transaksi` (`id_status`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Ketidakleluasaan untuk tabel `users`
+-- Constraints for table `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_member_id_fk` FOREIGN KEY (`member_id`) REFERENCES `member` (`id_member`) ON DELETE NO ACTION ON UPDATE NO ACTION;
