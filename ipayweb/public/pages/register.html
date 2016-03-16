@@ -1,64 +1,85 @@
 <div id="register" class="col-md-12 row-centered">
-  <div id="rghead" class="col-md-12 row-centered "><span><img src="images/regicon.png" />Isikan Data Diri Anda</span></div>
+  <div id="rghead" class="col-md-12 row-centered data "><span><img src="images/regicon.png" />Isikan Data Diri Anda</span></div>
     <div id="regform" class="col-md-7 col-centered member">
     <form>
         <div class="form-group">
           <label>Nama</label>
-            <input type="text" class="form-control pull-right" name="nama" />
+            <input type="text" required="" class="form-control pull-right" name="nama" />
         </div>
         <div class="form-group">
           <label>No KTP</label>
-            <input type="text" class="form-control pull-right" name="noktp" />
+            <input type="text" required="" class="form-control pull-right" name="noktp" />
         </div>
         <div class="form-group">
           <label>NPWP</label>
-            <input type="text" class="form-control pull-right" name="npwp" />
+            <input type="text" required="" class="form-control pull-right" name="npwp" />
         </div>                                                          
         <div class="clearfix"></div>
-            <button type="button" class="btn btn-warning col-md-12" name="nextA" onclick="memAddress()"><i class="glyphicon glyphicon-send"></i> Next</button>
+            <button type="button" name="nextA" onclick="memAddress()"><img src="images/nextbutton.png" /></button>
     </form>                       
     </div>
 
+    <div id="rghead" class="col-md-12 row-centered alamat " style="display: none"><span><img src="images/regicon.png" />Isikan Alamat</span></div>
     <div id="regform" class="col-md-7 col-centered mAddress" style="display: none">
         <form>
         <div class="form-group">
             <label>Jalan</label>
-                <input type="text" class="form-control pull-right" name="jalan" />
+            <textarea required="" class="form-control pull-right" name="jalan"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Provinsi</label>
+            <select name="provinsi" class="form-control pull-right">
+                <option value="provinsi">Pilih Provinsi</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Kota/ Kabupaten</label>
+            <select name="kota"class="form-control pull-right">
+                <option value="kota">Pilih Kota/ Kabupaten</option>
+            </select>
         </div>
         <div class="form-group">
             <label>Kecamatan</label>
-                <input type="text" class="form-control pull-right" name="kecamatan" />
-        </div>
-        <div class="form-group">
-            <label>Kota</label>
-                <input type="text" class="form-control pull-right" name="kota" />
-        </div>                   
-        <div class="form-group">
-            <label>Provinsi</label>
-                <input type="text" class="form-control pull-right" name="provinsi" />
+            <select name="kecamatan" class="form-control pull-right">
+                <option value="kecamatan">Pilih Kecamatan</option>
+            </select>
         </div><hr/>       
         <div class="form-group">
             <label>Keterangan</label>
-                <input type="text" class="form-control pull-right" name="keterangan" />
+            <textarea required="" class="form-control pull-right" name="keterangan"></textarea>
         </div>                                                     
         <div class="clearfix"></div>
-            <button type="button" class="btn btn-warning col-md-12" name="nextB" onclick="memContact()"><i class="glyphicon glyphicon-send"></i> Next</button>
+            <button type="button" name="nextB1" onclick="memContactP()"><img src="images/prevbutton.png" /></button>
+            <button type="button" name="nextB2" onclick="memContactN()"><img src="images/nextbutton.png" /></button>
         </form>                   
     </div>
 
+    <div id="rghead" class="col-md-12 row-centered channel " style="display: none"><span><img src="images/regicon.png" />Isikan Kontak</span></div>
     <div id="regform" class="col-md-7 col-centered mContact" style="display: none">
         <form>
-        <div id="isi" class="form-group">Channel
-            <select name="channel">
-                <option value="email">E-mail</option>
-                <option value="hh">hh</option>
+        <div class="form-group">
+            <input type="checkbox" name="email" value="email" onclick="pilihan()">E-Mail<br>
+            <input id="detemail" type="text" disabled="" class="form-control pull-right" placeholder="E-Mail" name="isiemail"/>
+            <hr/>
+            <input type="checkbox" name="nohp" value="nohp">No HP<br>
+            <input type="text" disabled="" class="form-control pull-right" placeholder="No HP" name="isinohp" />
+            
+            <!--<select name="cKontak">
+                <option value="email" onclick="tes">E-mail</option>
+                <option value="hp">No HP</option>
             </select>
+                <input id="a" type="text" class="form-control pull-right" name="inputemail" />
         </div>
-        <div class="form-group" style="display: none">
-                <input type="text" class="form-control pull-right" name="keterangan" />
+        <div id="isitelp" class="form-group" style="display: none">
+            <select name="cTelpon">
+                <option value="hp">No HP</option>
+                <option value="rumah">Telepon Rumah</option>
+            </select>
+                <input type="text" style="display: none" class="form-control pull-right" name="inputnohp" />-->
         </div>
         <div class="clearfix"></div>
-            <button type="button" class="btn btn-warning col-md-12" name="nextC"><i class="glyphicon glyphicon-send"></i> Next</button>
+            <button type="button" name="nextB1" onclick="memAddressP()"><img src="images/prevbutton.png" /></button>
+            <button type="button" name="nextB2"><img src="images/finishbutton.png" /></button>
         </form>                   
     </div>
     </div>
@@ -67,10 +88,39 @@
     function memAddress(){
         $(".member").hide()
         $(".mAddress").show()
+        $(".alamat").show()
+        $(".data").hide()
     }
-    function memContact(){
+     function memContactP(){
+        $(".member").show()
+        $(".mAddress").hide()
+        $(".alamat").hide()
+        $(".data").show()
+    }
+    function memContactN(){
         $(".mAddress").hide()
         $(".mContact").show()
+        $(".alamat").hide()
+        $(".channel").show()
     }
+    function memAddressP(){
+        $(".mAddress").show()
+        $(".mContact").hide()
+        $(".alamat").show()
+        $(".channel").hide()
+    }
+    function pilihan(){
+        $(".detemail").show()
+    }
+    /*function simpanMember(){
+        var nama = nama.text();
+        var noktp = noktp.text();
+        var npwp = npwp.text();
+                       
+        $("#newfid").val(fid);
+        $("#nama_baru").val(nama);
+        $("#alamat_baru").val(alamat);  
+    }*/
+
 
 </script>

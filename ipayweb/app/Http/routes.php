@@ -17,6 +17,8 @@ Route::group(['middleware' => 'web'], function () {
 	});
 });
 Route::post('addMember','memberController@addMember');
+Route::post('addMemberAddress','memberController@addMemberAddress');
+Route::post('addMemberContact','memberController@addMemberContact');
 Route::get('login', function () {
     return view('login');
 });
