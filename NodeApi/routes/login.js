@@ -12,32 +12,37 @@ var connection = mysql.createConnection({
 });
 
 var app = express();
+var lv;
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 router.post("/",function(req,res,next) {
 //var post_id_member = {sql : 'SELECT * from member where id_member ="'+req.body.id_member+'"'}
 	var username = req.body.username;
 	var password = req.body.password;
 	var hash = crypto.createHash('md5').update(password).digest("hex");
-	var queryString = 'SELECT * from users where username ="'+username+'" and password="'+hash+'"';
+	var queryString = 'SELECT * from users LEFT JOIN member ON member_id = id_member where username ="'+username+'" and password="'+hash+'" '
+	;
 	connection.query(queryString, function(err, rows, fields) {
 		if (err){
 		   console.log(err);
+		   console.log(queryString);
+		   res.json({"status":"error","message":queryString});
 		}else{
 			if(rows.length>0){
 				var session = randomString(10);
 				var check = checkSession(session);
+				var memberid = rows[0].member_id;
+				var level = rows[0].level_member;
 				while(check){
 					session = randomString(10);
 					check = checkSession(session);
 				}
+				var memberlevel;
 				setSession(username,session);
-				res.json({"isLogin":"true","username":username,"session":session});
-				return true;
+				console.log(lv);
+				res.json({"isLogin":"true","member_id":memberid,"session":session,"level":level});
 			}else{
 				res.json({"status":queryString});
-				return false;
 			}
 		}
 	});
@@ -50,14 +55,17 @@ function randomString(length) {
     return result;
 }
 function checkSession(session){
+	var retval;
 	connection.query('Select EXISTS(SELECT * from users Where session="'+session+'") as result',function(err, rows, fields){
 		if(err){
 			console.log(err);
 		}else{
 			if(rows.result===1){
+				retval = "false";
 				return false;
 			}else{
 				return true;
+				retval = "true";
 			}
 		}
 	});
