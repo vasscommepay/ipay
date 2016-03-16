@@ -1,39 +1,76 @@
 <div id="register" class="col-md-12 row-centered">
-<div id="rghead" class="col-md-12 row-centered "><span><img src="images/regicon.png" />Isikan Data Diri Anda</span></div>
-<div id="regform" class="col-md-7 col-centered">
-<form>
-                                <div class="form-group">
-                                  <label>Username</label>
-                                  <input type="text" required="" class="form-control pull-right" name="username" />
-                                </div>
-                               
-                                <hr />
-       
-                                <div class="form-group">
-                                  <label>Password</label>
-                                  <input type="password" required="" class="form-control pull-right" name="noktp" />
-                                </div>
-                               
-                                <div class="form-group">
-                                  <label>Verifikasi Password</label>
-                                  <input type="password" required="" class="form-control pull-right" name="nama_lengkap" />
-                                </div>
-                                
-                                <hr />
-                               
-                                <div class="form-group">
-                                    <label>E-Mail</label>
-                                    <input type="email" required="" name="ponsel" class="form-control pull-right" />
-                                </div>
-                               
-                                <div class="form-group">
-                                  <label>Captcha</label>
-                                  <input type="text" required="" class="form-control pull-right" name="noktp" />
-                                </div>
-                                                              
-                                <div class="clearfix"></div>
-                                <button class="btn btn-warning col-md-12" name="submit"><i class="glyphicon glyphicon-send"></i> Register</button>
-</form>                       
-</div>
+  <div id="rghead" class="col-md-12 row-centered "><span><img src="images/regicon.png" />Isikan Data Diri Anda</span></div>
+    <div id="regform" class="col-md-7 col-centered member">
+    <form>
+        <div class="form-group">
+          <label>Nama</label>
+            <input type="text" class="form-control pull-right" name="nama" />
+        </div>
+        <div class="form-group">
+          <label>No KTP</label>
+            <input type="text" class="form-control pull-right" name="noktp" />
+        </div>
+        <div class="form-group">
+          <label>NPWP</label>
+            <input type="text" class="form-control pull-right" name="npwp" />
+        </div>                                                          
+        <div class="clearfix"></div>
+            <button type="button" class="btn btn-warning col-md-12" name="nextA" onclick="memAddress()"><i class="glyphicon glyphicon-send"></i> Next</button>
+    </form>                       
+    </div>
 
+    <div id="regform" class="col-md-7 col-centered mAddress" style="display: none">
+        <form>
+        <div class="form-group">
+            <label>Jalan</label>
+                <input type="text" class="form-control pull-right" name="jalan" />
+        </div>
+        <div class="form-group">
+            <label>Kecamatan</label>
+                <input type="text" class="form-control pull-right" name="kecamatan" />
+        </div>
+        <div class="form-group">
+            <label>Kota</label>
+                <input type="text" class="form-control pull-right" name="kota" />
+        </div>                   
+        <div class="form-group">
+            <label>Provinsi</label>
+                <input type="text" class="form-control pull-right" name="provinsi" />
+        </div><hr/>       
+        <div class="form-group">
+            <label>Keterangan</label>
+                <input type="text" class="form-control pull-right" name="keterangan" />
+        </div>                                                     
+        <div class="clearfix"></div>
+            <button type="button" class="btn btn-warning col-md-12" name="nextB" onclick="memContact()"><i class="glyphicon glyphicon-send"></i> Next</button>
+        </form>                   
+    </div>
+
+    <div id="regform" class="col-md-7 col-centered mContact" style="display: none">
+        <form>
+        <div id="isi" class="form-group">Channel
+            <select name="channel">
+                <option value="email">E-mail</option>
+                <option value="hh">hh</option>
+            </select>
+        </div>
+        <div class="form-group" style="display: none">
+                <input type="text" class="form-control pull-right" name="keterangan" />
+        </div>
+        <div class="clearfix"></div>
+            <button type="button" class="btn btn-warning col-md-12" name="nextC"><i class="glyphicon glyphicon-send"></i> Next</button>
+        </form>                   
+    </div>
+    </div>
 </div>
+<script type="text/javascript">
+    function memAddress(){
+        $(".member").hide()
+        $(".mAddress").show()
+    }
+    function memContact(){
+        $(".mAddress").hide()
+        $(".mContact").show()
+    }
+
+</script>
