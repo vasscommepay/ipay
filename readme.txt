@@ -47,3 +47,16 @@ Folder documents untuk menyimpan dokumentasi
 }
 - nama member, createdAt, level, dan reg_num ditampilkan pada ui, dikirim ke email.
 -------------------------------------- END ---------------------------
+
+--------------------------------- USEFULL LINK -------------------------------------------
+- NODE.JS:
+	-https://github.com/felixge/node-mysql#todo (modul mysql)
+	-https://github.com/caolan/async (modul async)
+	-http://www.sebastianseilund.com/nodejs-async-in-practice (contoh penggunaan asycn)
+- WEB:
+	- http://jqueryvalidation.org/ (untuk melakukan validasi nilai input form)
+	- http://api.jquery.com/jquery.ajax/ (Untuk submit data ke server tanpa harus refresh halaman)
+	- https://laravel.com/docs/5.2/session (Untuk mengelola session laravel)
+	- https://laravel.com/docs/5.2/routing (Untuk mengelola routing laravel)
+------------------------------------ END --------------------------------------------------
+	
