@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<meta name="csrf-token" content="<?php echo csrf_token(); ?>">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Ipay V1.0</title>
 <link href="bootstrap-3.3.5-dist/css/bootstrap.css" rel="stylesheet" type="text/css">
@@ -13,7 +14,17 @@
 <script type="text/javascript" src="js/bootstrap-carousel.js"></script>     
 <script type="text/javascript" src="js/modernizr-1.5.min.js"></script>
 <script type="text/javascript">
+$.ajaxSetup({
+              headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              }
+      });
 	  $(document).ready(function(){
+      $.ajaxSetup({
+              headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              }
+      });
 		  $("#mainmenu").load("pages/home.html"); 
 
 var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");

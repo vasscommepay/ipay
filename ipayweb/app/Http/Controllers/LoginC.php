@@ -14,7 +14,7 @@ class LoginC extends Controller
                 $username = Request::input('username');
                 $password = Request::input('password');
 
-                $url = "http://11.0.0.48:5000/login";
+                $url = "http://localhost:5000/login";
                 $params = array("username"=>$username,"password"=>$password);
                 $parameter = json_encode($params);
                 $ch = curl_init($url);
@@ -31,8 +31,12 @@ class LoginC extends Controller
                 $res = json_decode($result);
                 if($res->isLogin){
                         $session = $res->session;
+                        $level = $res->level;
+                        $member_id = $res->member_id;
                         Session::put('username',$username);
                         Session::put('session',$session);
+                        Session::put('level',$level);
+                        Session::put('member_id',$member_id);
                         return redirect('/');
                 }else{
                         return redirect('login')->with('status','failed');

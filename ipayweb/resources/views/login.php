@@ -16,7 +16,7 @@
             <span><img src="images/logicon.png" />Silahkan Login</span></div>
         <div id="regform" class="col-md-7 col-centered">
     <form action="logedin" method="post">
-        <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
+        <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
         <div class="form-group">
             <label>Username</label>
                 <input type="text" required="" class="form-control pull-right" name="username" />

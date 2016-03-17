@@ -1,18 +1,17 @@
-<?php namespace App;
-
-use App\IpAddress;
-class ApiPostSender extends IpAddress{
+<?php 
+use App/IpAdress;
+class ApiPostSender extends IpAdress{
 	private $url;
 	private $params;
 
 	public function __construct($url, $params){
-		$this->url = $url;
-		$this->params=$params;
+		$this->'url' = $url;
+		$this->'parmas'=$params;
 	}
 
 	public function sendRequest(){
-		$url = $this->address()."/".$this->url;
-		$parameter = json_encode($this->params);
+		$url = "https://".$this->'ipAdress'.":900/".$this->'url';
+		$parameter = $this->'params';
 
 		$ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                     

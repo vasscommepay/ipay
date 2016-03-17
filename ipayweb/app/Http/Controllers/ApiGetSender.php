@@ -1,15 +1,15 @@
-<?php namespace App;
+<?phpnamespace App;
 
-use App\IpAddress;
-	class ApiGetSender extends IpAddress{
+	use App\IpAddress;
+	class ApiGetSender{
 		private $url;
 
 		public function __construct($url){
-			$this->url = $url;
+			$this->'url' = $url;
 		}
 
 		public function sendRequest(){
-			$url = $this->address()."/".$this->url;
+			$url = $this->address."/".$this->'url';
 
 			$ch = curl_init($url);
 	        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");               
@@ -21,7 +21,7 @@ use App\IpAddress;
 	        );   
 	        $result = curl_exec($ch);
 	        curl_close($ch);
-	        return $result;
+	        return "HAHAHA";
 		}
 
 	}

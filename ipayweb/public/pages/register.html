@@ -1,85 +1,88 @@
+<script type="text/javascript">
+</script>
 <div id="register" class="col-md-12 row-centered">
-  <div id="rghead" class="col-md-12 row-centered data "><span><img src="images/regicon.png" />Isikan Data Diri Anda</span></div>
+  <div id="rghead" class="col-md-12 row-centered "><span><img src="images/regicon.png" />Isikan Data Diri Member Baru</span></div>
+    <div id="loadingscr" align="center" style="vertical-align: center; display: none">
+        <img src="images/rolling.svg">
+    </div>
     <div id="regform" class="col-md-7 col-centered member">
-    <form>
+    <form id="member">
         <div class="form-group">
           <label>Nama</label>
-            <input type="text" required="" class="form-control pull-right" name="nama" />
+            <input type="text" class="form-control pull-right" name="nama" />
+        </div>
+        <div class="form-group">
+            <label>Jenis Kelamin</label>
+            <select name="jenis_kelamin" class="pull-right form-control ">
+                <option value="L">Laki-Laki</option>
+                <option value="P">Perempuan</option>
+            </select>
+        </div>
+        <div class="form-group">
+          <label>Tanggal Lahir</label>
+            <input type="date" class="form-control pull-right" name="tgl_lahir">
         </div>
         <div class="form-group">
           <label>No KTP</label>
-            <input type="text" required="" class="form-control pull-right" name="noktp" />
+            <input type="text" class="form-control pull-right" name="noktp" />
         </div>
+
         <div class="form-group">
           <label>NPWP</label>
-            <input type="text" required="" class="form-control pull-right" name="npwp" />
+            <input type="text" class="form-control pull-right" name="npwp" />
         </div>                                                          
         <div class="clearfix"></div>
-            <button type="button" name="nextA" onclick="memAddress()"><img src="images/nextbutton.png" /></button>
+            <button type="button" class="btn btn-warning col-md-12" name="nextA" onclick="memAddress()"><i class="glyphicon glyphicon-send"></i> Next</button>
     </form>                       
     </div>
 
-    <div id="rghead" class="col-md-12 row-centered alamat " style="display: none"><span><img src="images/regicon.png" />Isikan Alamat</span></div>
     <div id="regform" class="col-md-7 col-centered mAddress" style="display: none">
-        <form>
+        <form id="address">
         <div class="form-group">
             <label>Jalan</label>
-            <textarea required="" class="form-control pull-right" name="jalan"></textarea>
+                <input type="text" class="form-control pull-right" name="jalan" />
         </div>
-        <div class="form-group">
+        <hr/> 
+        <div id="prov_select" class="form-group">
             <label>Provinsi</label>
-            <select name="provinsi" class="form-control pull-right">
-                <option value="provinsi">Pilih Provinsi</option>
+            <select id="prov_list" name="prov" class="form-controll pull-right">
+                <option value="null">Pilih Provinsi</option>
             </select>
         </div>
-        <div class="form-group">
-            <label>Kota/ Kabupaten</label>
-            <select name="kota"class="form-control pull-right">
-                <option value="kota">Pilih Kota/ Kabupaten</option>
+        <div id="kab_select" class="form-group" style="display: none">
+            <label>Kota</label>
+            <select id="kab_list" name="kab" class="form-controll pull-right">
+                <option value="null">Pilih Kota/Kabupaten</option>
             </select>
         </div>
-        <div class="form-group">
+        <div id="kec_select" class="form-group" style="display: none">
             <label>Kecamatan</label>
-            <select name="kecamatan" class="form-control pull-right">
-                <option value="kecamatan">Pilih Kecamatan</option>
+            <select id="kec_list" name="kec" class="form-controll pull-right">
+                <option value="null">Pilih Kecamatan</option>
             </select>
-        </div><hr/>       
+        </div>
+        <hr/> 
         <div class="form-group">
             <label>Keterangan</label>
-            <textarea required="" class="form-control pull-right" name="keterangan"></textarea>
+                <input type="text" class="form-control pull-right" name="keterangan" />
         </div>                                                     
         <div class="clearfix"></div>
-            <button type="button" name="nextB1" onclick="memContactP()"><img src="images/prevbutton.png" /></button>
-            <button type="button" name="nextB2" onclick="memContactN()"><img src="images/nextbutton.png" /></button>
+            <button type="button" class="btn btn-warning col-md-12" name="nextB" onclick="memContact()"><i class="glyphicon glyphicon-send"></i> Next</button>
         </form>                   
     </div>
 
-    <div id="rghead" class="col-md-12 row-centered channel " style="display: none"><span><img src="images/regicon.png" />Isikan Kontak</span></div>
     <div id="regform" class="col-md-7 col-centered mContact" style="display: none">
-        <form>
+        <form id="kontak">
         <div class="form-group">
-            <input type="checkbox" name="email" value="email" onclick="pilihan()">E-Mail<br>
-            <input id="detemail" type="text" disabled="" class="form-control pull-right" placeholder="E-Mail" name="isiemail"/>
-            <hr/>
-            <input type="checkbox" name="nohp" value="nohp">No HP<br>
-            <input type="text" disabled="" class="form-control pull-right" placeholder="No HP" name="isinohp" />
-            
-            <!--<select name="cKontak">
-                <option value="email" onclick="tes">E-mail</option>
-                <option value="hp">No HP</option>
-            </select>
-                <input id="a" type="text" class="form-control pull-right" name="inputemail" />
-        </div>
-        <div id="isitelp" class="form-group" style="display: none">
-            <select name="cTelpon">
-                <option value="hp">No HP</option>
-                <option value="rumah">Telepon Rumah</option>
-            </select>
-                <input type="text" style="display: none" class="form-control pull-right" name="inputnohp" />-->
-        </div>
+            <label>Nomor Hp/Telepon </label>
+            <input type="text" class="form-control pull-right" name="telp" />
+        </div> 
+        <div class="form-group">
+            <label>Alamat Email </label>
+            <input type="text" class="form-control pull-right" name="email" />
+        </div> 
         <div class="clearfix"></div>
-            <button type="button" name="nextB1" onclick="memAddressP()"><img src="images/prevbutton.png" /></button>
-            <button type="button" name="nextB2"><img src="images/finishbutton.png" /></button>
+            <button type="button" class="btn btn-warning col-md-12" name="nextC"><i class="glyphicon glyphicon-send"></i> Next</button>
         </form>                   
     </div>
     </div>
@@ -87,40 +90,75 @@
 <script type="text/javascript">
     function memAddress(){
         $(".member").hide()
-        $(".mAddress").show()
-        $(".alamat").show()
-        $(".data").hide()
+        var data = $("#member").serialize();
+        $('#loadingscr').show();
+        $.ajax({
+            url:'addMember',
+            type: 'POST',
+            data: data,
+            success: function(res){
+                alert(res);
+                $('#loadingscr').hide();
+                $(".mAddress").show();
+                getProvinceList();
+            }
+        });
+        
+        
     }
-     function memContactP(){
-        $(".member").show()
+    function getProvinceList(){
+        $.getJSON('get_prov',function(success){
+            $.each(success,function(key,val){
+                var id = val.IDProvinsi;
+                var nama = val.Nama;
+                $("#prov_list").append('<option value="'+id+'">'+nama+'</option>');
+            });
+        });
+    }
+    $("#prov_list").change(function(){
+        $("#kab_list").html("<option value='null'>Pilih Kota/Kabupaten</option>");
+        $("#kec_list").html("<option value='null'>Pilih Kecamatan</option>");
+        var id_prov = $("#prov_list").val();
+        $.post('get_kab',{'id_prov':id_prov},function(success){
+            var kabupaten = JSON.parse(success);
+            $.each(kabupaten, function(key,val){
+                var id = val.IDKabupaten;
+                var nama = val.Nama;
+                $("#kab_list").append('<option value="'+id+'">'+nama+'</option>');
+            });
+            $("#kab_select").show();
+            $("#kec_select").val(null);
+            $("#kec_select").hide();
+        });
+    });
+    $("#kab_list").change(function(){
+        $("#kec_list").html("<option value='null'>Pilih Kecamatan</option>");
+        var id_kab = $("#kab_list").val();
+        $.post('get_kec',{'id_kab':id_kab},function(success){
+            var kec = JSON.parse(success);
+            $.each(kec, function(key,val){
+                var id = val.IDKecamatan;
+                var nama = val.Nama;
+                $("#kec_list").append('<option value="'+id+'">'+nama+'</option>');
+            });
+            $("#kec_select").show();
+        });
+    });
+    function memContact(){
+        
         $(".mAddress").hide()
-        $(".alamat").hide()
-        $(".data").show()
+        var data = $("#address").serialize();
+        $('#loadingscr').show();
+        $.ajax({
+            url:'addMemberAddress',
+            type: 'POST',
+            data: data,
+            success: function(res){
+                alert(res);
+                $('#loadingscr').hide();
+                $(".mContact").show()
+            }
+        });
     }
-    function memContactN(){
-        $(".mAddress").hide()
-        $(".mContact").show()
-        $(".alamat").hide()
-        $(".channel").show()
-    }
-    function memAddressP(){
-        $(".mAddress").show()
-        $(".mContact").hide()
-        $(".alamat").show()
-        $(".channel").hide()
-    }
-    function pilihan(){
-        $(".detemail").show()
-    }
-    /*function simpanMember(){
-        var nama = nama.text();
-        var noktp = noktp.text();
-        var npwp = npwp.text();
-                       
-        $("#newfid").val(fid);
-        $("#nama_baru").val(nama);
-        $("#alamat_baru").val(alamat);  
-    }*/
-
 
 </script>

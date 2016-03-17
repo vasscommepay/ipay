@@ -15,10 +15,12 @@ Route::group(['middleware' => 'web'], function () {
 		Session::flush();
 		return redirect('/');
 	});
+	Route::post('addMember','memberController@addMember');
+	Route::post('addMemberAddress','memberController@addMemberAddress');
 });
-Route::post('addMember','memberController@addMember');
-Route::post('addMemberAddress','memberController@addMemberAddress');
-Route::post('addMemberContact','memberController@addMemberContact');
+Route::get('get_prov','AddressController@getProvinsi');
+Route::post('get_kec','AddressController@getKecamatan');
+Route::post('get_kab','AddressController@getKabupaten');
 Route::get('login', function () {
     return view('login');
 });

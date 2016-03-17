@@ -1028,17 +1028,34 @@ max-width: 100%;
 	padding: 2%;
 	box-shadow: 1em 1em #8B8B8C;
 	font-family: Myriad;
-	font-size: 0.8em;
-	width: 40%;
+	font-size: 1.0em;
+	width: 60%;
 }
+
 #regform button {
 	margin-top: 1em;
 }
-#regform input {
+#regform input{
 	height: 2em;
 	width: 50%;
 }
-#regform input:focus {
+#regform select{
+	height: 2em;
+	width: 50%;
+}
+#regform textarea{
+	height: 2em;
+	width: 50%;
+}
+#regform input:focus{
+	box-shadow: 0 0 0.5em #F7941E!important;
+	border: none!important;
+}
+#regform select:focus{
+	box-shadow: 0 0 0.5em #F7941E!important;
+	border: none!important;
+}
+#regform textarea:focus{
 	box-shadow: 0 0 0.5em #F7941E!important;
 	border: none!important;
 }
