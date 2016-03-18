@@ -10,6 +10,5 @@
 			$address = $this->protocol.'://'.$this->ipAddress.':'.$this->port;
 			return $address;
 		}
-
 	}
 ?>

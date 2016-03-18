@@ -17,8 +17,11 @@ Route::group(['middleware' => 'web'], function () {
 	});
 	Route::post('addMember','memberController@addMember');
 	Route::post('addMemberAddress','memberController@addMemberAddress');
+	Route::post('addMemberContact','memberController@addMemberContact');
+	Route::post('sendMember','memberController@sendMember');
 });
 Route::get('get_prov','AddressController@getProvinsi');
+Route::get('get_wil','AddressController@getWilayah');
 Route::post('get_kec','AddressController@getKecamatan');
 Route::post('get_kab','AddressController@getKabupaten');
 Route::get('login', function () {

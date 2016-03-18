@@ -28,6 +28,10 @@ class AddressController extends Controller {
 		$this->params = array('id_kab'=>$kab);
 		$this->sendPostRequest();
 	}
+	public function getWilayah(){
+		$this->url = 'address/wilayah';
+		$this->sendGetRequest();
+	}
 	private function sendGetRequest(){
 		$url = $this->url;
 		$sender = new GetSender($url);

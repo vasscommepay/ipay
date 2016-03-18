@@ -21,6 +21,10 @@ class memberController extends Controller {
 		$mktp = Request::input('noktp');
 		$mnpwp = Request::input('npwp');
 		$form1 = array('session'=>$session,'nama'=>$mnama,'identity_number'=>$mktp,'npwp'=>$mnpwp,'tanggal_lahir'=>$tgl_lahir,'jenis_kelamin'=>$jenis_kelamin,'level_member'=>$level);
+		if($level==0){
+			$wilayah = Request::input('wilayah');
+			$form1 = array('session'=>$session,'nama'=>$mnama,'identity_number'=>$mktp,'npwp'=>$mnpwp,'tanggal_lahir'=>$tgl_lahir,'jenis_kelamin'=>$jenis_kelamin,'level_member'=>$level,'wilayah'=>$wilayah);
+		}
 		echo json_encode($form1);
 		Session::put('form1',$form1);
 	}

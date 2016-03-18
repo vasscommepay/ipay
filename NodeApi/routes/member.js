@@ -179,6 +179,7 @@ router.post("/newMember",function(req, res, next) {
         	var level_table_sql;
         	if(newMemberLevel == 1){
         		var wilayah = req.body.wilayah;
+
         		level_table_sql = "INSERT INTO member_korwil(id_member,id_wilayah) VALUES("+newMemberId+","+wilayah+")";
         	}else if(newMemberLevel == 2){
         		level_table_sql = "INSERT INTO member_koordinator(id_member,id_korwil) VALUES("+newMemberId+","+id_atasan+")";
@@ -188,11 +189,12 @@ router.post("/newMember",function(req, res, next) {
         		var pos = req.body.posisi;
         		level_table_sql = 'INSERT INTO member_koordinator(id_member,posisi) VALUES('+newMemberId+',"'+pos+'")';
         	}
+        	console.log(wilayah);
         	console.log(newMemberId);
         	connection.query(level_table_sql,function(err,result){
         		if (err){
 				   console.log(err);
-				   console.log('tabel level');
+				   console.log('tabel level False');
 				   res.json({"inserted" : false,"message":err});
 				}else{
 					console.log('tabel level');
