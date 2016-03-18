@@ -94,7 +94,7 @@ router.post("/newMember",function(req, res, next) {
 	}else{
 		newMemberLevel = level_member+1;
 	}
-	
+	var nama = req.body.nama;
 	var simpan = { sql : 'insert into member (identity_number,nama,tgl_lahir,jenis_kelamin, npwp, level_member) values ("'+req.body.identity_number+'" , "'+req.body.nama+'" , "'+req.body.tanggal_lahir+'" , "'+req.body.jenis_kelamin+'" , "'+req.body.npwp+'" , "'+req.body.level_member+'")' };
 	async.series([
         //Load user to get userId first
@@ -118,7 +118,9 @@ router.post("/newMember",function(req, res, next) {
 				   res.json({"inserted" : false,"message":err});
 				}else{
 					newMemberId = result.insertId;
+					console.log('tabel member');
 					callback();
+					
 				}
 			});
         },
@@ -138,6 +140,7 @@ router.post("/newMember",function(req, res, next) {
 				   res.json({"inserted" : false,"message":err});
 				}else{
 					//res.json('Inserted: ' + JSON.stringify(rows));
+					console.log('tabel address');
 					callback();
 				}
 			});
@@ -155,13 +158,17 @@ router.post("/newMember",function(req, res, next) {
     		connection.query(telp_sql, function(err, result) {
 				if (err){
 				   console.log(err);
+				   console.log('tabel contact1');
 				   res.json({"inserted" : false,"message":err});
 				}else{
+					console.log('tabel contact1');
 					connection.query(email_sql, function(err, result) {
 						if (err){
 						   console.log(err);
+						   console.log('tabel contact2');
 						   res.json({"inserted" : false,"message":err});
 						}else{
+							console.log('tabel contact2');
 							callback();
 						}
 					});
@@ -185,8 +192,10 @@ router.post("/newMember",function(req, res, next) {
         	connection.query(level_table_sql,function(err,result){
         		if (err){
 				   console.log(err);
+				   console.log('tabel level');
 				   res.json({"inserted" : false,"message":err});
 				}else{
+					console.log('tabel level');
 					callback();
 				}
         	});
@@ -201,7 +210,7 @@ router.post("/newMember",function(req, res, next) {
 			}else{
 				var regNum = rows[0].reg_num;
 				var createdAt = rows[0].created_at;
-				res.json({"status":"inserted","reg_num":regNum,"createdAt":createdAt});
+				res.json({"inserted":true,"nama":nama,"reg_num":regNum,"createdAt":createdAt});
 			}
 		});
     });

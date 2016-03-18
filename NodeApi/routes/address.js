@@ -20,6 +20,17 @@ router.get("/provinsi",function(req,res,next){
 		}
 	});
 });
+router.get("/wilayah",function(req,res,next){
+	var sql = "SELECT * FROM wilayah";
+	connection.query(sql, function(err,rows){
+		if(err){
+			console.log(err);
+			res.json({"status":"error","message":err});
+		}else{
+			res.json(rows);
+		}
+	});
+});
 router.post("/getKota",function(req,res,next){
 	var id_provinsi = connection.escape(req.body.id_prov);
 	var sql = "SELECT * FROM kabupaten WHERE IDProvinsi="+id_provinsi;

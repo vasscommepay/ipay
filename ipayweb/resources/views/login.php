@@ -14,7 +14,7 @@
     <div id="login" class="col-md-12 row-centered">
         <div id="loghead" class="col-md-12">
             <span><img src="images/logicon.png" />Silahkan Login</span></div>
-        <div id="regform" class="col-md-7 col-centered">
+        <div id="regform" class="col-md-7 col-centered" style="width: 40%">
     <form action="logedin" method="post">
         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
         <div class="form-group">
@@ -30,7 +30,8 @@
                 <input type="text" required="" class="form-control pull-right" name="Captcha" />
         </div>                                                      
         <div class="clearfix"></div>
-        <button class="btn btn-warning col-md-12" name="submit"><i class="glyphicon glyphicon-send"></i> Register</button>
+        <button class="btn btn-warning col-md-12" name="submit"><i class="glyphicon glyphicon-send"></i> Login</button>
+        <button class="btn btn-warning col-md-12" type="button"><i class="glyphicon glyphicon-send"></i> Register</button>
     </form>                       
         </div>
     </div>

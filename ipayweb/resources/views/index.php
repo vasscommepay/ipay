@@ -94,6 +94,12 @@ var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/
 	   $("#signlink").click(function(){
         $('#mainmenu').load('pages/register.html');
 		$('#switcher').remove();
+    var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
+     $("head").append(cssLink); 
+       });
+     $("#signlink").click(function(){
+        $('#addMem').load('pages/afiliasi.html');
+    $('#switcher').remove();
  /*var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
      $("head").append(cssLink); 
        });
@@ -127,6 +133,7 @@ var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/
 
 <body>
   <!-- Modal -->
+  <input type="hidden" value="<?PHP echo Session::get('level'); ?>" id="level_member">
     <div class="modal fade" id="carts" role="dialog">
       <div class="modal-dialog"> 
         
@@ -179,7 +186,7 @@ var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/
 <div id="leftmenu" class="col-lg-3 col-md-3 col-sm-3 col-xs-2">
 <div id="logo" class="row row-centered"><img src="images/icon.gif" /></div>
 <div id="mini-menu" class="row row-centered">
-<div class="col-md-4 col-sm-6 hidden-xs"><a id="signlink" href="#"><div class="iconedit"></div>Signup</a></div>
+<div class="col-md-4 col-sm-6 hidden-xs"><a id="signlink" href="#"><div class="iconedit"></div>Add Member</a></div>
 <div class="col-md-4 col-sm-6 hidden-xs"><a href="logout"><div class="iconkey"></div>Logout</a></div>
 <div class="col-md-4 col-sm-12 col-xs-12 transbutton"><a id="cartmodal" data-dismiss="modal" data-toggle="modal" href="#carts"><div class="col-md-3 col-sm-3 col-xs-6"><div class="iconcart "></div></div><div class="transtext col-md-5 col-sm-5 hidden-xs">Cart</div><div class="transamount col-md-3 col-sm-3 col-xs-6">2</div></a></div>
 </div>

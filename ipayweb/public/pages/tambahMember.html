@@ -1,21 +1,16 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
-        var lv = $("#level_member").val();
-        if(lv==0){
-            $("#wil_input").show();
-           $.getJSON("get_wil",function(success){
-                $.each(success,function(key,val){
-                    var id = val.id;
-                    var nama = val.nama;
-                    $("#wil_list").append('<option value="'+id+'">'+nama+'</option>');
-                });
-            }); 
-        }
-        
+        $.getJSON("get_wil",function(success){
+            $.each(success,function(key,val){
+                var id = val.id;
+                var nama = val.nama;
+                $("#wil_list").append('<option value="'+id+'">'+nama+'</option>');
+            });
+        });
     });
 </script>
-<div id="register" class="col-md-12 row-centered">
+<div id="afiliasi" class="col-md-12 row-centered">
   <div id="rghead" class="col-md-12 row-centered "><span><img src="images/regicon.png" />Isikan Data Diri Member Baru</span></div>
     <div id="loadingscr" align="center" style="vertical-align: center; display: none">
         <img src="images/rolling.svg">
@@ -46,12 +41,15 @@
           <label>NPWP</label>
             <input type="text" class="form-control pull-right" name="npwp" />
         </div>
-        <div id="wil_input" class="form-group" style="display: none">
-            <label>Wilayah Korwil</label>
-            <select id="wil_list" name="wilayah" class="form-controll pull-right">
-                <option value="null">Pilih Wialayah</option>
-            </select>
-        </div>                                                       
+            <script type="text/javascript">
+               
+            </script>
+            <div class="form-group">
+                <label>Wilayah Korwil</label>
+                <select id="wil_list" name="wilayah" class="form-controll pull-right">
+                    <option value="null">Pilih Wialayah</option>
+                </select>
+            </div>                                                       
         <div class="clearfix"></div>
             <button type="button" class="btn btn-warning col-md-12" name="nextA" onclick="memAddress()"><i class="glyphicon glyphicon-send"></i> Next</button>
     </form>                       
