@@ -24,6 +24,10 @@ Route::get('get_prov','AddressController@getProvinsi');
 Route::get('get_wil','AddressController@getWilayah');
 Route::post('get_kec','AddressController@getKecamatan');
 Route::post('get_kab','AddressController@getKabupaten');
+Route::post('register','registerController@register');
+Route::get('daftarregistrasi', function () {
+    return view('daftarregistrasi');
+});
 Route::get('login', function () {
     return view('login');
 });

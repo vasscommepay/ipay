@@ -31,7 +31,7 @@
         </div>                                                      
         <div class="clearfix"></div>
         <button class="btn btn-warning col-md-12" name="submit"><i class="glyphicon glyphicon-send"></i> Login</button>
-        <button class="btn btn-warning col-md-12" type="button"><i class="glyphicon glyphicon-send"></i> Register</button>
+        <a href="daftarregistrasi"><button class="btn btn-warning col-md-12" type="button"><i class="glyphicon glyphicon-send"></i> Register</button></a>
     </form>                       
         </div>
     </div>

@@ -1,4 +1,4 @@
-
+<script type="text/javascript" src="js/jquery.validate.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         var lv = $("#level_member").val();
@@ -12,7 +12,15 @@
                 });
             }); 
         }
-        
+        $("#npwp").keyup(function() {
+            $("#npwp").val(this.value.match(/[0-9]*/));
+        });
+        $("#noktp").keyup(function() {
+            $("#noktp").val(this.value.match(/[0-9]*/));
+        });
+        $("#telp").keyup(function() {
+            $("#telp").val(this.value.match(/[0-9]*/));
+        });
     });
 </script>
 <div id="register" class="col-md-12 row-centered">
@@ -21,10 +29,10 @@
         <img src="images/rolling.svg">
     </div>
     <div id="regform" class="col-md-7 col-centered member">
-    <form id="member">
+    <form id="memberForm">
         <div class="form-group">
           <label>Nama</label>
-            <input type="text" class="form-control pull-right" name="nama" />
+            <input type="text" required class="form-control pull-right" name="nama" id="nama"/>
         </div>
         <div class="form-group">
             <label>Jenis Kelamin</label>
@@ -35,25 +43,25 @@
         </div>
         <div class="form-group">
           <label>Tanggal Lahir</label>
-            <input type="date" class="form-control pull-right" name="tgl_lahir">
+            <input type="date" required class="form-control pull-right" id="tgl_lahir" name="tgl_lahir">
         </div>
         <div class="form-group">
           <label>No KTP</label>
-            <input type="text" class="form-control pull-right" name="noktp" />
+            <input type="text" required class="form-control pull-right" maxlength="16" id="noktp" name="noktp" />
         </div>
 
         <div class="form-group">
           <label>NPWP</label>
-            <input type="text" class="form-control pull-right" name="npwp" />
+            <input type="text" required class="form-control pull-right" maxlength="15" id="npwp" name="npwp" />
         </div>
         <div id="wil_input" class="form-group" style="display: none">
             <label>Wilayah Korwil</label>
             <select id="wil_list" name="wilayah" class="form-controll pull-right">
-                <option value="null">Pilih Wialayah</option>
+                <option value="null">Pilih Wilayah</option>
             </select>
         </div>                                                       
         <div class="clearfix"></div>
-            <button type="button" class="btn btn-warning col-md-12" name="nextA" onclick="memAddress()"><i class="glyphicon glyphicon-send"></i> Next</button>
+            <div name="nextA" align="center" style="vertical-align: center;"><a href="#" onclick="cekMemAddres()"><img src="images/nextbutton.png" /></a></div>
     </form>                       
     </div>
 
@@ -61,7 +69,7 @@
         <form id="address">
         <div class="form-group">
             <label>Jalan</label>
-                <input type="text" class="form-control pull-right" name="jalan" />
+                <input type="text" required class="form-control pull-right" id="jalan" name="jalan" />
         </div>
         <hr/> 
         <div id="prov_select" class="form-group">
@@ -85,10 +93,13 @@
         <hr/> 
         <div class="form-group">
             <label>Keterangan</label>
-                <input type="text" class="form-control pull-right" name="keterangan" />
+                <input type="text" class="form-control pull-right" id="keterangan" name="keterangan" />
         </div>                                                     
         <div class="clearfix"></div>
-            <button type="button" class="btn btn-warning col-md-12" name="nextB" onclick="memContact()"><i class="glyphicon glyphicon-send"></i> Next</button>
+            <div class="form-group">
+            <div name="nextB1" align="center" style="vertical-align: center;"><a href="#" onclick="memContactP()"><img src="images/prevbutton.png" /></a></div>
+            <div name="nextB2" align="center" style="vertical-align: center;"><a href="#" onclick="cekMemContact()"><img src="images/nextbutton.png" /></a></div>
+            </div>
         </form>                   
     </div>
 
@@ -96,14 +107,15 @@
         <form id="kontak">
         <div class="form-group">
             <label>Nomor Hp/Telepon </label>
-            <input type="text" class="form-control pull-right" name="telp" />
+            <input type="text" required class="form-control pull-right" id="telp" name="telp" />
         </div> 
         <div class="form-group">
             <label>Alamat Email </label>
-            <input type="text" class="form-control pull-right" name="email" />
+            <input type="email" required class="form-control pull-right" id="email" name="email" />
         </div> 
         <div class="clearfix"></div>
-            <button type="button" onclick="submitContact()" class="btn btn-warning col-md-12" name="submit"><i class="glyphicon glyphicon-send"></i> Submit</button>
+            <div name="prevContact" align="center" style="vertical-align: center;"><a href="#" onclick="memAddressP()"><img src="images/prevbutton.png" /></a></div>
+            <div name="submit" align="center" style="vertical-align: center;"><a href="#" onclick="finishContact()"><img src="images/finishbutton.png" /></a></div>
         </form>                   
     </div>
     <div id="satatus">
@@ -113,7 +125,7 @@
         </div>
         <div id="successStatus" class="alert alert-success alert-dismissible" role="alert" style="display: none">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <strong>Sukses</strong>Member baru berhasil ditambahkan.
+            <strong>Sukses</strong><hr/> Member baru berhasil ditambahkan.
         </div>
         <div id="regStatus" class="col-md-7 col-centered" style="display: none">
             <div class="form-group">
@@ -136,6 +148,94 @@
     </div>
 </div>
 <script type="text/javascript">
+    function cekMemAddres(){
+        var nama = $('input[name="nama"]');
+        var noktp = $('input[name="noktp"]');
+        var npwp = $('input[name="npwp"]');
+        var tgl_lahir = $('input[name="tgl_lahir"]');
+        //var pilih = document.regform.wil_list.value;
+        //var wil = $("#wil_list");
+        //var wil_input = wil.options[wil.selectedIndex].value;
+        //var wilayah = document.regform.wil_list.value;
+        if (nama.val() == "") {
+            alert("Masukkan Nama!");
+            nama.val();
+            nama.focus();
+        } 
+        else if (tgl_lahir.val() == "") {
+            alert("Masukkan Tanggal Lahir!");
+            tgl_lahir.val();
+            tgl_lahir.focus();
+        }
+        else if (noktp.val() == "") {
+            alert("Masukkan Nomor KTP!");
+            noktp.val();
+            noktp.focus();
+        }
+        else if (npwp.val() == "") {
+            alert("Masukkan NPWP!");
+            npwp.val();
+            npwp.focus();
+        }
+        /*else if (pilih == null) {
+            alert("pilih wilayah!");
+            pilih.val();
+            pilih.focus();
+        };*/
+        /*else if (wilayah == null)
+            alert("pilih wilayahnya");
+            return false;
+        }*/
+        /*else if (wil_input.val() == null) {
+            alert("Pilih Wilayah!");
+            wil_input.val();
+            wil_input.focus();
+        }*/
+        else {memAddress();}
+    }
+
+    function cekMemContact(){
+        var jalan = $('input[name="jalan"]');
+        //var prov_list = $('select[name="prov_list"]');
+        //var kab_list = $('select[name="kab_list"]');
+        //var kec_list = $('select[name="kec_list"]');
+        if (jalan.val() == "") {
+            alert("Masukkan Nama Jalan!");
+            jalan.val();
+            jalan.focus();
+        } 
+        /*else if (prov_list.val() == null) {
+            alert("Pilih Provinsi!");
+            prov_list.val();
+            prov_list.focus();
+        }
+        else if (kab_list.val() == null) {
+            alert("Pilih Kabupaten!");
+            kab_list.val();
+            kab_list.focus();
+        }
+        else if (kec_list.val() == null) {
+            alert("Pilih Kecamatan!");
+            kec_list.val();
+            kec_list.focus();
+        }*/
+        else {memContact();}
+    }
+    function finishContact(){
+        var telp = $('input[name="telp"]');
+        var email = $('input[name="email"]');
+        if (telp.val() == "") {
+            alert("Masukkan Nomor Telepon!");
+            telp.val();
+            telp.focus();
+        } 
+        else if (email.val() == "") {
+            alert("Masukkan Alamat Email!");
+            email.val();
+            email.focus();
+        } 
+        else {submitContact();}
+    }
     function memAddress(){
         $(".member").hide()
         var data = $("#member").serialize();
@@ -151,8 +251,6 @@
                 getProvinceList();
             }
         });
-        
-        
     }
     function getProvinceList(){
         $.getJSON('get_prov',function(success){
@@ -193,7 +291,6 @@
         });
     });
     function memContact(){
-        
         $(".mAddress").hide()
         var data = $("#address").serialize();
         $('#loadingscr').show();
@@ -208,7 +305,18 @@
             }
         });
     }
-
+    function memContactP(){
+        $(".member").show()
+        $(".mAddress").hide()
+        $(".alamat").hide()
+        $(".data").show()
+    }
+    function memAddressP(){
+        $(".mAddress").show()
+        $(".mContact").hide()
+        $(".alamat").show()
+        $(".channel").hide()
+    }
     function submitContact(){
         var data = $('#kontak').serialize();
         $.ajax({
@@ -245,6 +353,4 @@
             }
         });
     }
-
-
 </script>
