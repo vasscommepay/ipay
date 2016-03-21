@@ -34,7 +34,11 @@ router.use(function(req, res, next) {
 				console.log(err);
 				res.json({"status":"error","message":err});
 			}else{
-				next(); 
+				if(rows[0].result===0){
+					res.json({"status":"error","message":"Session tidak terdaftar"});
+				}else{
+					next();
+				}
 			}
 		});
 	}else{

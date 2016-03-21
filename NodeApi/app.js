@@ -21,6 +21,7 @@ var member = require('./routes/member');
 var login = require('./routes/login');
 var produk = require('./routes/produk');
 var address = require('./routes/address');
+var transaction = require('./routes/transaction');
 var app = express();
 
 // view engine setup
@@ -42,6 +43,7 @@ app.use('/member', member);
 app.use('/login',login);
 app.use('/produk',produk);
 app.use('/address',address);
+app.use('/transaction',transaction);
 
 
 // catch 404 and forward to error handler
