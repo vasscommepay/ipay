@@ -1,4 +1,5 @@
 <script type="text/javascript" src="js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="js/jquery.printelement.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         var lv = $("#level_member").val();
@@ -61,7 +62,9 @@
             </select>
         </div>                                                       
         <div class="clearfix"></div>
-            <div name="nextA" align="center" style="vertical-align: center;"><a href="#" onclick="cekMemAddres()"><img src="images/nextbutton.png" /></a></div>
+            <div name="nextA" align="center" style="vertical-align: center;">
+                <a href="#" onclick="cekMemAddres()"><img src="images/nextbutton.png" /></a>
+            </div>
     </form>                       
     </div>
 
@@ -97,8 +100,8 @@
         </div>                                                     
         <div class="clearfix"></div>
             <div class="form-group">
-            <div name="nextB1" align="center" style="vertical-align: center;"><a href="#" onclick="memContactP()"><img src="images/prevbutton.png" /></a></div>
-            <div name="nextB2" align="center" style="vertical-align: center;"><a href="#" onclick="cekMemContact()"><img src="images/nextbutton.png" /></a></div>
+            <div class="col-md-6" align="center" align="center"><a href="#" ><img src="images/prevbutton.png" title="Kembali" /></a></div>
+            <div class="col-md-6" align="center" align="center"><a href="#" onclick="cekMemContact()"><img src="images/nextbutton.png" title="Lanjut" /></a></div>
             </div>
         </form>                   
     </div>
@@ -114,20 +117,20 @@
             <input type="email" required class="form-control pull-right" id="email" name="email" />
         </div> 
         <div class="clearfix"></div>
-            <div name="prevContact" align="center" style="vertical-align: center;"><a href="#" onclick="memAddressP()"><img src="images/prevbutton.png" /></a></div>
-            <div name="submit" align="center" style="vertical-align: center;"><a href="#" onclick="finishContact()"><img src="images/finishbutton.png" /></a></div>
+             <div class="col-md-6" align="center" align="center"><a href="#" onclick="memAddressP()" ><img src="images/prevbutton.png" title="Kembali" /></a></div>
+            <div class="col-md-6" align="center" align="center"><a href="#" onclick="submitContact()"><img src="images/finishbutton.png" title="Submit" /></a></div>
         </form>                   
     </div>
-    <div id="satatus">
-        <div id="failedStatus" class="alert alert-warning alert-dismissible" role="alert" style="display: none">
+    <div id="regform" class="col-md-7 col-centered mStatus" style="display: none">
+        <div id="failedStatus" class="alert alert-warning" role="alert" style="display: none" >
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <strong>Gagal!</strong>Gagal Menambahkan member baru.
         </div>
-        <div id="successStatus" class="alert alert-success alert-dismissible" role="alert" style="display: none">
+        <div id="successStatus" class="alert alert-success" role="alert" style="display: none">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <strong>Sukses</strong><hr/> Member baru berhasil ditambahkan.
         </div>
-        <div id="regStatus" class="col-md-7 col-centered" style="display: none">
+        <div id="regStatus" class="" style="display: none">
             <div class="form-group">
                 <label>Nama Member</label>
                 <span id="newMemName" class=" pull-right">#################</span>
@@ -137,13 +140,18 @@
                 <span id="newRegDate" class=" pull-right">#################</span>
             </div> 
             <div class="form-group">
+                <label>Jam Registrasi</label>
+                <span id="newRegHour" class=" pull-right">#################</span>
+            </div>
+            <div class="form-group">
                 <label>Nomor Registrasi</label>
                 <span  id="newRegNum" class=" pull-right">#################</span>
             </div> 
 
             <div class="clearfix"></div>
-            <button type="button" onclick="dissmiss" class="btn btn-Success col-md-12" name="submit"><i class="glyphicon glyphicon-send"></i> OK</button>                  
+                        
         </div>
+        <button type="button" onclick="print('#regStatus')" class="btn btn-block btn-success col-md-12"><i class="glyphicon glyphicon-print"></i> Cetak</button>      
     </div>
     </div>
 </div>
@@ -153,87 +161,115 @@
         var noktp = $('input[name="noktp"]');
         var npwp = $('input[name="npwp"]');
         var tgl_lahir = $('input[name="tgl_lahir"]');
-        //var pilih = document.regform.wil_list.value;
-        //var wil = $("#wil_list");
-        //var wil_input = wil.options[wil.selectedIndex].value;
-        //var wilayah = document.regform.wil_list.value;
         if (nama.val() == "") {
-            alert("Masukkan Nama!");
-            nama.val();
-            nama.focus();
+            bootbox.dialog({
+              message: "Masukkan Nama!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                  callback: function() {
+                    nama.val(); 
+                    nama.focus();
+                  }
+                },
+              }
+            });
         } 
         else if (tgl_lahir.val() == "") {
-            alert("Masukkan Tanggal Lahir!");
+             bootbox.dialog({
+              message: "Masukkan Tanggal Lahir!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                },
+              }
+            });
             tgl_lahir.val();
             tgl_lahir.focus();
         }
         else if (noktp.val() == "") {
-            alert("Masukkan Nomor KTP!");
+             bootbox.dialog({
+              message: "Masukkan Nomor KTP!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                },
+              }
+            });
             noktp.val();
             noktp.focus();
         }
         else if (npwp.val() == "") {
-            alert("Masukkan NPWP!");
+             bootbox.dialog({
+              message: "Masukkan NPWP!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                },
+              }
+            });
             npwp.val();
             npwp.focus();
         }
-        /*else if (pilih == null) {
-            alert("pilih wilayah!");
-            pilih.val();
-            pilih.focus();
-        };*/
-        /*else if (wilayah == null)
-            alert("pilih wilayahnya");
-            return false;
-        }*/
-        /*else if (wil_input.val() == null) {
-            alert("Pilih Wilayah!");
-            wil_input.val();
-            wil_input.focus();
-        }*/
         else {memAddress();}
     }
-
     function cekMemContact(){
         var jalan = $('input[name="jalan"]');
-        //var prov_list = $('select[name="prov_list"]');
-        //var kab_list = $('select[name="kab_list"]');
-        //var kec_list = $('select[name="kec_list"]');
         if (jalan.val() == "") {
-            alert("Masukkan Nama Jalan!");
+           bootbox.dialog({
+              message: "Masukkan Nama Jalan!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                },
+              }
+            });
             jalan.val();
             jalan.focus();
-        } 
-        /*else if (prov_list.val() == null) {
-            alert("Pilih Provinsi!");
-            prov_list.val();
-            prov_list.focus();
         }
-        else if (kab_list.val() == null) {
-            alert("Pilih Kabupaten!");
-            kab_list.val();
-            kab_list.focus();
-        }
-        else if (kec_list.val() == null) {
-            alert("Pilih Kecamatan!");
-            kec_list.val();
-            kec_list.focus();
-        }*/
         else {memContact();}
     }
     function finishContact(){
         var telp = $('input[name="telp"]');
         var email = $('input[name="email"]');
         if (telp.val() == "") {
-            alert("Masukkan Nomor Telepon!");
+            bootbox.dialog({
+              message: "Masukkan Nomor Telepon!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                },
+              }
+            });
             telp.val();
             telp.focus();
         } 
         else if (email.val() == "") {
-            alert("Masukkan Alamat Email!");
             email.val();
             email.focus();
-        } 
+            bootbox.dialog({
+              message: "Masukkan Alamat Email!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                },
+              }
+            });
+        }
         else {submitContact();}
     }
     function memAddress(){
@@ -341,16 +377,28 @@
                 alert(res);
                 var hasil = JSON.parse(res);
                 if(hasil.inserted){
-                    $("#regform").hide();
-                    $("#successStatus").show();
+                    var waktu = hasil.createdAt;
+
+                    var day = waktu.substring(8,10);
+                    var month =waktu.substring(5,7);
+                    var year = waktu.substring(0,4);
+                    var hour = waktu.substring(12,20);
+
+                    $(".mContact").hide();
+                    $(".mStatus").show();
+                    $("#rghead").text("Member Berhasil Ditambahkan");
                     $("#newMemName").text(hasil.nama);
                     $("#newRegNum").text(hasil.reg_num);
-                    $("#newRegDate").text(hasil.createdAt);
+                    $("#newRegDate").text(day+"-"+month+"-"+year);
+                    $("#newRegHour").text(hour);
                     $("#successStatus").show();
                     $("#regStatus").show();
                     $("#status").show();
                 }
             }
         });
+    }
+    function print(element){
+        $(element).printElement();
     }
 </script>

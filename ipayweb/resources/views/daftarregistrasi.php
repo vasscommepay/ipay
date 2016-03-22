@@ -9,44 +9,34 @@
     <script type="text/javascript" src="bootstrap-3.3.5-dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="js/bootstrap-carousel.js"></script>     
     <script type="text/javascript" src="js/modernizr-1.5.min.js"></script>
-    <script type="text/javascript" src="assets/js/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="js/bootbox.min.js"></script>
+    <script type="text/javascript" src="js/jquery.validate.js"></script>
     <script type="text/javascript">
-    /*$().ready(function){
-        $("#formreg").validate({
-                rules: {
-                    username: {
-                        required: true,
-                        minlength: 2
-                    },
-                    password: {
-                        required: true,
-                        minlength: 5
-                    },
-                    confpassword: {
-                        required: true,
-                        minlength: 5,
-                        equalTo: "#password"
-                    },
-                    noreg: "required"
-                },
-                messages: {
-                    username: {
-                        required: "Masukkan Username"
-                        minlength: "Username 3-7 karakter"
-                    },
-                    password: {
-                        required: "Masukkan Password Anda",
-                        minlength: "Password anda harus diatas 5 karakter"
-                    },
-                    confpassword: {
-                        required: "Masukkan Password Anda",
-                        minlength: "Password anda harus diatas 5 karakter",
-                        equalTo: "Password harus sama"
-                    },
-                    noreg: "Masukkan Nomor Registrasi"
-                },
+    $(document).ready(function(){
+        $('#confpassword').keyup(function(){
+            var passpertama = $("#password").val();
+            var passkedua = $("#confpassword").val();
+            if($('#password').val() != $('#confpassword').val()){
+                $('#confpassword').css('background','#e74c3c'); //warna merah
+            }else if(passpertama == passkedua){
+                $('#confpassword').css('background','#2ecc71'); //warna hijau
             }
-        }*/
+        });             
+    });
+    /*$(document).ready(function() {
+        $('#formreg').validate({
+            rules: {
+                confpassword: {
+                    equalTo: "#password"
+                }
+            },
+            messages: {
+                confpassword: {
+                    equalTo: "Password tidak sama"
+                }
+            }
+        });
+    });*/
     </script>
 </head>
 <body>
@@ -58,15 +48,15 @@
         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
         <div class="form-group">
             <label>Username</label>
-                <input type="text" required="" maxlength="7" class="form-control pull-right" name="username" />
-        </div>
+                <input type="text" required="" class="form-control pull-right" name="username" onchange="cekUsername()" />
+        </div><hr>
         <div class="form-group">
             <label>Password</label>
-                <input type="password" required="" maxlength="8" class="form-control pull-right" name="password" />
+                <input type="password" required="" maxlength="8" class="form-control pull-right" name="password" id="password" />
         </div>
         <div class="form-group">
-            <label>Confirm Password</label>
-                <input type="password" required="" maxlength="8" class="form-control pull-right" name="confpassword" />
+            <label>Ulangi Password</label>
+                <input type="password" required="" maxlength="8" class="form-control pull-right" name="confpassword" id="confpassword" />
         </div><hr />                 
         <div class="form-group">
             <label>Nomor Registrasi</label>
@@ -74,30 +64,45 @@
         </div>                                                      
         <div class="clearfix"></div>
         <button class="btn btn-warning col-md-12" name="submit" onclick="signup()"><i class="glyphicon glyphicon-send"></i> Sign Up</button>
-        <hr><label>Sudah punya akun? klik Login</label>
-        <a href="login"><button class="btn btn-warning col-md-12" type="button" ><i class="glyphicon glyphicon-send"></i> Login</button></a>   
+        <label>Sudah punya akun? klik <a href="login"> Login</a></label>
     </form>                       
         </div>
     </div>
 </body>
 <script type="text/javascript">
-    function signup(){
-        var confpassword = ('input[name="confpassword"]');
-        var password = ('input[name="password"]');
-        if (confpassword.val() != password.val) {
-            alert("Password harus sama!");
-            confpassword.val();
-            confpassword.focus();
-        } 
-        else {submitregistrasi();}
-    }
-    function submitregistrasi(){
+    function cekUsername(){
+        var data = $('input[name="username"]').val();
         $.ajax({
-        url:'register',
-        type:'POST',
-        data: data,
-        success: function(res){
-            alert(res);}
+            url:'cekUsername',
+            type: 'POST',
+            data: {"username": data},
+            success: function(res){
+                var result = JSON.parse(res);
+                //alert(result.status);
+                if (result.status){
+                    bootbox.alert("username tidak bisa digunakan");
+                    $('input[name="username"]').val("");
+                    $('input[name="username"]').focus();
+                }
+            }
+        });
+    }
+    function cekPassword(){
+        var password = $('input[name="password"]').val();
+        var confpassword = $('input[name="confpassword"]').val();
+        if (password.val() == "a") {
+            alert("hayo");
+        };
+    }
+    function signup(){
+        var data = $("#formreg").serialize();
+        $.ajax({
+            url:'register',
+            type: 'POST',
+            data: data,
+            success: function(res){
+                alert("sukses");
+            }
         });
     }
 </script>

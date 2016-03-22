@@ -25,6 +25,7 @@ Route::get('get_wil','AddressController@getWilayah');
 Route::post('get_kec','AddressController@getKecamatan');
 Route::post('get_kab','AddressController@getKabupaten');
 Route::post('register','registerController@register');
+Route::post('cekUsername','registerController@cekUsername');
 Route::get('daftarregistrasi', function () {
     return view('daftarregistrasi');
 });

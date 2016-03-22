@@ -13,6 +13,13 @@ class registerController extends Controller
 	private $url;
 	private $params;
 
+    function cekUsername(){
+    	$username = Request::input('username');
+    	$user = array('username'=>$username);
+    	$this->params = $user;
+    	$this->url = 'users/cek-username';
+    	$this->sendPostRequest();
+    }
     function register(){
     	$username = Request::input('username');
     	$password = Request::input('password');

@@ -13,6 +13,7 @@
 <script type="text/javascript" src="bootstrap-3.3.5-dist/js/bootstrap.js"></script>
 <script type="text/javascript" src="js/bootstrap-carousel.js"></script>     
 <script type="text/javascript" src="js/modernizr-1.5.min.js"></script>
+<script type="text/javascript" src="js/bootbox.min.js"></script>
 <script type="text/javascript">
 $.ajaxSetup({
               headers: {

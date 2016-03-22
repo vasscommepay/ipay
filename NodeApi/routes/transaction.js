@@ -36,46 +36,135 @@ router.use(function(req, res, next) {
 	}
 });
 
-router.post('/getProduct',function(req,res){
-	var idAtasan;
-	var sqlAtasan;
-	var sqlProduk;
+router.post('/createOrder',function(req,res){
 	var id_member = req.body.id_member;
-	var level = req.body.level;
-        	if(level==2){
-        		sqlAtasan = "SELECT id_korwil as atasan FROM member_koordinator WHERE id_member ="+id_member;
-        	}else if(level==3){
-        		sqlAtasan = "SELECT id_koordinator as atasan FROM member_agen WHERE id_member ="+id_member;
-        	}else{
-        		sqlAtasan = "SELECT id_member as atasan FROM member_internal";
-        	}
-    if(req.body.kategori!=null){
-    	sqlProduk = "SELECT * FROM produk_member JOIN master_produk ON product_id = id WHERE member_id= ? AND kategori_produk="+req.body.kategori;
-    }else{
-    	sqlProduk = "SELECT * FROM produk_member WHERE member_id=?";
-    }
-	
-	connection.query(sqlAtasan,function(err,rows){
-		if (err){
-		   console.log(err);
-		   res.json({"inserted" : false,"message":err});
+	var sql = "INSERT INTO member_order(id_member) VALUES(?)";
+	connection.query(sql,[id_member],function(err,result){
+		if(err){
+			console.log(err);
 		}else{
-			if(rows[0]==null){
-				console.log("KOPLAK");
-			}else{
-				id_atasan= rows[0].atasan;
-				console.log(id_atasan);
-				connection.query(sqlProduk,[id_atasan],function(err,rows){
-					if(err){
-						console.log(err);  
-			   			res.json({"select" : false,"message":err});
-					}else{
-						res.json(rows);				
-					}
-				});
-			}
-			
+			res.json({"isSuccess":true,"orderid":result.insertId});
 		}
+	});
+});
+
+router.post('/tambahStok',function(req,res){
+	var produks = req.body.prod;
+	var id_member = req.body.id_member;
+	var prod_count = produks.length;
+	var index;
+	var id_uplink = connection.escape(req.body.id_uplink);
+	var orderid = req.body.oderid;
+	var total_biaya=0;
+	var total_saldo;
+	var status_biaya;
+	var saldo_cukup;
+	var prod_stat = [];
+		async.each(produks, function(produk, callback){
+			var id_produk = connection.escape(produk.id_produk);
+			var qty = produk.qty;
+			var harga_beli;
+			var total;
+			var stok;		
+			var harga_jual;
+			var tujuan = 'stok';
+			var min_order ;
+			var max_order;
+			var status_stok;
+			var status_kosong;
+			var status_aktif;
+			var status_order;
+			var stok_kurang;
+			var isReady = false;
+			var status_transaksi=false;
+			var status=[];
+			var sql = 'SELECT * FROM produk_member WHERE product_id ="'+id_produk+'" AND member_id ='+id_uplink;
+			connection.query(sql,function(err,rows){
+				if(err){
+					console.log(err);
+					res.json({"status":"error","message":err});
+				}else{
+					harga_jual = rows[0].harga_jual;
+					total = harga_jual*qty;
+					status_aktif = rows[0].aktif;
+					status_kosong = rows[0].kosong;
+					stok = rows[0].stok_produk;
+					if(stok-qty < 0){
+						status_stok = false;
+						stok_kurang = qty-stok;
+					}else{
+						status_stok = true;
+						stok_kurang = 0;
+						isReady = true;
+					}
+					if(min_order<qty && max_order>qty){
+						status_order = true;
+						isReady = true;
+					}else{
+						status_order = false;
+						isReady = false;
+					}
+					if(isReady){
+						sql = 'INSERT INTO transaksi(id_order,id_produk,id_member_produk,total_biaya,jenis_transaksi) VALUES(?,?,?,?,?)';
+						connection.query(sql,[orderid,id_produk,id_uplink,total,"tstk"],function(err,result){
+							var id_tran;
+							if(err){
+								consol.log(err);
+							}else{
+								status_transaksi = true;
+								id_tran = result.insertId;
+							}
+							status = {
+								"id_produk":id_produk,
+								"order_qty":qty,
+								"harga":harga_jual,
+								"total":total,
+								"status_aktif":status_aktif,
+								"status_kosong":status_kosong,
+								"status_stok":status_stok,
+								"stok_kurang":stok_kurang,
+								"status_order":status_order,
+								"min_order":min_order,
+								"max_order":max_order,
+								"status_transaksi":true,
+								"id_transaksi":id_tran
+							}
+							total_biaya += total;
+							console.log("Totalbiaya="+total_biaya);
+							prod_stat.push(status);
+							callback();
+						});
+					}
+					
+				}
+			});
+		
+	},function(err){
+
+		console.log("callback: sukses");
+		var sql = "SELECT total_saldo FROM member WHERE id_member = ?";
+		connection.query(sql,[id_member],function(err,rows){
+			if(err){
+				console.log("get_saldo: gagal");
+				console.log(err);
+				res.json({"status":"error","message":err});
+			}else{
+				console.log("get_saldo: sukses");
+				total_saldo = rows[0].total_saldo;
+				if(total_saldo<total_biaya){
+					saldo_cukup = false;
+				}else{
+					saldo_cukup = true;
+				}
+				var status = [{
+					"total_biaya":total_biaya,
+					"saldo":total_saldo,
+					"saldo_cukup":saldo_cukup,
+					"prod_stat":prod_stat
+					}];
+				res.json(status);
+			}
+		});
 	});
 });
 
