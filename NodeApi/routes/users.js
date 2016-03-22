@@ -1,10 +1,11 @@
-var express = require('express');
-var async = require('async');
-var crypto = require('crypto');
-var router = express.Router();
-var bodyParser = require('body-parser');
-var mysql      = require('mysql');
-var connection = mysql.createConnection({
+var express 	= require('express');
+var async 		= require('async');
+var crypto 		= require('crypto');
+var nodemailer	= require('nodemailer');
+var router 		= express.Router();
+var bodyParser 	= require('body-parser');
+var mysql      	= require('mysql');
+var connection 	= mysql.createConnection({
    host     : 'localhost',
    user     : 'root',
    password : '',
@@ -40,10 +41,10 @@ var cekUsername = {sql : 'SELECT * from users WHERE username="'+req.body.usernam
 			console.log(err);
 		}else{
 			if (rows[0]==null){
-				res.json({"status" : "true" , "message" : "username not exist"});
+				res.json({"status" : false , "message" : "username not exist"});
 			} else {
-				var username = rows[0].username;
-				res.json({"status" : "false" , "message" : "username exist"});
+				// var username = rows[0].username;
+				res.json({"status" : true , "message" : "username exist"});
 			}
 		}
 	});
@@ -61,7 +62,7 @@ var member_id;
 				   console.log(err);
 				}else{
 					if (rows[0]==null){
-						res.json({"status" : "false" , "message" : "users not exist"});
+						res.json({"status" : false , "message" : "users not exist"});
 					} else {
 						member_id = rows[0].id_member;
 						callback();
@@ -76,9 +77,9 @@ var member_id;
         	connection.query(addNewUsers, function(err, result) {
 				if (err){
 					console.log(err);
-					res.json({"inserted" : "false" , "message" : err});
+					res.json({"inserted" : false , "message" : err});
 				}else{
-					res.json({"inserted" : "true" , "message" : "success"});
+					res.json({"inserted" : true , "message" : "success"});
 				}
 			});
         });
@@ -97,7 +98,7 @@ var isexists;
 					console.log(err);
 				}else{
 					if (rows==null){
-						res.json({"status" : "false" , "message" : "password missmatch"});
+						res.json({"status" : false , "message" : "password missmatch"});
 					} else {
 						callback();
 					}
@@ -113,9 +114,9 @@ var isexists;
 					console.log(err);
 				}else{
 					if (rows==null){
-						res.json({"status" : "false" , "message" : "this old password"});
+						res.json({"status" : false , "message" : "this old password"});
 					} else {
-						res.json({"status" : "true" , "message" : "password updated"});
+						res.json({"status" : true , "message" : "password updated"});
 					}
 				}
 			});
@@ -132,7 +133,52 @@ router.post("/lupa-password",function(req,res,next) {
 			res.json({"status" : "deleted"});
 		}
 	});
-				
+});
+
+
+
+app.post('/send-password',function(req,res){
+
+var contact = {subject: 'test', message: 'test message', email: 'visitor@gmail.com'};
+var to = "bfibrianto@gmail.com";
+
+
+var smtpConfig = {
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // use SSL
+    proxy: 'http://localhost:5000/',
+    auth: {
+        user: 'sender@gmail.com',
+        pass: 'password'
+    }
+};
+
+var transport = nodemailer.createTransport('SMTP',{
+    service: 'Gmail',
+    auth: {
+        user: 'sender@gmail.com',
+        pass: 'password'
+    }
+});
+
+    var mailOptions={
+        from : contact.email,
+        to : to,
+        subject : contct.subject,
+        text : contact.message
+    }
+    console.log(mailOptions);
+    transport.sendMail(mailOptions, function(err, info){
+		if(err){
+			console.log(err);
+			//res.end('err');
+		}else{
+			console.log('Message sent: ' + info.message);
+			//res.end('sent');
+		}
+	});
+
 });
 
 module.exports = router;

@@ -1,5 +1,5 @@
 var express       = require('express');
-var async = require('async');
+var async         = require('async');
 var routes        = require('routes');
 var http          = require('http');
 var path          = require('path');
@@ -7,6 +7,7 @@ var favicon       = require('serve-favicon');
 var logger        = require('morgan');
 var cookieParser  = require('cookie-parser');
 var bodyParser    = require('body-parser');
+var nodemailer    = require('nodemailer');
 var mysql         = require('mysql');
 // var connection = mysql.createConnection({
 //    host     : 'localhost',
