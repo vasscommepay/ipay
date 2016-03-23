@@ -8,7 +8,7 @@ var logger        = require('morgan');
 var cookieParser  = require('cookie-parser');
 var bodyParser    = require('body-parser');
 var nodemailer    = require('nodemailer');
-var mailer    = require('express-mailer');
+var mailer        = require('express-mailer');
 var mysql         = require('mysql');
 // var connection = mysql.createConnection({
 //    host     : 'localhost',
@@ -17,15 +17,16 @@ var mysql         = require('mysql');
 //    database : 'ipaydb'
 // });
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
-var member = require('./routes/member');
-var login = require('./routes/login');
-var produk = require('./routes/produk');
-var address = require('./routes/address');
+var routes      = require('./routes/index');
+var login       = require('./routes/login');
+var member      = require('./routes/member');
+var users       = require('./routes/users');
+var produk      = require('./routes/produk');
+var address     = require('./routes/address');
+var saldo       = require('./routes/saldo');
 var transaction = require('./routes/transaction');
-var app = require('express')(),
-    mailer = require('express-mailer');
+var app         = require('express')(),
+    mailer      = require('express-mailer');
 
 // view engine setup
 app.set('port', process.env.PORT || 5000, '11.0.0.39');
@@ -41,12 +42,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
-app.use('/member', member);
-app.use('/login',login);
-app.use('/produk',produk);
 app.use('/address',address);
+app.use('/login',login);
+app.use('/member', member);
+app.use('/produk',produk);
+app.use('/saldo',saldo);
 app.use('/transaction',transaction);
+app.use('/users', users);
 
 app.post('/mail', function(req, res){
     mailer.extend(app,{

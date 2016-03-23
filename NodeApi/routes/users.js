@@ -46,12 +46,12 @@ var cekUsername = {sql : 'SELECT * from users WHERE username="'+req.body.usernam
 			console.log(err);
 		}else{
 			if (rows[0]==null){
-				res.json({"status" : false , "message" : "username not exist"});
-				console.log('message : username tidak terdaftar');
+				res.json({"Status" : false , "Message" : "Username Not Exist"});
+				console.log('Message : Username Tidak Terdaftar');
 			} else {
 				// var username = rows[0].username;
-				res.json({"status" : true , "message" : "username exist"});
-				console.log('message : username terdaftar');
+				res.json({"Status" : true , "Message" : "Username Exist"});
+				console.log('Message : Username Sudah Terdaftar');
 			}
 		}
 	});
@@ -69,8 +69,8 @@ var member_id;
 				   console.log(err);
 				}else{
 					if (rows[0]==null){
-						res.json({"status" : false , "message" : "users not exist"});
-						console.log('message : user belum terdaftar');
+						res.json({"Status" : false , "Message" : "Users Not Exist"});
+						console.log('Message : User Belum Terdaftar');
 					} else {
 						member_id = rows[0].id_member;
 						callback();
@@ -85,10 +85,11 @@ var member_id;
         	connection.query(addNewUsers, function(err, result) {
 				if (err){
 					console.log(err);
-					res.json({"inserted" : false , "message" : err});
+					res.json({"Inserted" : false , "Message" : err});
+					console.log('Message : User Tidak Berhasil Didaftarkan');
 				}else{
-					res.json({"inserted" : true , "message" : "success"});
-					console.log('message : user berhasil didaftarkan');
+					res.json({"Inserted" : true , "Message" : "Success"});
+					console.log('Message : User Berhasil Didaftarkan');
 				}
 			});
         });
@@ -107,8 +108,8 @@ var isexists;
 					console.log(err);
 				}else{
 					if (rows==null){
-						res.json({"status" : false , "message" : "password missmatch"});
-						console.log('message : password tidak cocok');
+						res.json({"Status" : false , "Message" : "Password Missmatch"});
+						console.log('Message : Password Tidak Cocok');
 					} else {
 						callback();
 					}
@@ -124,11 +125,11 @@ var isexists;
 					console.log(err);
 				}else{
 					if (rows==null){
-						res.json({"status" : false , "message" : "this old password"});
-						console.log('message : ini password lama anda');
+						res.json({"Status" : false , "Message" : "This Old Password"});
+						console.log('Message : Ini Password Lama Anda');
 					} else {
-						res.json({"status" : true , "message" : "password updated"});
-						console.log('message : password berhasil diperbarui');
+						res.json({"Status" : true , "Message" : "Password Updated"});
+						console.log('Message : Password Berhasil Diperbarui');
 					}
 				}
 			});
