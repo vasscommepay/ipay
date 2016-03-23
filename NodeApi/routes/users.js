@@ -136,39 +136,42 @@ router.post("/lupa-password",function(req,res,next) {
 });
 
 
+router.post('/send-password',function(req,res){
 
-app.post('/send-password',function(req,res){
 
-var contact = {subject: 'test', message: 'test message', email: 'visitor@gmail.com'};
-var to = "bfibrianto@gmail.com";
+var contact = {subject: 'test', message: 'test message', email: 'bfibrianto@gmail.com'};
+var to = "sarahmuyassaroh@gmail.com";
 
 
 var smtpConfig = {
     host: 'smtp.gmail.com',
+    secure:false,
     port: 465,
-    secure: true, // use SSL
-    proxy: 'http://localhost:5000/',
+    //proxy: 'http://localhost:5000/',
     auth: {
-        user: 'sender@gmail.com',
-        pass: 'password'
+        user: 'bfibrianto@gmail.com',
+        pass: 'kitibriti'
     }
 };
 
 var transport = nodemailer.createTransport('SMTP',{
-    service: 'Gmail',
+    service: 'gmail',
     auth: {
-        user: 'sender@gmail.com',
-        pass: 'password'
+        user: 'bfibrianto@gmail.com',
+        pass: 'kitibriti'
     }
 });
+
+var directConfig = {
+    name: 'localhost' // must be the same that can be reverse resolved by DNS for your IP
+};
 
     var mailOptions={
         from : contact.email,
         to : to,
-        subject : contct.subject,
+        subject : contact.subject,
         text : contact.message
     }
-    console.log(mailOptions);
     transport.sendMail(mailOptions, function(err, info){
 		if(err){
 			console.log(err);

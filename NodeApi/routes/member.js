@@ -191,7 +191,7 @@ router.post("/newMember",function(req, res, next) {
         		level_table_sql = "INSERT INTO member_koordinator(id_member,id_koordinator) VALUES("+newMemberId+","+id_atasan+")";
         	}else{
         		var pos = req.body.posisi;
-        		level_table_sql = 'INSERT INTO member_koordinator(id_member,posisi) VALUES('+newMemberId+',"'+pos+'")';
+        		level_table_sql = 'INSERT INTO member_internal(id_member,posisi) VALUES('+newMemberId+',"'+pos+'")';
         	}
         	console.log(wilayah);  
         	console.log(newMemberId);
