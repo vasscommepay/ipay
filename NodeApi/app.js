@@ -8,6 +8,7 @@ var logger        = require('morgan');
 var cookieParser  = require('cookie-parser');
 var bodyParser    = require('body-parser');
 var nodemailer    = require('nodemailer');
+var mailer    = require('express-mailer');
 var mysql         = require('mysql');
 // var connection = mysql.createConnection({
 //    host     : 'localhost',
@@ -23,7 +24,8 @@ var login = require('./routes/login');
 var produk = require('./routes/produk');
 var address = require('./routes/address');
 var transaction = require('./routes/transaction');
-var app = express();
+var app = require('express')(),
+    mailer = require('express-mailer');
 
 // view engine setup
 app.set('port', process.env.PORT || 5000, '11.0.0.39');
@@ -46,6 +48,32 @@ app.use('/produk',produk);
 app.use('/address',address);
 app.use('/transaction',transaction);
 
+app.post('/mail', function(req, res){
+    mailer.extend(app,{
+    from: req.body.email,
+    host:'smtp.gmail.com',
+    secureConnection: true,
+    port: 465,
+    transportMethod: 'SMTP',
+     auth: {
+         user: 'gallan.widyanto@gmail.com',
+         pass: '9oL;dnf21.,'
+     }
+
+  });
+       app.mailer.send('email',{
+       to: 'bfibrianto@gmail.com',
+       subject: req.body.subject,
+       message: req.body.message
+
+  }, function(err){
+    if(err){
+       console.log('error');
+       //return;
+    }
+     res.send('email sent');
+ });
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

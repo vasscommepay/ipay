@@ -1,7 +1,7 @@
 var express 	= require('express');
 var async 		= require('async');
 var crypto 		= require('crypto');
-var nodemailer	= require('nodemailer');
+//var nodemailer	= require('nodemailer');
 var router 		= express.Router();
 var bodyParser 	= require('body-parser');
 var mysql      	= require('mysql');
@@ -16,6 +16,10 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+var app = require('express')(),
+    mailer = require('express-mailer');
+
+
 function randomString(length) {
 	var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@&"
     var result = '';
@@ -27,9 +31,10 @@ router.post("/view-get-users",function(req,res,next) {
 var viewGetUsers = {sql : 'SELECT * from users'};
 	connection.query(viewGetUsers, function(err, rows, fields) {
 		if (err){
-		   console.log(err);
+		   	console.log(err);
 		}else{
 			res.json(rows);
+			console.log(rows);
 		}
 	});
 });
@@ -42,9 +47,11 @@ var cekUsername = {sql : 'SELECT * from users WHERE username="'+req.body.usernam
 		}else{
 			if (rows[0]==null){
 				res.json({"status" : false , "message" : "username not exist"});
+				console.log('message : username tidak terdaftar');
 			} else {
 				// var username = rows[0].username;
 				res.json({"status" : true , "message" : "username exist"});
+				console.log('message : username terdaftar');
 			}
 		}
 	});
@@ -63,6 +70,7 @@ var member_id;
 				}else{
 					if (rows[0]==null){
 						res.json({"status" : false , "message" : "users not exist"});
+						console.log('message : user belum terdaftar');
 					} else {
 						member_id = rows[0].id_member;
 						callback();
@@ -80,6 +88,7 @@ var member_id;
 					res.json({"inserted" : false , "message" : err});
 				}else{
 					res.json({"inserted" : true , "message" : "success"});
+					console.log('message : user berhasil didaftarkan');
 				}
 			});
         });
@@ -99,6 +108,7 @@ var isexists;
 				}else{
 					if (rows==null){
 						res.json({"status" : false , "message" : "password missmatch"});
+						console.log('message : password tidak cocok');
 					} else {
 						callback();
 					}
@@ -115,73 +125,102 @@ var isexists;
 				}else{
 					if (rows==null){
 						res.json({"status" : false , "message" : "this old password"});
+						console.log('message : ini password lama anda');
 					} else {
 						res.json({"status" : true , "message" : "password updated"});
+						console.log('message : password berhasil diperbarui');
 					}
 				}
 			});
         });
 });
 
-router.post("/lupa-password",function(req,res,next) {
-	var lupaPassword = { sql : 'delete from member where id_member="'+req.body.id_member+'"' }
-	connection.query(lupaPassword, function(err, rows, fields) {
-		if (err){
-		   console.log(err);
-		}else{
-			//res.json('Deleted: ' + JSON.stringify(rows));
-			res.json({"status" : "deleted"});
-		}
-	});
-});
+// router.post("/lupa-password",function(req,res,next) {
+// 	var lupaPassword = { sql : 'delete from member where id_member="'+req.body.id_member+'"' }
+// 	connection.query(lupaPassword, function(err, rows, fields) {
+// 		if (err){
+// 		   console.log(err);
+// 		}else{
+// 			//res.json('Deleted: ' + JSON.stringify(rows));
+// 			res.json({"status" : "deleted"});
+// 		}
+// 	});
+// });
 
 
-router.post('/send-password',function(req,res){
+// router.post('/send-password',function(req,res){
 
 
-var contact = {subject: 'test', message: 'test message', email: 'bfibrianto@gmail.com'};
-var to = "sarahmuyassaroh@gmail.com";
+// var contact = {subject: 'test', message: 'test message', email: 'bfibrianto@gmail.com'};
+// var to = "sarahmuyassaroh@gmail.com";
 
 
-var smtpConfig = {
-    host: 'smtp.gmail.com',
-    secure:false,
+// var smtpConfig = {
+//     host: 'smtp.gmail.com',
+//     secure:false,
+//     port: 465,
+//     //proxy: 'http://localhost:5000/',
+//     auth: {
+//         user: 'bfibrianto@gmail.com',
+//         pass: 'kitibriti'
+//     }
+// };
+
+// var transport = nodemailer.createTransport('SMTP',{
+//     service: 'gmail',
+//     auth: {
+//         user: 'bfibrianto@gmail.com',
+//         pass: 'kitibriti'
+//     }
+// });
+
+// var directConfig = {
+//     name: 'localhost' // must be the same that can be reverse resolved by DNS for your IP
+// };
+
+//     var mailOptions={
+//         from : contact.email,
+//         to : to,
+//         subject : contact.subject,
+//         text : contact.message
+//     }
+//     transport.sendMail(mailOptions, function(err, info){
+// 		if(err){
+// 			console.log(err);
+// 			//res.end('err');
+// 		}else{
+// 			console.log('Message sent: ' + info.message);
+// 			//res.end('sent');
+// 		}
+// 	});
+
+// });
+
+router.post('/mail', function(req, res){
+    mailer.extend(app,{
+    from: req.body.email,
+    host:'smtp.gmail.com',
+    secureConnection: true,
     port: 465,
-    //proxy: 'http://localhost:5000/',
-    auth: {
-        user: 'bfibrianto@gmail.com',
-        pass: 'kitibriti'
+    transportMethod: 'SMTP',
+     auth: {
+         user: 'example@gmail.com',
+         pass: '**********'
+     }
+
+  });
+       app.mailer.send('email',{
+       to: 'gallan.widyanto@gmail.com',
+       subject: req.body.subject,
+       message: req.body.message
+
+  }, function(err){
+    if(err){
+       console.log('error');
+       //return
     }
-};
-
-var transport = nodemailer.createTransport('SMTP',{
-    service: 'gmail',
-    auth: {
-        user: 'bfibrianto@gmail.com',
-        pass: 'kitibriti'
-    }
-});
-
-var directConfig = {
-    name: 'localhost' // must be the same that can be reverse resolved by DNS for your IP
-};
-
-    var mailOptions={
-        from : contact.email,
-        to : to,
-        subject : contact.subject,
-        text : contact.message
-    }
-    transport.sendMail(mailOptions, function(err, info){
-		if(err){
-			console.log(err);
-			//res.end('err');
-		}else{
-			console.log('Message sent: ' + info.message);
-			//res.end('sent');
-		}
-	});
-
+     res.send('email sent');
+ });
 });
 
 module.exports = router;
