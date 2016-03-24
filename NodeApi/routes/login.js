@@ -6,9 +6,9 @@ var bodyParser = require('body-parser');
 var mysql      = require('mysql');
 var async = require('async');
 var connection = mysql.createConnection({
-   host     : 'localhost',
+   host     : '10.0.0.19',
    user     : 'root',
-   password : '',
+   password : 'S4)CA&kJkLJvEMw<',
    database : 'ipaydb'
 });
 
