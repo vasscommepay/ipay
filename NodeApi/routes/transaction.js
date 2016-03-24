@@ -27,6 +27,7 @@ router.use(function(req, res, next) {
 				if(rows[0].result===0){
 					res.json({"status":"error","message":"Session tidak terdaftar"});
 				}else{
+					console.log("session sukses");
 					next();
 				}
 			}
@@ -54,11 +55,13 @@ router.post('/tambahStok',function(req,res){
 	var prod_count = produks.length;
 	var index;
 	var id_uplink = connection.escape(req.body.id_uplink);
-	var orderid = req.body.oderid;
+	var orderid = req.body.orderid;
 	var total_biaya=0;
 	var total_saldo;
 	var status_biaya;
 	var saldo_cukup;
+	var isSuccess;
+	var isCheck = req.body.isCheck;
 	var prod_stat = [];
 		async.each(produks, function(produk, callback){
 			var id_produk = connection.escape(produk.id_produk);
@@ -73,7 +76,7 @@ router.post('/tambahStok',function(req,res){
 			var status_stok;
 			var status_kosong;
 			var status_aktif;
-			var status_order;
+			var isSuccess;
 			var stok_kurang;
 			var isReady = false;
 			var status_transaksi=false;
@@ -87,30 +90,40 @@ router.post('/tambahStok',function(req,res){
 					harga_jual = rows[0].harga_jual;
 					total = harga_jual*qty;
 					status_aktif = rows[0].aktif;
+					min_order = rows[0].min_order_qty;
+					max_order = rows[0].max_order_qty;   
 					status_kosong = rows[0].kosong;
 					stok = rows[0].stok_produk;
+
 					if(stok-qty < 0){
 						status_stok = false;
 						stok_kurang = qty-stok;
 					}else{
 						status_stok = true;
 						stok_kurang = 0;
-						isReady = true;
 					}
-					if(min_order<qty && max_order>qty){
+					if(min_order<=qty && max_order>=qty){
 						status_order = true;
-						isReady = true;
 					}else{
 						status_order = false;
+					}
+
+					if(status_aktif==1 && status_kosong==0 && status_stok && status_order){
+						isReady = true;
+					}else{
 						isReady = false;
 					}
-					if(isReady){
-						sql = 'INSERT INTO transaksi(id_order,id_produk,id_member_produk,total_biaya,jenis_transaksi) VALUES(?,?,?,?,?)';
-						connection.query(sql,[orderid,id_produk,id_uplink,total,"tstk"],function(err,result){
+					if(isReady && !isCheck){
+						console.log("cek transaksi sukses");
+						sql = 'INSERT INTO transaksi(id_order,id_produk,id_member_produk,total_biaya,jenis_transaksi) VALUES('+orderid+',"'+id_produk+'",'+id_uplink+','+total+',"tstk")';
+						connection.query(sql,function(err,result){
 							var id_tran;
 							if(err){
-								consol.log(err);
+								status_transaksi = false;
+								console.log("Insert transaksi gagal");
+								console.log(err);
 							}else{
+								console.log("Insert transaksi sukses");
 								status_transaksi = true;
 								id_tran = result.insertId;
 							}
@@ -126,14 +139,39 @@ router.post('/tambahStok',function(req,res){
 								"status_order":status_order,
 								"min_order":min_order,
 								"max_order":max_order,
-								"status_transaksi":true,
+								"status_transaksi":status_transaksi,
 								"id_transaksi":id_tran
 							}
 							total_biaya += total;
 							console.log("Totalbiaya="+total_biaya);
 							prod_stat.push(status);
-							callback();
+							console.log("add transaksi sukses");
+							
 						});
+						callback();
+					}else{
+						status_transaksi = false;
+						status = {
+								"id_produk":id_produk,
+								"order_qty":qty,
+								"harga":harga_jual,
+								"total":total,
+								"status_aktif":status_aktif,
+								"status_kosong":status_kosong,
+								"status_stok":status_stok,
+								"stok_kurang":stok_kurang,
+								"status_order":status_order,
+								"min_order":min_order,
+								"max_order":max_order,
+								"status_transaksi":status_transaksi,
+								"id_transaksi":null
+							}
+							total_biaya += total;
+							isSuccess = status_transaksi;
+							console.log("Totalbiaya="+total_biaya);
+							prod_stat.push(status);
+							console.log("add transaksi sukses");
+							callback();
 					}
 					
 				}
@@ -157,17 +195,34 @@ router.post('/tambahStok',function(req,res){
 					saldo_cukup = true;
 				}
 				var status = [{
+					"isSuccess":isSuccess,
 					"total_biaya":total_biaya,
 					"saldo":total_saldo,
 					"saldo_cukup":saldo_cukup,
 					"prod_stat":prod_stat
 					}];
+				if(saldo_cukup && !isCheck){
+					  
+				}
 				res.json(status);
 			}
 		});
 	});
 });
 
+function updateTabelOrder(orderid,biaya,status){
+	var biaya = connection.escape(biaya);
+	var status = connection.escape(status);
+	var sql = 'UPDATE member_order SET biaya_total='+biaya+'status="'+status+'"';
+	connection.query(sql,function(err,result){
+		if(err){
+			console.log("update ordre gagal");
+			console.log(err);
+		}else{
+			console.log("update order sukses");
+		}
+	});
+}
 
 module.exports = async;
 module.exports = router;

@@ -60,6 +60,32 @@ var tampilGet = { sql : 'SELECT * from member' }
 	});
 });
 
+router.post('/get-downlink',function(req,res){
+	var level = req.body.level;
+	var memberid = req.body.member_id;
+	var sql;
+	if(level==1){
+		sql = "SELECT * FROM member_koordinator WHERE id_korwil ="+memberid;
+	}else if(level==2){
+		sql = "SELECT * FROM member_agen WHERE id_koordinator ="+memberid;
+	}else {
+		sql = "SELECT * FROM member_korwil";
+	}
+	connection.query(sql,function(err,rows){
+		if(err){
+			console.log(err);
+			res.json({"isSuccess":false,"message":err});
+		}else{
+			if(rows[0]==null){
+				console.log("empty row");
+				res.json({"isSuccess":false,"message":"No record found"});
+			}else{
+				res.json(rows);
+			}
+		}
+	});
+});
+
 
 router.post("/contactChannel", function(req,res,next){
 	var sql = "SELECT * FROM contact_channel";
@@ -92,13 +118,15 @@ router.post("/newMember",function(req, res, next) {
 	var level_member = req.body.level_member;
 	var isInternal = req.body.isInternal;
 	var newMemberLevel;
-	if(isInternal){
+	console.log(isInternal);
+	if(isInternal=="true"){
 		newMemberLevel = level_member;
 	}else{
 		newMemberLevel = level_member+1;
+		console.log("newlevel="+newMemberLevel);
 	}
 	var nama = req.body.nama;
-	var simpan = { sql : 'insert into member (identity_number,nama,tgl_lahir,jenis_kelamin, npwp, level_member) values ("'+req.body.identity_number+'" , "'+req.body.nama+'" , "'+req.body.tanggal_lahir+'" , "'+req.body.jenis_kelamin+'" , "'+req.body.npwp+'" , "'+req.body.level_member+'")' };
+	var simpan = { sql : 'insert into member (identity_number,nama,tgl_lahir,jenis_kelamin, npwp, level_member) values ("'+req.body.identity_number+'" , "'+req.body.nama+'" , "'+req.body.tanggal_lahir+'" , "'+req.body.jenis_kelamin+'" , "'+req.body.npwp+'" , "'+newMemberLevel+'")' };
 	async.series([
         //Load user to get userId first
         function(callback){

@@ -27,7 +27,7 @@ router.post("/",function(req,res,next) {
 	var session =randomString(10);
 	async.whilst(
 		function(){
-			connection.query('Select EXISTS(SELECT * from users Where session="'+session+'") as result',function(err, rows, fields){
+			connection.query('Select EXISTS(SELECT * from users Where session="'+session+'" and username = "'+username+'") as result',function(err, rows, fields){
 				if(err){
 					console.log(err);
 				}else{
