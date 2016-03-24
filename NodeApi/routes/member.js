@@ -1,12 +1,13 @@
-var express 	= require('express');
-var async 		= require('async');
-var router 		= express.Router();
-var bodyParser 	= require('body-parser');
-var mysql      	= require('mysql');
-var connection 	= mysql.createConnection({
-   host     : '10.0.0.19',
+var express = require('express');
+var async = require('async');
+var router = express.Router();
+var bodyParser = require('body-parser');
+var mysql      = require('mysql');
+
+var connection = mysql.createConnection({
+   host     : 'localhost',
    user     : 'root',
-   password : 'S4)CA&kJkLJvEMw<',
+   password : '',
    database : 'ipaydb'
 });
 
@@ -126,7 +127,7 @@ router.post("/newMember",function(req, res, next) {
 		console.log("newlevel="+newMemberLevel);
 	}
 	var nama = req.body.nama;
-	var simpan = { sql : 'insert into member (identity_number,nama,tgl_lahir,jenis_kelamin, npwp, level_member) values ("'+req.body.identity_number+'" , "'+req.body.nama+'" , "'+req.body.tanggal_lahir+'" , "'+req.body.jenis_kelamin+'" , "'+req.body.npwp+'" , "'+newMemberLevel+'")' };
+	var simpan = { sql : 'insert into member (identity_number,nama,tgl_lahir,jenis_kelamin, npwp, level_member,max_users) values ("'+req.body.identity_number+'" , "'+req.body.nama+'" , "'+req.body.tanggal_lahir+'" , "'+req.body.jenis_kelamin+'" , "'+req.body.npwp+'" , "'+newMemberLevel+'",2)' };
 	async.series([
         //Load user to get userId first
         function(callback){

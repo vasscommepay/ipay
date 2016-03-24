@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var mysql      = require('mysql');
 
 var connection = mysql.createConnection({
-   host     : 'localhost',
+   host     : '10.0.0.19',
    user     : 'root',
    password : '',
    database : 'ipaydb'
@@ -216,7 +216,7 @@ function updateTabelOrder(orderid,biaya,status){
 	var sql = 'UPDATE member_order SET biaya_total='+biaya+'status="'+status+'"';
 	connection.query(sql,function(err,result){
 		if(err){
-			console.log("update ordre gagal");
+			console.log("update order gagal");
 			console.log(err);
 		}else{
 			console.log("update order sukses");

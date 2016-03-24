@@ -4,9 +4,9 @@ var router 		= express.Router();
 var bodyParser 	= require('body-parser');
 var mysql      	= require('mysql');
 var connection 	= mysql.createConnection({
-   host     : '10.0.0.19',
+   host     : 'localhost',
    user     : 'root',
-   password : 'S4)CA&kJkLJvEMw<',
+   password : '',
    database : 'ipaydb'
 });
 
@@ -57,39 +57,19 @@ var tampilGet = { sql : 'SELECT * from mutasi_saldo_member' }
 });
 
 router.post("/tambah-saldo", function(req,res,next){
-	var member_id;	
-	async.series([
-		function(callback){
-        	var getIdMember ='SELECT id_member from member where id_member="'+req.body.id_member+'"';
-        	connection.query(getIdMember,function(err,rows){
-        		if (err){
-				   console.log(err);
-				}else{
-					if (rows[0]==null){
-						res.json({"Status" : false , "Message" : "Member ID Not Exist"});
-						console.log('Message : Member ID Belum Terdaftar');
-					} else {
-						member_id = rows[0].id_member;
-						callback();
-					}
-				}
-        	});
-        }
-	],
-        function (callback){
-        	console.log(member_id);
-        	var addNewUsers = {sql : 'INSERT INTO mutasi_saldo_member (jumlah_transaksi,jenis_mutasi,debet,member_id)VALUES("'+req.body.jumlah_transaksi+'","'+req.body.jenis_mutasi+'",0,"'+member_id+'")'};
-        	connection.query(addNewUsers, function(err, result) {
-				if (err){
-					console.log(err);
-					res.json({"Inserted" : false , "Message" : err});
-					console.log('Message : Saldo Tidak Berhasil Ditambahkan');
-				}else{
-					res.json({"Inserted" : true , "message" : "success"});
-					console.log('Message : Saldo Berhasil Ditambahkan');
-				}
-			});
-        });
+	var member_id = req.body.member_id;
+	var uplink = req.body.uplink;
+	var addNewUsers = {sql : 'CALL tambah_saldo("'+member_id+'","'+req.body.jumlah_transaksi+'","'+req.body.jenis_mutasi+'","'+uplink+'")'};
+	connection.query(addNewUsers, function(err, result) {
+		if (err){
+			console.log(err);
+			res.json({"Inserted" : false , "Message" : err});
+			console.log('Message : Saldo Tidak Berhasil Ditambahkan');
+		}else{
+			res.json({"Inserted" : true , "message" : "success"});
+			console.log('Message : Saldo Berhasil Ditambahkan');
+		}
+	});
 });
 
 module.exports = async;
