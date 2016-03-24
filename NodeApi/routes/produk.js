@@ -67,7 +67,7 @@ router.post('/getSubKategori',function(req,res){
 
 router.post('/getProduct',function(req,res){
 	var uplink = req.body.uplink;
-
+ 
 	if(req.body.kategori!=null){
     	sqlProduk = "SELECT * FROM produk_member JOIN master_produk ON product_id = id WHERE member_id= ? AND kategori_produk='"+req.body.kategori+"'";
     }else{

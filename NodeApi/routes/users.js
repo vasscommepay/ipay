@@ -53,8 +53,9 @@ var cekUsername = {sql : 'SELECT * from users WHERE username="'+req.body.usernam
 router.post("/add-new-users",function(req,res,next) {
 var password = req.body.password;
 var hash = crypto.createHash('md5').update(password).digest("hex");
-var member_id;	
-	async.series([
+var member_id;
+var isAllowed = false;	
+	async.parallel([
 		function(callback){
         	var getIdMember ='SELECT id_member from member where reg_num="'+req.body.reg_num+'"';
         	connection.query(getIdMember,function(err,rows){
@@ -62,9 +63,29 @@ var member_id;
 				   console.log(err);
 				}else{
 					if (rows[0]==null){
-						res.json({"status" : false , "message" : "users not exist"});
+						console.log("Member tidak terdaftar");
+						res.json({"inserted" : false ,
+							"error":"reg_num_error", 
+							"message" : "member tidak terdaftar"});
 					} else {
 						member_id = rows[0].id_member;
+						callback();
+					}
+				}
+        	});
+        },function(callback){
+			var getMember ='SELECT max_users, current_users_count from member where reg_num="'+req.body.reg_num+'" AND current_users_count < max_users';
+			connection.query(getMember,function(err,rows){
+        		if (err){
+				   console.log(err);
+				}else{
+					if (rows[0]==null){
+						console.log("Jumalh user terlalu banyak");
+						res.json({"inserted" : false ,
+							"error":"max_users",
+						 	"message" : "Jumlah user untuk member terlalu banyak"
+							});
+					} else {
 						callback();
 					}
 				}
@@ -72,17 +93,19 @@ var member_id;
         }
 	],
         function (callback){
-        	console.log(member_id);
-        	var addNewUsers = {sql : 'INSERT INTO users (username,password,email,member_id)VALUES("'+req.body.username+'","'+hash+'","'+req.body.email+'","'+member_id+'")'};
+    		var addNewUsers = {sql : 'INSERT INTO users (username,password,member_id)VALUES("'+req.body.username+'","'+hash+'",'+member_id+')'};
         	connection.query(addNewUsers, function(err, result) {
 				if (err){
 					console.log(err);
 					res.json({"inserted" : false , "message" : err});
 				}else{
+					console.log("user baru ditambahkan");
 					res.json({"inserted" : true , "message" : "success"});
 				}
 			});
+
         });
+
 });
 
 router.put("/ubah-password",function(req,res,next) {
