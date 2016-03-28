@@ -10,12 +10,6 @@ var bodyParser    = require('body-parser');
 var nodemailer    = require('nodemailer');
 var mailer        = require('express-mailer');
 var mysql         = require('mysql');
-// var connection = mysql.createConnection({
-//     host     : '10.0.0.19',
-//     user     : 'root',
-//     password : 'S4)CA&kJkLJvEMw<',
-//     database : 'ipaydb'
-// });
 
 var routes      = require('./routes/index');
 var login       = require('./routes/login');
@@ -107,7 +101,6 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 //module.exports = app;
 

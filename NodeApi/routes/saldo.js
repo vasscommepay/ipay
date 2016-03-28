@@ -2,14 +2,7 @@ var express 	= require('express');
 var async 		= require('async');
 var router 		= express.Router();
 var bodyParser 	= require('body-parser');
-var mysql      	= require('mysql');
-var connection 	= mysql.createConnection({
-	host     : 'localhost',
-   //host     : '10.0.0.19',
-   user     : 'root',
-   password : 'S4)CA&kJkLJvEMw<',
-   database : 'ipaydb'
-});
+var connection  = require('./db');
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
