@@ -8,7 +8,7 @@ var connection = mysql.createConnection({
    host     : 'localhost',
    user     : 'root',
    password : '',
-   database : 'ipaydb'
+   database : 'ipaydb2'
 });
 
 var app = express();
@@ -115,6 +115,7 @@ router.post("/tampil-post",function(req, res, next) {
 router.post("/newMember",function(req, res, next) {
 	var id_atasan;
 	var newMemberId;
+	var addressId;
 	var session = req.body.session;
 	var level_member = req.body.level_member;
 	var isInternal = req.body.isInternal;
@@ -127,7 +128,7 @@ router.post("/newMember",function(req, res, next) {
 		console.log("newlevel="+newMemberLevel);
 	}
 	var nama = req.body.nama;
-	var simpan = { sql : 'insert into member (identity_number,nama,tgl_lahir,jenis_kelamin, npwp, level_member,max_users) values ("'+req.body.identity_number+'" , "'+req.body.nama+'" , "'+req.body.tanggal_lahir+'" , "'+req.body.jenis_kelamin+'" , "'+req.body.npwp+'" , "'+newMemberLevel+'",2)' };
+	
 	async.series([
         //Load user to get userId first
         function(callback){
@@ -144,6 +145,28 @@ router.post("/newMember",function(req, res, next) {
         	});
         },
         function(callback) {
+        	var addressName = connection.escape(req.body.addressName);
+        	var jalan = connection.escape(req.body.jalan);
+        	var kec = connection.escape(req.body.kec);
+        	var kot = connection.escape(req.body.kot);
+        	var prov = connection.escape(req.body.prov);
+        	var ket = connection.escape(req.body.ket);
+        	console.log(newMemberId);
+        	var address_sql = 'INSERT INTO member_address(name,jalan,id_kecamatan,id_kota,id_provinsi,keterangan_tambahan) VALUES("'+addressName+'","'+jalan+'",'+kec+','+kot+','+prov+',"'+ket+'")';
+        	connection.query(address_sql, function(err, result) {
+				if (err){
+				   console.log(err);
+				   res.json({"inserted" : false,"message":err});
+				}else{
+					//res.json('Inserted: ' + JSON.stringify(rows));
+					console.log('tabel address');
+					addressId = result.insertId;
+					callback();
+				}
+			});
+        },
+        function(callback) {
+        	var simpan = { sql : 'insert into member (identity_number,nama,tgl_lahir,jenis_kelamin, npwp, level_member,max_users,reg_num,id_address) values ("'+req.body.identity_number+'" , "'+req.body.nama+'" , "'+req.body.tanggal_lahir+'" , "'+req.body.jenis_kelamin+'" , "'+req.body.npwp+'" , "'+newMemberLevel+'",2,"'+createRegNumber(8)+'",'+addressId+')' };
         	connection.query(simpan, function(err, result) {
 				if (err){
 				   console.log(err);
@@ -157,31 +180,7 @@ router.post("/newMember",function(req, res, next) {
 			});
         },
         //Load posts (won't be called before task 1's "task callback" has been called)
-        function(callback) {
-        	var addressName = connection.escape(req.body.addressName);
-        	var jalan = connection.escape(req.body.jalan);
-        	var kec = connection.escape(req.body.kec);
-        	var kot = connection.escape(req.body.kot);
-        	var prov = connection.escape(req.body.prov);
-        	var ket = connection.escape(req.body.ket);
-        	console.log(newMemberId);
-        	var address_sql = 'INSERT INTO member_address(name,jalan,id_kecamatan,id_kota,id_provinsi,keterangan_tambahan,id_member) VALUES("'+addressName+'","'+jalan+'",'+kec+','+kot+','+prov+',"'+ket+'",'+newMemberId+')';
-        	connection.query(address_sql, function(err, result) {
-				if (err){
-				   console.log(err);
-				   res.json({"inserted" : false,"message":err});
-				}else{
-					//res.json('Inserted: ' + JSON.stringify(rows));
-					console.log('tabel address');
-					callback();
-				}
-			});
-            // db.query('posts', {userId: userId}, function(err, posts) {
-            //     if (err) return callback(err);
-            //     locals.posts = posts;
-            //     callback();
-            // });
-        },
+        
         function(callback){
         	var telp = req.body.telp;
         	var email = req.body.email;
@@ -216,7 +215,7 @@ router.post("/newMember",function(req, res, next) {
         	}else if(newMemberLevel == 2){
         		level_table_sql = "INSERT INTO member_koordinator(id_member,id_korwil) VALUES("+newMemberId+","+id_atasan+")";
         	}else if(newMemberLevel == 3){
-        		level_table_sql = "INSERT INTO member_koordinator(id_member,id_koordinator) VALUES("+newMemberId+","+id_atasan+")";
+        		level_table_sql = "INSERT INTO member_agen(id_member,id_koordinator) VALUES("+newMemberId+","+id_atasan+")";
         	}else{
         		var pos = req.body.posisi;
         		level_table_sql = 'INSERT INTO member_internal(id_member,posisi) VALUES('+newMemberId+',"'+pos+'")';
@@ -276,5 +275,25 @@ router.delete("/hapus",function(req,res,next) {
 	});
 				
 });
+
+function createRegNumber(length){
+	var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    var result = '';
+    var d = new Date();
+    var day = d.getDate();
+    var mon = d.getMonth();
+    var month = 0;
+    var h = d.getHours();
+    var hour = 0;
+    if(mon<10){
+    	month = '0'.concat((mon+1));
+    }else{
+    	month = mon+1;
+    }
+    var year = d.getFullYear();
+    for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    var date = day.toString()+month.toString()+year.toString();
+	return result+date;
+}
 module.exports = async;
 module.exports = router;

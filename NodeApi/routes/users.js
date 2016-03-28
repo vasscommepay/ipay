@@ -6,9 +6,9 @@ var router 		= express.Router();
 var bodyParser 	= require('body-parser');
 var mysql      	= require('mysql');
 var connection 	= mysql.createConnection({
-   host     : '10.0.0.19',
+   host     : 'localhost',
    user     : 'root',
-   password : 'S4)CA&kJkLJvEMw<',
+   password : '',
    database : 'ipaydb'
 });
 

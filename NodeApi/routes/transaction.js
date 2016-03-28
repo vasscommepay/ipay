@@ -39,8 +39,9 @@ router.use(function(req, res, next) {
 
 router.post('/createOrder',function(req,res){
 	var id_member = req.body.id_member;
-	var sql = "INSERT INTO member_order(id_member) VALUES(?)";
-	connection.query(sql,[id_member],function(err,result){
+	var kode_order = createKodeOrder(8);
+	var sql = "INSERT INTO member_order(id_member,kode_order) VALUES(?,?)";
+	connection.query(sql,[id_member,kode_order],function(err,result){
 		if(err){
 			console.log(err);
 		}else{
@@ -222,6 +223,26 @@ function updateTabelOrder(orderid,biaya,status){
 			console.log("update order sukses");
 		}
 	});
+}
+
+function createKodeOrder(length){
+	var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    var result = '';
+    var d = new Date();
+    var day = d.getDate();
+    var mon = d.getMonth();
+    var month = 0;
+    var h = d.getHours();
+    var hour = 0;
+    if(mon<10){
+    	month = '0'.concat((mon+1));
+    }else{
+    	month = mon+1;
+    }
+    var year = d.getFullYear();
+    for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    var date = day.toString()+month.toString()+year.toString();
+	return "OR"+date+result;
 }
 
 module.exports = async;

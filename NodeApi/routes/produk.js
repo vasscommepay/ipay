@@ -37,11 +37,13 @@ router.use(function(req, res, next) {
 
 router.post('/getKategori',function(req,res){
 	var uplink = req.body.uplink;
-	var sql = "SELECT DISTINCT master_produk.kategori_produk FROM master_produk JOIN produk_member ON master_produk.id = produk_member.product_id WHERE produk_member.member_id = ? ";
+	console.log(uplink);
+	var sql = "SELECT DISTINCT kategori_produk.* FROM master_produk JOIN produk_member ON master_produk.id = produk_member.product_id JOIN kategori_produk ON master_produk.kategori_produk = kategori_produk.id_kategori WHERE produk_member.member_id = ? AND kategori_produk.id_super_kategori = null";
 	connection.query(sql,[uplink],function(err,rows){
 		if(err){
 			console.log(err);
 		}else{
+			console.log(rows);
 			res.json(rows);
 		}
 	});
@@ -65,7 +67,7 @@ router.post('/getSubKategori',function(req,res){
 	});
 });	
 
-router.post('/getProduct',function(req,res){
+router.post('/getProduk',function(req,res){
 	var uplink = req.body.uplink;
  
 	if(req.body.kategori!=null){
