@@ -3,7 +3,7 @@ var crypto     = require('crypto');
 var router     = express.Router();
 var bodyParser = require('body-parser');
 var connection  = require('./db');
-
+var async 		= require('async');
 
 var app = express();
 var lv;

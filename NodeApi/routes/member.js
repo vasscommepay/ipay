@@ -4,7 +4,8 @@ var async 		= require('async');
 var router 		= express.Router();
 var bodyParser 	= require('body-parser');
 var connection  = require('./db');
-
+var mailer      = require('express-mailer');
+var nodemailer = require('nodemailer');
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -18,6 +19,8 @@ app.post('/', function (req, res, next) {
 	var	total_komisi	= connection.escape(req.body.total_komisi);
 	var	total_saldo		= connection.escape(req.body.total_saldo);
 });
+
+
 
 router.use(function(req, res, next) {
     console.log(req.method, req.url);
@@ -236,6 +239,7 @@ router.post("/newMember",function(req, res, next) {
 			}else{
 				var regNum = rows[0].reg_num;
 				var createdAt = rows[0].created_at;
+				sendEmail('gallan.widyanto@gmail.com','iPay Registration','<h2>Selamat anda telah terdaftar pada sistem iPay<h2><br><p> Gunakan nomor registrasi untuk membuat user baru.</p><br><h2>Nomor Registrasi:'+regNum+'</h2>');
 				res.json({"inserted":true,"nama":nama,"reg_num":regNum,"createdAt":createdAt});
 			}
 		});
@@ -288,5 +292,30 @@ function createRegNumber(length){
     var date = day.toString()+month.toString()+year.toString();
 	return result+date;
 }
-module.exports = async;
+
+function sendEmail(to,subject,message){
+	var transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'bfibrianto@gmail.com', // Your email id
+            pass: 'kitibriti' // Your password
+        }
+    });
+
+	var mailOptions = {
+	    from: 'bfibrianto@gmail.com', // sender address
+	    to: to, // list of receivers
+	    subject: subject, // Subject line
+	    //text: text //, // plaintext body
+	    html: message // You can choose to send an HTML body instead
+	};
+	transporter.sendMail(mailOptions, function(error, info){
+	    if(error){
+	        console.log(error);
+	    }else{
+	        console.log('Message sent: ' + info.response);
+	    };
+	});
+}
+
 module.exports = router;
