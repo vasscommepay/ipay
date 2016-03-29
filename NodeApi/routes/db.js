@@ -1,9 +1,9 @@
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
-    host     : 'localhost',
+    host     : '10.0.0.19',
     user     : 'root',
-    password : '',
-    database : 'ipaydb'
+    password : 'S4)CA&kJkLJvEMw<',
+    database : 'ipaydb2'
 });
 
 connection.connect(function(err) {

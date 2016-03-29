@@ -32,7 +32,7 @@ router.use(function(req, res, next) {
 router.post('/getKategori',function(req,res){
 	var uplink = req.body.uplink;
 	console.log(uplink);
-	var sql = "SELECT DISTINCT kategori_produk.* FROM master_produk JOIN produk_member ON master_produk.id = produk_member.product_id JOIN kategori_produk ON master_produk.kategori_produk = kategori_produk.id_kategori WHERE produk_member.member_id = ? AND kategori_produk.id_super_kategori = null";
+	var sql = "SELECT * FROM kategori_produk WHERE kategori_produk.id_super_kategori IS null";
 	connection.query(sql,[uplink],function(err,rows){
 		if(err){
 			console.log(err);
