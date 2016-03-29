@@ -1,16 +1,9 @@
-
-var crypto = require('crypto');
-var express = require('express');
-var router = express.Router();
+var express    = require('express');
+var crypto     = require('crypto');
+var router     = express.Router();
 var bodyParser = require('body-parser');
-var mysql      = require('mysql');
-var async = require('async');
-var connection = mysql.createConnection({
-   host     : 'localhost',
-   user     : 'root',
-   password : '',
-   database : 'ipaydb'
-});
+var connection  = require('./db');
+
 
 var app = express();
 var lv;

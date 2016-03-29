@@ -1,15 +1,9 @@
-var express = require('express');
-var async = require('async');
-var router = express.Router();
-var bodyParser = require('body-parser');
-var mysql      = require('mysql');
 
-var connection = mysql.createConnection({
-   host     : 'localhost',
-   user     : 'root',
-   password : '',
-   database : 'ipaydb2'
-});
+var express 	= require('express');
+var async 		= require('async');
+var router 		= express.Router();
+var bodyParser 	= require('body-parser');
+var connection  = require('./db');
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -128,7 +122,6 @@ router.post("/newMember",function(req, res, next) {
 		console.log("newlevel="+newMemberLevel);
 	}
 	var nama = req.body.nama;
-	
 	async.series([
         //Load user to get userId first
         function(callback){

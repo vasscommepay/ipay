@@ -1,15 +1,8 @@
-var express = require('express');
-var async = require('async');
-var router = express.Router();
+var express    = require('express');
+var async      = require('async');
+var router     = express.Router();
 var bodyParser = require('body-parser');
-var mysql      = require('mysql');
-
-var connection = mysql.createConnection({
-   host     : '10.0.0.19',
-   user     : 'root',
-   password : '',
-   database : 'ipaydb'
-});
+var connection = require('./db');
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -217,7 +210,7 @@ function updateTabelOrder(orderid,biaya,status){
 	var sql = 'UPDATE member_order SET biaya_total='+biaya+'status="'+status+'"';
 	connection.query(sql,function(err,result){
 		if(err){
-			console.log("update order gagal");
+			console.log("update ordre gagal");
 			console.log(err);
 		}else{
 			console.log("update order sukses");
