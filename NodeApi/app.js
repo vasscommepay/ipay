@@ -19,6 +19,7 @@ var produk      = require('./routes/produk');
 var address     = require('./routes/address');
 var saldo       = require('./routes/saldo');
 var transaction = require('./routes/transaction');
+var couch = require('./routes/couchdb');
 var app         = require('express')(),
     mailer      = require('express-mailer');
 
@@ -43,6 +44,7 @@ app.use('/produk',produk);
 app.use('/saldo',saldo);
 app.use('/transaction',transaction);
 app.use('/users', users);
+app.use('/couchdb',couch);
 
 
 app.post('/mail', function(req, res){

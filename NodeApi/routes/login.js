@@ -4,9 +4,7 @@ var router     = express.Router();
 var bodyParser = require('body-parser');
 var connection  = require('./db');
 var async 		= require('async');
-
 var app = express();
-var lv;
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 router.post("/",function(req,res,next) {
@@ -25,6 +23,7 @@ router.post("/",function(req,res,next) {
 					console.log(err);
 				}else{
 					if(rows.result===1){
+						console.log("nousers");
 						return session_status = false;
 					}else{
 						return session_status = true;
@@ -45,7 +44,7 @@ router.post("/",function(req,res,next) {
 				if (err){
 				   console.log(err);
 				   console.log(queryString);
-				   res.json({"status":"error","message":queryString});
+				   res.json({"isLogin":false,"message":err});
 				}else{
 					if(rows.length>0){
 						var memberid = rows[0].member_id;
@@ -75,7 +74,7 @@ router.post("/",function(req,res,next) {
 						});
 						
 					}else{
-						res.json({"status":queryString});
+						res.json({"isLogin":false,"message":"User tidak terdaftar"});
 					}
 				}
 			});

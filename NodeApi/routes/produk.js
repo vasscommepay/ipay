@@ -2,6 +2,7 @@ var express    = require('express');
 var router     = express.Router();
 var bodyParser = require('body-parser');
 var connection = require('./db');
+var async      = require('async');
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -36,6 +37,7 @@ router.post('/getKategori',function(req,res){
 	connection.query(sql,[uplink],function(err,rows){
 		if(err){
 			console.log(err);
+			res.json({"available":false,"message":err});
 		}else{
 			console.log(rows);
 			res.json(rows);
@@ -78,12 +80,140 @@ router.post('/getProduk',function(req,res){
 			if(rows==null){
 				res.json({"available":false,"message":"produk kosong"});
 			}else{
-				res.json(rows);
+				res.send(rows[0]);
 			}		
 		}
 	});
 });
 
+router.post("/addKategori",function(req,res){
+	var id = connection.escape(req.body.idKat);
+	var nama = connection.escape(req.body.namaKat);
+	var sql = 'INSERT INTO kategori_produk(id_kategori,nama_kategori) VALUES('+id+','+nama +')';
+	if(req.body.superKat!=null){
+		var superkat = connection.escape(req.body.superKat);
+		sql = 'INSERT INTO kategori_produk(id_kategori,nama_kategori,id_super_kategori) VALUES('+id+','+nama+','+superkat+')';
+	}
+	connection.query(sql,function(err,result){
+		if(err){
+			console.log(err);
+			res.json({"inserted":false,"message":err});
+		}else{
+			res.json({"inserted":true,"affectedRidows":result.affectedRows});
+		}
+	});
+});
+
+router.post("/updateAktifBanyakProduk",function(req,res){
+	var products = req.body.products;
+	var aktif = req.body.aktif;
+	var sql = "UPDATE master_produk SET aktif ="+aktif+" WHERE id_produk = "+products[1];
+	async.each(products, function(product,callback){
+		sql =sql+" OR id_produk = "+product;
+		callback();
+	},function(err){
+		connection.query(sql,function(err,result){
+			if(err){
+				console.log(err);
+				res.json({"updated":false,"message":err});
+			}else{
+				res.json({"updated":true,"affectedRows":result.affectedRows});
+			}
+		});
+		res.send(sql);
+	});
+});
+
+router.post("/updateKosongBanyakProduk",function(req,res){
+	var products = req.body.products;
+	var kosong = req.body.kosong;
+	var sql = "UPDATE master_produk SET kosong ="+kosong+" WHERE id_produk = "+products[1];
+	async.each(products, function(product,callback){
+		sql =sql+" OR id_produk = "+product;
+		callback();
+	},function(err){
+		connection.query(sql,function(err,result){
+			if(err){
+				console.log(err);
+				res.json({"updated":false,"message":err});
+			}else{
+				res.json({"updated":true,"affectedRows":result.affectedRows});
+			}
+		});
+		res.send(sql);
+	});
+});
+
+router.post("/updateAktifSatuProduk",function(res,req){
+	var aktif = connection.escape(req.body.aktif);
+	var id_produk = connection.escape(req.body.id_produk);
+	var sql = "UPDATE master_produk SET aktif ="+aktif+" WHERE id ="+id_produk;
+	connection.query(sql,function(err,result){
+		if(err){
+			console.log(err);
+			res.json({"updated":false,"message":err});
+			console.log("update status aktif produk: "+id+" gagal");
+		}else{
+			console.log("update status aktif produk: "+id+" sukses");
+			res.json({"updated":true,"affectedRows":result.affectedRows});
+		}
+	});
+});
+
+router.post("/updateKosongSatuProduk",function(res,req){
+	var kosong = connection.escape(req.body.kosong);
+	var id_produk = connection.escape(req.body.id_produk);
+	var sql = "UPDATE master_produk SET kosong ="+kosong+" WHERE id ="+id_produk;
+	connection.query(sql,function(err,result){
+		if(err){
+			console.log(err);
+			console.log("update status_kosong produk: "+id+" gagal");
+			res.json({"updated":false,"message":err});
+		}else{
+			console.log("update status kosong produk: "+id+" sukses");
+			res.json({"updated":true,"affectedRows":result.affectedRows});
+		}
+	});
+});
+
+router.post("/updateHargaBeli",function(req,res){
+	var id = connection.escape(req.body.idproduk);
+	var harga = connection.escape(req.body.harga_beli);
+	var sql = "UPDATE master_produk SET harga_beli = "+harga_beli+" WHERE id= "+id;
+	connection(sql,function(err,result){
+		if(err){
+			console.log(err);
+			res.json({"updated":false,"message":err});
+		}else{
+			console.log("update harga_beli produk: "+id+" sukses");
+			res.json({"updated":true,"affectedRows":result.affectedRows});
+		}
+	});
+});
+
+router.post("/updateProduk",function(req,res,next) {
+	var id = connection.escape(req.body.idproduk);
+	var nama = connection.escape(req.body.namaproduk);
+	var harga_beli = connection.escape(req.body.harga_beli);
+	var keterangan = connection.escape(req.body.keterangan);
+	var kategori_produk = connection.escape(req.body.kategori_produk);
+	var nominal = connection.escape(req.body.nominal);
+	var prabayar = connection.escape(req.body.prabayar);
+	var aktif = connection.escape(req.body.aktif);
+	var kosong = connection.escape(req.body.kosong);
+	var sql = 'UPDATE master_produk SET nama = '+nama+',harga_beli = '+harga_beli+',keterangan = '+keterangan+',kategori_produk = '+kategori_produk+',nominal = '+nominal+',prabayar = '+prabayar+' WHERE id = '+id;
+
+	var session = req.body.session;
+	connection.query(sql, function(err, rows, fields) {
+		if (err){
+		   console.log(err);
+		   res.json({"updated":false,"message":err});
+		}else{
+			res.json({"updated":true});
+		}
+	});
+
+});
 router.post("/addProduk",function(req,res,next) {
 	var id = connection.escape(req.body.idproduk);
 	var nama = connection.escape(req.body.namaproduk);
@@ -92,15 +222,16 @@ router.post("/addProduk",function(req,res,next) {
 	var kategori_produk = connection.escape(req.body.kategori_produk);
 	var nominal = connection.escape(req.body.nominal);
 	var prabayar = connection.escape(req.body.prabayar);
-	var sql = 'INSERT INTO master_produk(id,nama,harga_beli,keterangan,kategori_produk,nominal,prabayar) VALUES("'+id+'","'+nama+'",'+harga_beli+',"'+keterangan+'","'+kategori_produk+'","'+nominal+'","'+prabayar+'")';
+	var aktif = connection.escape(req.body.aktif);
+	var kosong = connection.escape(req.body.kosong);
+	var sql = 'INSERT INTO master_produk(id,nama,harga_beli,keterangan,kategori_produk,nominal,prabayar,aktif,kosong) VALUES('+id+','+nama+','+harga_beli+','+keterangan+','+kategori_produk+','+nominal+','+prabayar+','+aktif+','+kosong+')';
 
-	var session = req.body.session;
 	connection.query(sql, function(err, rows, fields) {
 		if (err){
 		   console.log(err);
-		   res.send(err);
+		   res.send(sql);
 		}else{
-			res.json({"status":"inserted"});
+			res.json({"inserted":true});
 		}
 	});
 

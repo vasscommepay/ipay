@@ -110,6 +110,7 @@ router.post("/tampil-post",function(req, res, next) {
 
 
 router.post("/newMember",function(req, res, next) {
+	var start = Date.now();
 	var id_atasan;
 	var newMemberId;
 	var addressId;
@@ -135,7 +136,7 @@ router.post("/newMember",function(req, res, next) {
 				   res.json({"inserted" : false,"message":err});
 				}else{
 					id_atasan= rows[0].member_id;
-					console.log(id_atasan);
+					console.log("id atasan= "+id_atasan);
 					callback();
 				}
         	});
@@ -147,8 +148,8 @@ router.post("/newMember",function(req, res, next) {
         	var kot = connection.escape(req.body.kot);
         	var prov = connection.escape(req.body.prov);
         	var ket = connection.escape(req.body.ket);
-        	console.log(newMemberId);
-        	var address_sql = 'INSERT INTO member_address(name,jalan,id_kecamatan,id_kota,id_provinsi,keterangan_tambahan) VALUES("'+addressName+'","'+jalan+'",'+kec+','+kot+','+prov+',"'+ket+'")';
+        	console.log("memberid= "+newMemberId);
+        	var address_sql = 'INSERT INTO address(name,jalan,id_kecamatan,id_kota,id_provinsi,keterangan_tambahan) VALUES("'+addressName+'","'+jalan+'",'+kec+','+kot+','+prov+',"'+ket+'")';
         	connection.query(address_sql, function(err, result) {
 				if (err){
 				   console.log(err);
@@ -157,6 +158,7 @@ router.post("/newMember",function(req, res, next) {
 					//res.json('Inserted: ' + JSON.stringify(rows));
 					console.log('tabel address');
 					addressId = result.insertId;
+					console.log('addressid= '+addressId);
 					callback();
 				}
 			});
@@ -169,7 +171,7 @@ router.post("/newMember",function(req, res, next) {
 				   res.json({"inserted" : false,"message":err});
 				}else{
 					newMemberId = result.insertId;
-					console.log('tabel member');
+					console.log('new member= '+newMemberId);
 					callback();
 					
 				}
@@ -228,6 +230,23 @@ router.post("/newMember",function(req, res, next) {
 					callback();
 				}
         	});
+        },
+        function(callback){
+        	var komisi = 500;
+        	if(req.body.komisi!=null){
+        		komisi = connection.escape(req.body.komisi);
+        	}
+        	var sql = 'INSERT INTO produk_member (product_id,member_id,harga_beli,harga_jual,keuntungan) SELECT product_id,'+newMemberId+',harga_jual,(harga_jual+'+komisi+'),keuntungan FROM produk_member WHERE member_id ='+id_atasan;
+        	connection.query(sql,function(err,result){
+        		if (err){
+				   console.log(err);
+				   res.json({ "inserted" : false,"message":err});
+				}else{
+					console.log("insert produk sukses");
+					callback();
+	        	}
+        	});
+ 
         }
     ], function(err) {
     	if (err) return next(err);
@@ -237,10 +256,11 @@ router.post("/newMember",function(req, res, next) {
 			   console.log(err);
 			   res.json({"inserted" : false,"message":err});
 			}else{
+				var end = Date.now();
 				var regNum = rows[0].reg_num;
 				var createdAt = rows[0].created_at;
 				sendEmail('gallan.widyanto@gmail.com','iPay Registration','<h2>Selamat anda telah terdaftar pada sistem iPay<h2><br><p> Gunakan nomor registrasi untuk membuat user baru.</p><br><h2>Nomor Registrasi:'+regNum+'</h2>');
-				res.json({"inserted":true,"nama":nama,"reg_num":regNum,"createdAt":createdAt});
+				res.json({"inserted":true,"nama":nama,"reg_num":regNum,"createdAt":createdAt,"execuionTime":end-start});
 			}
 		});
     });
