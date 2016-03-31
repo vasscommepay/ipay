@@ -4,11 +4,12 @@ var router     = express.Router();
 var bodyParser = require('body-parser');
 var connection = require('./db');
 
+var nano   = require('nano')('http://localhost:5984');
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-router.use(function(req, res, next) {
+router.use(function(req, res, next) {//Untuk cek apakah ada session
     console.log(req.method, req.url);
     var session = req.body.session;
 	if(session!=null){
@@ -43,7 +44,8 @@ router.post('/createOrder',function(req,res){
 	});
 });
 
-router.post('/tambahStok',function(req,res){
+
+router.post('/simulasiTransaksi',function(req,res){//UNTUK TRANSAKSI
 	var produks = req.body.prod;
 	var id_member = req.body.id_member;
 	var prod_count = produks.length;
@@ -55,154 +57,208 @@ router.post('/tambahStok',function(req,res){
 	var status_biaya;
 	var saldo_cukup;
 	var isSuccess;
+	var status_order;
 	var isCheck = req.body.isCheck;
 	var prod_stat = [];
-		async.each(produks, function(produk, callback){
-			var id_produk = connection.escape(produk.id_produk);
-			var qty = produk.qty;
-			var harga_beli;
-			var total;
-			var stok;		
-			var harga_jual;
-			var tujuan = 'stok';
-			var min_order ;
-			var max_order;
-			var status_stok;
-			var status_kosong;
-			var status_aktif;
-			var isSuccess;
-			var stok_kurang;
-			var isReady = false;
-			var status_transaksi=false;
-			var status=[];
-			var sql = 'SELECT * FROM produk_member WHERE product_id ="'+id_produk+'" AND member_id ='+id_uplink;
-			connection.query(sql,function(err,rows){
+	var sql = "SELECT total_saldo FROM member WHERE id_member = ?";
+	async.series([
+		function(callback){//Mendapatkan saldo member untuk cek apakah saldo cukup
+			connection.query(sql,[id_member],function(err,rows){
 				if(err){
 					console.log(err);
-					res.json({"status":"error","message":err});
 				}else{
-					harga_jual = rows[0].harga_jual;
-					total = harga_jual*qty;
-					status_aktif = rows[0].aktif;
-					min_order = rows[0].min_order_qty;
-					max_order = rows[0].max_order_qty;   
-					status_kosong = rows[0].kosong;
-					stok = rows[0].stok_produk;
-
-					if(stok-qty < 0){
-						status_stok = false;
-						stok_kurang = qty-stok;
+					if(rows.length==0) {
+						res.json({"status":"error","message":"data tidak ditemukan"});
 					}else{
-						status_stok = true;
-						stok_kurang = 0;
-					}
-					if(min_order<=qty && max_order>=qty){
-						status_order = true;
-					}else{
-						status_order = false;
-					}
-
-					if(status_aktif==1 && status_kosong==0 && status_stok && status_order){
-						isReady = true;
-					}else{
-						isReady = false;
-					}
-					if(isReady && !isCheck){
-						console.log("cek transaksi sukses");
-						sql = 'INSERT INTO transaksi(id_order,id_produk,id_member_produk,total_biaya,jenis_transaksi) VALUES('+orderid+',"'+id_produk+'",'+id_uplink+','+total+',"tstk")';
-						connection.query(sql,function(err,result){
-							var id_tran;
-							if(err){
-								status_transaksi = false;
-								console.log("Insert transaksi gagal");
-								console.log(err);
-							}else{
-								console.log("Insert transaksi sukses");
-								status_transaksi = true;
-								id_tran = result.insertId;
-							}
-							status = {
-								"id_produk":id_produk,
-								"order_qty":qty,
-								"harga":harga_jual,
-								"total":total,
-								"status_aktif":status_aktif,
-								"status_kosong":status_kosong,
-								"status_stok":status_stok,
-								"stok_kurang":stok_kurang,
-								"status_order":status_order,
-								"min_order":min_order,
-								"max_order":max_order,
-								"status_transaksi":status_transaksi,
-								"id_transaksi":id_tran
-							}
-							total_biaya += total;
-							console.log("Totalbiaya="+total_biaya);
-							prod_stat.push(status);
-							console.log("add transaksi sukses");
-							
-						});
+						total_saldo = rows[0].total_saldo;//saldo member saat ini
 						callback();
-					}else{
-						status_transaksi = false;
-						status = {
-								"id_produk":id_produk,
-								"order_qty":qty,
-								"harga":harga_jual,
-								"total":total,
-								"status_aktif":status_aktif,
-								"status_kosong":status_kosong,
-								"status_stok":status_stok,
-								"stok_kurang":stok_kurang,
-								"status_order":status_order,
-								"min_order":min_order,
-								"max_order":max_order,
-								"status_transaksi":status_transaksi,
-								"id_transaksi":null
-							}
-							total_biaya += total;
-							isSuccess = status_transaksi;
-							console.log("Totalbiaya="+total_biaya);
-							prod_stat.push(status);
-							console.log("add transaksi sukses");
-							callback();
 					}
-					
 				}
 			});
-		
-	},function(err){
-
-		console.log("callback: sukses");
-		var sql = "SELECT total_saldo FROM member WHERE id_member = ?";
-		connection.query(sql,[id_member],function(err,rows){
-			if(err){
-				console.log("get_saldo: gagal");
-				console.log(err);
-				res.json({"status":"error","message":err});
-			}else{
-				console.log("get_saldo: sukses");
-				total_saldo = rows[0].total_saldo;
+		},
+		function(callback){    
+			async.each(produks, function(produk, callback){//Transaksi untuk setiap produk
+				var id_produk = produk.id_produk;
+				var qty = produk.qty;
+				var harga_beli;
+				var total;
+				var stok;		
+				var harga_jual;
+				var harga_jual_member;
+				var tujuan = req.body.tujuan;
+				var status_stok;
+				var status_kosong;
+				var status_aktif;
+				var isSuccess;
+				var status_transaksi=false;
+				var status=[];
+				var supplier;
+				var harga_supplier;
+				var sql = 'SELECT * FROM produk_member WHERE product_id ="'+id_produk+'" AND member_id ='+id_uplink;
+				var produk = nano.db.use('ipay_produk');
+				produk.get(id_produk,function(err,rows){	
+					if(err){
+						console.log(err);
+						res.json({"status":"error","message":err});
+					}else{
+						harga_jual = rows.harga_jual;
+						harga_jual_member = harga_jual[id_member];
+						total = harga_jual_member*qty;
+						status_aktif = rows.aktif;  
+						status_kosong = rows.kosong;
+						status_transaksi = false;
+						if(status_aktif && !status_kosong) status_transaksi = true;
+						status = {
+								"status_transaksi":status_transaksi,
+								"id_produk":id_produk,
+								"order_qty":qty,
+								"harga":harga_jual_member,
+								"total":total,
+								"status_aktif":status_aktif,
+								"status_kosong":status_kosong
+							}
+						total_biaya += total;
+						total_saldo = total_saldo-total_biaya;
+						isSuccess = status_transaksi;
+						console.log("Totalbiaya="+total_biaya);
+						prod_stat.push(status);
+						console.log("add transaksi sukses");
+						callback();
+					}
+				});
+			
+			},function(err){
+				console.log("callback: sukses");
 				if(total_saldo<total_biaya){
 					saldo_cukup = false;
 				}else{
 					saldo_cukup = true;
 				}
-				var status = [{
+				status_order = [{
 					"isSuccess":isSuccess,
 					"total_biaya":total_biaya,
 					"saldo":total_saldo,
 					"saldo_cukup":saldo_cukup,
 					"prod_stat":prod_stat
 					}];
-				if(saldo_cukup && !isCheck){
-					  
-				}
-				res.json(status);
-			}
-		});
-	});
+				res.json(status_order);
+			});
+			callback();
+		}
+	],
+		function(err){
+		});			
 });
+
+
+
+// router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
+// 	var produks = req.body.prod;
+// 	var id_member = req.body.id_member;
+// 	var prod_count = produks.length;
+// 	var index;
+// 	var id_uplink = connection.escape(req.body.id_uplink);
+// 	var orderid = req.body.orderid;
+// 	var total_biaya=0;
+// 	var total_saldo;
+// 	var status_biaya;
+// 	var saldo_cukup;
+// 	var isSuccess;
+// 	var isCheck = req.body.isCheck;
+// 	var prod_stat = [];
+// 	var sql = "SELECT total_saldo FROM member WHERE id_member = ?";
+// 	async.series([
+// 		function(callback){//Mendapatkan saldo member untuk cek apakah saldo cukup
+// 			connection.query(sql,[id_member],function(err,rows){
+// 				if(err){
+// 					console.log(err);
+// 				}else{
+// 					if(rows.length==0) {
+// 						res.json({"status":"error","message":"data tidak ditemukan"});
+// 					}else{
+// 						total_saldo = rows[0].total_saldo;//saldo member saat ini
+// 						callback();
+// 					}
+// 				}
+// 			});
+// 		},
+// 		function(callback){    
+// 			async.each(produks, function(produk, callback){//Transaksi untuk setiap produk
+// 				var id_produk = produk.id_produk;
+// 				var qty = produk.qty;
+// 				var harga_beli;
+// 				var total;
+// 				var stok;		
+// 				var harga_jual;
+// 				var harga_jual_member;
+// 				var tujuan = req.body.tujuan;
+// 				var status_stok;
+// 				var status_kosong;
+// 				var status_aktif;
+// 				var isSuccess;
+// 				var status_transaksi=false;
+// 				var status=[];
+// 				var supplier;
+// 				var harga_supplier;
+// 				var produk = nano.db.use('ipay_produk');
+// 				var supplier = nano.db.use('ipay_supplier');
+// 				produk.get(id_produk,function(err,rows){//Cek ketersediaan produk	
+// 					if(err){
+// 						console.log(err);
+// 						res.json({"status":"error","message":err});
+// 					}else{
+// 						harga_jual = rows.harga_jual;
+// 						harga_jual_member = harga_jual[id_member];
+// 						total = harga_jual_member*qty;
+// 						status_aktif = rows.aktif;  
+// 						status_kosong = rows.kosong;
+// 						status_transaksi = false;
+// 						if(status_aktif && !status_kosong) status_transaksi = true;
+// 						status = {
+// 								"status_transaksi":status_transaksi,
+// 								"id_produk":id_produk,
+// 								"order_qty":qty,
+// 								"harga":harga_jual_member,
+// 								"total":total,
+// 								"status_aktif":status_aktif,
+// 								"status_kosong":status_kosong
+// 							}
+// 						total_biaya += total;
+// 						total_saldo = total_saldo-total_biaya;
+// 						isSuccess = status_transaksi;
+// 						console.log("Totalbiaya="+total_biaya);
+// 						prod_stat.push(status);
+// 						console.log("add transaksi sukses");
+// 						callback();
+// 					}
+// 				});
+			
+// 			},function(err){
+// 				console.log("callback: sukses");
+// 				if(total_saldo<total_biaya){
+// 					saldo_cukup = false;
+// 				}else{
+// 					saldo_cukup = true;
+// 				}
+// 				var status = [{
+// 					"isSuccess":isSuccess,
+// 					"total_biaya":total_biaya,
+// 					"saldo":total_saldo,
+// 					"saldo_cukup":saldo_cukup,
+// 					"prod_stat":prod_stat
+// 					}];
+// 				res.json(status);
+// 			});
+// 		}
+// 	],
+// 		function(err){
+
+// 		});			
+// });
+
+
+
+
 
 function updateTabelOrder(orderid,biaya,status){
 	var biaya = connection.escape(biaya);
