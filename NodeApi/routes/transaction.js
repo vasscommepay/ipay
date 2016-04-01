@@ -162,9 +162,13 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 	var status_biaya;
 	var saldo_cukup;
 	var isSuccess;
+	var status_biller = true;
+	var harga_biller;
 	var status_order;
 	var isCheck = req.body.isCheck;
 	var prod_stat = [];
+	var produk_db = nano.db.use('ipay_produk');
+	var supplier_db = nano.db.use('ipay_supplier');
 	async.each(produks, function(produk, callback){//Transaksi untuk setiap produk
 		var id_produk = produk.id_produk;
 		var qty = produk.qty;
@@ -181,14 +185,13 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 		var status_transaksi=false;
 		var status=[];
 		var list_supplier= [];
-		var supplier;
+		var selected_supplier;
 		var harga_supplier;
 		var id_transaksi;
-		var produk = nano.db.use('ipay_produk');
 		async.series([
 			function(callback){
 				//cek ketersediaan produk
-				produk.get(id_produk,function(err,rows){	
+				produk_db.get(id_produk,function(err,rows){	
 					if(err){
 						console.log(err);
 						res.json({"status":"error","message":err});
@@ -211,7 +214,6 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 								"status_kosong":status_kosong
 							}
 						total_biaya += total;
-						total_saldo = total_saldo-total_biaya;
 						isSuccess = status_transaksi;
 						console.log("Totalbiaya="+total_biaya);
 						console.log("add transaksi sukses");
@@ -221,24 +223,57 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 			},
 			function(callback){
 				//catat transaksi
-				var sql = "CALL transaksi_sp("+orderid+","+id_member+","+id_uplink+","+qty+","+id_produk+","+total_biaya+",'"+supplier+"',"+tujuan+"')";
+				var sql = "CALL transaksi_sp("+orderid+","+id_member+","+id_uplink+","+qty+",'"+id_produk+"',"+total_biaya+",'-','"+tujuan+"')";
 				connection.query(sql,function(err,rows){
 					if(err){
 						console.log("insert transaksi error, "+err);
 						callback();
 					}else{
+						console.log("catat transaksi sukses");
 						id_transaksi = rows[0].id_transaksi;
-						status["id_transaksi"]=id_transaksi;
-						callback();
+						status["id_transaksi"]=id_transaksi;						
 						prod_stat.push(status);
+						callback();
 					}
 				});
+			},
+			function(callback){
+				//Pilih supplier
+				console.log("pilih supplier");
+				var len = list_supplier.length;
+				var i;
+				var try_supplier;
+				supplier_db.get(id_produk,function(err,rows){
+					if(err) console.log(err);
+					for(i=1;i<len;i++){
+						var test_supplier = {};
+						test_supplier["is_ready"]=true;
+						test_supplier["last_price"]=999999999999999;
+						try_supplier = list_supplier[i];
+						var sup = rows.supplier;
+						var this_sup = sup[try_supplier];
+						var is_ready = this_sup.is_ready;
+						var last_price = this_sup.last_price;
+						if(is_ready && last_price<test_supplier["last_price"]){
+							test_supplier["last_price"]=last_price;
+							selected_supplier = this_sup;
+						}
+						console.log("selected_supplier");
+						
+					}
+				});callback();
+			},
+			function(callback){
+				//hubungi biller
+				var angka = Math.floor(Math.random()*10)%2;
+				if(angka!=1) status_biller=false;
+				console.log("Kirim ke biller");
+				callback();
 			}
 		],callback);
 		
 	},
 	function(err){
-		console.log("callback: sukses");
 			if(total_saldo<total_biaya){
 				saldo_cukup = false;
 			}else{

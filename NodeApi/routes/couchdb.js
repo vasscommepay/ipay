@@ -96,13 +96,62 @@ router.get('/exportProduk',function(req,res) {
 		});
 
 });
-router.get('/exportsSupplier',function(req,res){
+router.get('/exportSupplier',function(req,res){
 	var supplier = {};
 	var ipay_sup = nano.db.use('ipay_supplier');
 	var bod = [];
-	var sql = "SELECT * FROM supplier LEFT JOIN supplier_produk"
-	connection.query
-	async.each()
+	var sql = "SELECT DISTINCT id_produk FROM supplier_produk";
+	connection.query(sql,function(err,rows){
+		if(err){
+			console.log(err);
+			res.json({"exported":false,"message":err});
+		}else{
+			if(rows.length==0){
+				console.log('no produk data');
+				res.json({"exported":false,"message":"tidak ada data produk"});
+			}else{
+				async.each(rows,function(row,callback){
+					var id_produk = row.id_produk;
+					var this_supplier = {};
+					var get_supplier = "SELECT id_supplier,harga_terkini,is_ready FROM supplier_produk WHERE id_produk = '"+id_produk+"'";
+					connection.query(get_supplier,function(err,result){
+						if(err){
+							console.log(err);
+							res.json({"exported":false,"message":err});
+						}else{
+							if(result.length==0){
+								console.log('no produk data');
+								res.json({"exported":false,"message":"tidak ada data produk"});
+							}else{
+								var i;
+								for(i=0;i<result.length;i++){
+									var supplier_prop = {};
+									supplier_prop["is_ready"]=result[i].is_ready;
+									supplier_prop["harga_terkini"]=result[i].harga_terkini;
+									supplier[result[i].id_supplier] = supplier_prop;
+								}
+								ipay_sup.insert({supplier:supplier},id_produk,function(err,body){
+									if(err){
+										console.log(err);
+										res.json({"exported":false,"message":"no data"});
+									} 
+									console.log
+									bod.push(body);
+									callback();
+								});
+								
+							}
+						}
+					});
+				},
+				function(err){
+					if(err) console.log(err);
+					res.json(bod);
+				}
+				);
+			}
+		}
+	});
 });
 router.post('/getProduk',function(req,res){
 	var id_produk = req.body.produk;
