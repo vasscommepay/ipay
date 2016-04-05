@@ -290,6 +290,7 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 								console.log("selected_supplier: "+selected_supplier);
 							}
 							status["supplier"]=selected_supplier;
+							status["tujuan"]=tujuan;
 							callback();
 						}
 					});
@@ -331,41 +332,28 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 				"prod_stat":prod_stat
 				}];
 			res.json(status_order);
-			setTimeout(hubungiBiller(list_transaksi),10000);
+			prosesTransaksi(prod_stat);
 	});			
 });
 
-function hubungiBiller(transaksi ){
+function prosesTransaksi(transaksi ){
 	var transaction_db = nano.db.use('ipay_transaction');
 	async.each(transaksi,function(tran,callback){
-		var id_tran = tran.id;
-		console.log("id_tran: "+id_tran);
-		var rev = tran.rev;
-		console.log("rev: "+rev);
-		transaction_db.get(id_tran,function(err,rows){
-			var supplier = rows.supplier;
-			console.log(supplier);
-			console.log(rev);
-			// var angka = Math.floor(Math.random()*10)%2;
-			// var time = Math.floor(Math.random()*1000);
-			// if(angka!=1){
-			// 	status_biller=false;
-			// 	console.log("transaksi dengan biller: "+supplier+", sukses dilakukan");
+		var id_tran = tran.id_transaksi;
+		console.log("processing id_tran: "+id_tran);
+		var supplier = tran.supplier;
+		var produk = tran.id_produk;
+		var qty = tran.order_qty;
+		var tujuan = tran.tujuan;
+		var rev = tran.tran_rev;
+		//Coba hubungi biller, jika gagal sd/5x, maka status gagal.
 
-			// }else{
-			// 	status_biller=true;
-			// 	setTimeout(updateStatusBiller(id_tran,rev),9000);
-			// 	console.log("transaksi dengan biller: "+supplier+", sukses dilakukan");
-			// }
-			setTimeout(updateStatusBiller(id_tran,rev),10000);
-			log(supplier);
-		});
 	});
 }
+
 function log(supplier){
 	console.log("transaksi dengan biller: "+supplier+", sukses dilakukan");
 }
-//function send
 function updateStatusBiller(id_transaksi,rev){
 	var transaction_db = nano.db.use('ipay_transaction');
 	transaction_db.insert({_id:""+id_transaksi+"" ,_rev:rev,status_biller:true},""+id_transaksi+"",function(err,body){
