@@ -3,7 +3,12 @@ var router     = express.Router();
 var bodyParser = require('body-parser');
 var connection = require('./db');
 var async      = require('async');
-var nano   = require('nano')('http://localhost:5984');
+var nano   = require('nano')('https://couchdb-8d8a45.smileupps.com')
+, username = 'admin'
+	  , userpass = '8c18747889e9'
+	  , callback = console.log // this would normally be some callback
+	  , cookies  = {} // store cookies, normally redis or something
+	  ;
 
 router.get('/exportProduk',function(req,res) {
 	var ipay = nano.db.use('ipay_produk');
@@ -56,6 +61,7 @@ router.get('/exportProduk',function(req,res) {
 							var supplier={};
 							var memlen = memberList.length;
 							var suplen = supplierList.length;
+							supplier["count"]=suplen;
 							var i;
 							for(i = 0;i<memlen;i++){
 								var member_id = memberList[i].member_id;
@@ -126,6 +132,7 @@ router.get('/exportSupplier',function(req,res){
 								var i;
 								for(i=0;i<result.length;i++){
 									var supplier_prop = {};
+									supplier_prop["id"]=result[i].id_supplier;
 									supplier_prop["is_ready"]=result[i].is_ready;
 									supplier_prop["harga_terkini"]=result[i].harga_terkini;
 									supplier[result[i].id_supplier] = supplier_prop;

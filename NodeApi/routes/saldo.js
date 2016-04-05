@@ -54,7 +54,7 @@ router.post("/tambah-saldo", function(req,res,next){
 	var member_id;	
 	async.series([
 		function(callback){
-        	var getIdMember ='SELECT id_member from member where id_member="'+req.body.id_member+'"';
+        	var getIdMember ='SELECT id_member from member where id_member='+req.body.id_member;
         	connection.query(getIdMember,function(err,rows){
         		if (err){
 				   console.log(err);
@@ -86,5 +86,4 @@ router.post("/tambah-saldo", function(req,res,next){
         });
 });
 
-module.exports = async;
 module.exports = router;

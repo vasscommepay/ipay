@@ -47,10 +47,9 @@ router.post('/getKategori',function(req,res){
 
 router.post('/getSubKategori',function(req,res){
 	var uplink = req.body.uplink;
-	var super_kategori = req.body.super_kategori;
-	
-	var sql = "SELECT DISTINCT master_produk.kategori_produk FROM master_produk LEFT JOIN produk_member ON master_produk.id = produk_member.product_id LEFT JOIN kategori_produk ON master_produk.kategori_produk = kategori_produk.id_kategori WHERE produk_member.member_id = ? AND id_super_kategori = ? ";
-	connection.query(sql,[uplink,super_kategori],function(err,rows){
+	var super_kategori = req.body.id_kategori;
+	var sql = "SELECT * FROM kategori_produk WHERE kategori_produk.id_super_kategori =?";
+	connection.query(sql,[super_kategori],function(err,rows){
 		if(err){
 			console.log(err);
 		}else{

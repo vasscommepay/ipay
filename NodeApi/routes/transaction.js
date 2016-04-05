@@ -3,8 +3,12 @@ var async      = require('async');
 var router     = express.Router();
 var bodyParser = require('body-parser');
 var connection = require('./db');
-
-var nano   = require('nano')('http://localhost:5984');
+var nano   = require('nano')('http://localhost:5984')
+	, username = 'user'
+	  , userpass = 'pass'
+	  , callback = console.log // this would normally be some callback
+	  , cookies  = {} // store cookies, normally redis or something
+	  ;
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -169,8 +173,14 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 	var prod_stat = [];
 	var produk_db = nano.db.use('ipay_produk');
 	var supplier_db = nano.db.use('ipay_supplier');
+	var transaction_db = nano.db.use('ipay_transaction');
+	var list_transaksi=[];
 	async.each(produks, function(produk, callback){//Transaksi untuk setiap produk
+
 		var id_produk = produk.id_produk;
+		console.log("Mulai transaksi produk: "+id_produk);
+		var id_tran;
+		var rev;
 		var qty = produk.qty;
 		var harga_beli;
 		var total;
@@ -184,10 +194,12 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 		var isSuccess;
 		var status_transaksi=false;
 		var status=[];
+		status["orderid"]=orderid;
 		var list_supplier= [];
 		var selected_supplier;
 		var harga_supplier;
 		var id_transaksi;
+		
 		async.series([
 			function(callback){
 				//cek ketersediaan produk
@@ -230,9 +242,12 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 						callback();
 					}else{
 						console.log("catat transaksi sukses");
-						id_transaksi = rows[0].id_transaksi;
-						status["id_transaksi"]=id_transaksi;						
-						prod_stat.push(status);
+						var tran = rows[0];
+						id_transaksi = tran[0].id_transaksi;
+						console.log("id_transaksi: "+id_transaksi);
+						status["status_biller"]=false;	
+						status["id_transaksi"]=id_transaksi;
+						id_tran = id_transaksi;
 						callback();
 					}
 				});
@@ -240,35 +255,64 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 			function(callback){
 				//Pilih supplier
 				console.log("pilih supplier");
-				var len = list_supplier.length;
-				var i;
-				var try_supplier;
-				supplier_db.get(id_produk,function(err,rows){
-					if(err) console.log(err);
-					for(i=1;i<len;i++){
-						var test_supplier = {};
-						test_supplier["is_ready"]=true;
-						test_supplier["last_price"]=999999999999999;
-						try_supplier = list_supplier[i];
-						var sup = rows.supplier;
-						var this_sup = sup[try_supplier];
-						var is_ready = this_sup.is_ready;
-						var last_price = this_sup.last_price;
-						if(is_ready && last_price<test_supplier["last_price"]){
-							test_supplier["last_price"]=last_price;
-							selected_supplier = this_sup;
+				var len = list_supplier.count;
+				if(len==1){
+					selected_supplier = list_supplier[1];
+					callback();
+				}else{	
+					console.log(list_supplier);
+					console.log(len);
+					var i;
+					var try_supplier;
+					supplier_db.get(id_produk,function(err,rows){
+						console.log("GET SUPPLIER");
+						if(err){
+							console.log(err);
+						}else{
+							for(i=1;i<len;i++){
+								var test_supplier = {};
+								test_supplier["is_ready"]=true;
+								test_supplier["last_price"]=999999999999999;
+								try_supplier = list_supplier[i];
+								console.log("try_supplier: "+try_supplier);
+								var sup = rows.supplier;
+								console.log("sup: "+sup);
+								var this_sup = sup[try_supplier];
+								console.log("this_sup: "+this_sup);
+								var is_ready = this_sup.is_ready;
+								var last_price = this_sup.harga_terkini;
+								console.log("last_price: "+last_price);
+								console.log("is_ready: "+is_ready);
+								if(is_ready==1 && last_price<test_supplier["last_price"]){
+									test_supplier["last_price"]=last_price;
+									selected_supplier = this_sup.id;
+								}
+								console.log("selected_supplier: "+selected_supplier);
+							}
+							status["supplier"]=selected_supplier;
+							callback();
 						}
-						console.log("selected_supplier");
-						
-					}
-				});callback();
+					});
+				}
 			},
 			function(callback){
-				//hubungi biller
-				var angka = Math.floor(Math.random()*10)%2;
-				if(angka!=1) status_biller=false;
-				console.log("Kirim ke biller");
+				console.log("Kirim ke biller: "+selected_supplier);
+				console.log("+++++++++++++++++++++++TRANSAKSI SUKSES++++++++++++++++++++++++++++")
 				callback();
+			},
+			function(callback){
+				transaction_db.insert(status,""+id_transaksi+"",function(err,body){
+					if(err) console.log(err);
+					rev=body.rev;
+					status["tran_rev"] = rev;
+					prod_stat.push(status);
+					var transaksi={};
+					transaksi["id"]=id_transaksi;
+					transaksi["rev"]=rev;
+					list_transaksi.push(transaksi);
+					callback();
+				});
+				
 			}
 		],callback);
 		
@@ -287,12 +331,48 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 				"prod_stat":prod_stat
 				}];
 			res.json(status_order);
+			setTimeout(hubungiBiller(list_transaksi),10000);
 	});			
 });
 
+function hubungiBiller(transaksi ){
+	var transaction_db = nano.db.use('ipay_transaction');
+	async.each(transaksi,function(tran,callback){
+		var id_tran = tran.id;
+		console.log("id_tran: "+id_tran);
+		var rev = tran.rev;
+		console.log("rev: "+rev);
+		transaction_db.get(id_tran,function(err,rows){
+			var supplier = rows.supplier;
+			console.log(supplier);
+			console.log(rev);
+			// var angka = Math.floor(Math.random()*10)%2;
+			// var time = Math.floor(Math.random()*1000);
+			// if(angka!=1){
+			// 	status_biller=false;
+			// 	console.log("transaksi dengan biller: "+supplier+", sukses dilakukan");
 
-
-
+			// }else{
+			// 	status_biller=true;
+			// 	setTimeout(updateStatusBiller(id_tran,rev),9000);
+			// 	console.log("transaksi dengan biller: "+supplier+", sukses dilakukan");
+			// }
+			setTimeout(updateStatusBiller(id_tran,rev),10000);
+			log(supplier);
+		});
+	});
+}
+function log(supplier){
+	console.log("transaksi dengan biller: "+supplier+", sukses dilakukan");
+}
+//function send
+function updateStatusBiller(id_transaksi,rev){
+	var transaction_db = nano.db.use('ipay_transaction');
+	transaction_db.insert({_id:""+id_transaksi+"" ,_rev:rev,status_biller:true},""+id_transaksi+"",function(err,body){
+		if(err) console.log(err);
+		console.log("transaksi biller sukses pada: "+Date.now());
+	});
+}
 
 function updateTabelOrder(orderid,biaya,status){
 	var biaya = connection.escape(biaya);
