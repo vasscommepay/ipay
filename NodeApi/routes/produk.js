@@ -64,9 +64,9 @@ router.post('/getSubKategori',function(req,res){
 
 router.post('/getProduk',function(req,res){
 	var uplink = req.body.uplink;
- 
+
 	if(req.body.kategori!=null){
-    	sqlProduk = "SELECT * FROM produk_member JOIN master_produk ON product_id = id WHERE member_id= ? AND kategori_produk='"+req.body.kategori+"'";
+    	sqlProduk = "SELECT * FROM produk_member JOIN master_produk ON product_id = id WHERE member_id= ? AND kategori_produk='"+req.body.id_kategori+"'";
     }else{
     	sqlProduk = "SELECT * FROM produk_member WHERE member_id=?";
     }
@@ -79,7 +79,7 @@ router.post('/getProduk',function(req,res){
 			if(rows==null){
 				res.json({"available":false,"message":"produk kosong"});
 			}else{
-				res.send(rows[0]);
+				res.send(rows);
 			}		
 		}
 	});
