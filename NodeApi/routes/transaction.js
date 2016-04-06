@@ -353,7 +353,7 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 router.post('/cekTransaksi',function(req,res){
 	var id_transaksi = req.body.id_transaksi;
 	transaction_db.get(id_tran,function(err,rows){
-		res.json("status":rows.status_biller);
+		res.json({"status":rows.status_biller});
 	})
 });
 

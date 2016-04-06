@@ -3,13 +3,78 @@ var router     = express.Router();
 var bodyParser = require('body-parser');
 var connection = require('./db');
 var async      = require('async');
-var nano   = require('nano')('https://couchdb-8d8a45.smileupps.com')
-, username = 'admin'
-	  , userpass = '8c18747889e9'
-	  , callback = console.log // this would normally be some callback
-	  , cookies  = {} // store cookies, normally redis or something
-	  ;
+var nano   = require('./nano');
+var app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
+router.get('/exportForm',function(req,res){
+	var form_db = nano.db.use('ipay_form');
+	var bod = [];
+	sql = "SELECT DISTINCT id_kategori FROM kategori_form";
+	getData(sql,function(err,rows){
+		if(err) console.log(err);
+		async.each(rows,function(kategori,callback){
+			var id_kategori = kategori.id_kategori;
+			var prop = [];
+			sql = "SELECT * FROM kategori_form WHERE id_kategori = '"+id_kategori+"'";
+			getData(sql,function(err,rows){
+				if(err){
+					console.log(err);
+					callback(err);
+				}else{
+					var i = 0;
+					for(i=0;i<rows.length;i++){
+						var prop_id = {};
+						var input_name = rows[i].input_name;
+						var input_type = rows[i].input_type;
+						var input_label = rows[i].input_label;
+						prop_id["input_name"]=input_name;
+						prop_id["input_type"]=input_type;
+						prop_id["input_label"]=input_label;
+						prop.push(prop_id);
+					}
+					console.log(id_kategori);
+					//callback();
+					form_db.insert({prop:prop},id_kategori,function(err,body){
+						if(err) console.log(err);
+						bod.push(bod);
+						if(body.rev!=null){
+							connection.query("UPDATE kategori_form SET rev ='"+body.rev+"' WHERE id_kategori ='"+id_kategori+"'", function(err,result){
+								if(err)console.log(err);
+								callback();
+							});
+						}else{
+							callback();
+						}
+					});
+				}
+			});
+		},
+		function(err){
+			if(err){
+				console.log(err);
+			}else{
+				res.json({"exported":true});
+			}
+		});
+	});
+});
+
+function getData(sql,callback){
+	connection.query(sql,function(err,rows){
+		if(err){
+			callback(err);
+		}else{
+			if(rows.length==0){
+				err = "empty table";
+				callback(err);
+			}else{
+				callback(null,rows);
+			}
+		}
+	});
+}
 router.get('/exportProduk',function(req,res) {
 	var ipay = nano.db.use('ipay_produk');
 	var produks;

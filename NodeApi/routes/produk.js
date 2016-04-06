@@ -3,7 +3,7 @@ var router     = express.Router();
 var bodyParser = require('body-parser');
 var connection = require('./db');
 var async      = require('async');
-
+var nano   = require('./nano');
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -28,6 +28,15 @@ router.use(function(req, res, next) {
 	}else{
 		res.json({"status":"error","message":"Tidak Ada Session"});
 	}
+});
+
+router.post('/getForm',function(req,res){
+	var id_kategori = req.body.id_kategori;
+	var form = nano.db.use('ipay_form');
+	form.get(id_kategori,function(err,rows){
+		var properties = rows.prop;
+		res.json(properties);
+	});
 });
 
 router.post('/getKategori',function(req,res){
