@@ -1,4 +1,4 @@
-var express    = require('express');
+ var express    = require('express');
 var router     = express.Router();
 var bodyParser = require('body-parser');
 var connection = require('./db');
@@ -34,8 +34,14 @@ router.post('/getForm',function(req,res){
 	var id_kategori = req.body.id_kategori;
 	var form = nano.db.use('ipay_form');
 	form.get(id_kategori,function(err,rows){
-		var properties = rows.prop;
-		res.json(properties);
+		if(err){
+			console.log("get form error: "+err);
+			res.json({"error":true,"msessage":err});
+		}else{
+			var properties = rows.prop;
+			res.json({"error":false,"values":properties});
+		}
+		
 	});
 });
 

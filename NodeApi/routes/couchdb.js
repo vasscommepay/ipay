@@ -7,7 +7,50 @@ var nano   = require('./nano');
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
+router.get('/exportAgen',function(req,res){
+	var result = [];
+	var member_db = nano.db.use('ipay_agen');
+	var sql = 'SELECT id_member,id_koordinator FROM member_agen';
+	getData(sql,function(err,agens){
+		if(err){
+			console.log("table: agen, error: "+err);
+			res.json({"error":true,"message":err});
+		}else{
+			var data = {};
+			async.each(agens,function(agen,callback){
+				var id_member = agen.id_member;
+				var id_koordinator = agen.id_koordinator;
+				var get_korwil = "SELECT id_korwil FROM member_koordinator WHERE id_member ="+id_koordinator;
+				data["koor"]=id_koordinator;
+				getData(get_korwil,function(err,koor){
+					if(err){
+						console.log("table: koor, error: "+err);
+						callback(err);
+					}else{
+						var id_korwil = koor[0].id_korwil;
+						data["korwil"] = id_korwil;
+						member_db.insert(data,""+id_member+"",function(err,body){
+							if(err){
+								console.log("error insert couch :"+err);
+								callback(err);
+							}else{
+								result.push(body);
+								callback();
+							}
+						});
+					}
+				});
+			},function(err){
+				if(err){
+					res.json({"error":true,"message":err});
+				}else{
+					res.json(result);
+				}
+			});
+		}
+		
+	});
+});
 router.get('/exportForm',function(req,res){
 	var form_db = nano.db.use('ipay_form');
 	var bod = [];
@@ -132,8 +175,8 @@ router.get('/exportProduk',function(req,res) {
 								var member_id = memberList[i].member_id;
 								var hb = memberList[i].harga_beli;
 								var hj = memberList[i].harga_jual;
-								harga_jual[member_id] = hb;
-								harga_beli[member_id] = hj;
+								harga_jual[member_id] = hj;
+								harga_beli[member_id] = hb;
 							}
 							for(i=0;i<suplen;i++){
 								var supplier_id = supplierList[i].id_supplier;
@@ -144,8 +187,6 @@ router.get('/exportProduk',function(req,res) {
 							
 							var row = {nama:nama,harga:harga,nominal:nominal,aktif:aktif,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
 							console.log(newRow);
-							result = newRow;
-							//curl -X POST http://127.0.0.1:5984/ipay2/ -d newRow -H "Content-Type: application/json";
 
 							ipay.insert(row,id_produk,function(err,body){
 								if(err){
