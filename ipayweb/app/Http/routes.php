@@ -19,6 +19,10 @@ Route::group(['middleware' => 'web'], function () {
 	Route::post('addMemberAddress','memberController@addMemberAddress');
 	Route::post('addMemberContact','memberController@addMemberContact');
 	Route::post('sendMember','memberController@sendMember');
+	Route::post('kategori', 'produkController@kategori');
+	Route::post('subKategori', 'produkController@subKategori');
+	Route::post('form', 'produkController@form');
+	Route::post('produk', 'produkController@produk');
 });
 Route::get('get_prov','AddressController@getProvinsi');
 Route::get('get_wil','AddressController@getWilayah');

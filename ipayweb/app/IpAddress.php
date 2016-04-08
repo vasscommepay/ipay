@@ -2,7 +2,7 @@
 	class IpAddress{
 		//Setup untuk adress
 		public $protocol = 'http'; //protocol http atau https
-		public $ipAddress = '11.0.0.48'; //alamat ip API
+		public $ipAddress = '11.0.0.39'; //alamat ip API
 		public $port = '5000'; //port API
 		
 		//API address

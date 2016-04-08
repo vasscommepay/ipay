@@ -564,6 +564,13 @@ max-width: 100%;
 	color: white;
 	line-height: 1.5em;
 }
+#category1 {
+	padding: 0;
+	margin-left: 6em;
+	font-size: 12px;
+	color: white;
+	line-height: 1.5em;
+}
 #category img {
 }
 .bullet {
@@ -931,7 +938,56 @@ max-width: 100%;
 	opacity: 1!important;
 	display: block;
 }
-#generalcat, #healthcat, #membercat, #insurecat, #pincat, #creditcat {
+#categoryleft {
+	position: absolute;
+	background-color: #8B8B8C;
+	width: 9%;
+	height: 84vh;
+	z-index: 99;
+}
+#subkategori, #healthcat, #membercat, #insurecat, #pincat, #creditcat {
+	position: absolute;
+	z-index: 10;
+	text-align: center;
+	background-color: #ADADAD;
+	overflow-y: scroll;
+	width: 7vw;
+	height: 84vh;
+	left: 0vh;
+	padding: 0;
+	opacity: 0;
+	transition-duration: 0.5s!important;
+	transition: all 0.5s ease-in-out!important;
+	-moz-transition: all 0.5s ease-in-out!important;
+	-webkit-transition: all 0.5s ease-in-out!important;
+	-o-transition: all 0.5s ease-in-out!important;
+}
+#produk{
+	position: absolute;
+	z-index: 10;
+	text-align: center;
+	background-color: #ADADAD;
+	overflow-y: scroll;
+	width: 7vw;
+	height: 84vh;
+	left: 0vh;
+	padding: 0;
+	opacity: 0;
+	transition-duration: 0.5s!important;
+	transition: all 0.5s ease-in-out!important;
+	-moz-transition: all 0.5s ease-in-out!important;
+	-webkit-transition: all 0.5s ease-in-out!important;
+	-o-transition: all 0.5s ease-in-out!important;
+} 
+#subkategori1{
+	position: absolute;
+	z-index: 10;
+	text-align: center;
+	background-color: #ADADAD;
+	width: 12vw;
+	height: 84vh;	
+} 
+#produk1{
 	position: absolute;
 	z-index: 0;
 	text-align: center;
@@ -948,7 +1004,11 @@ max-width: 100%;
 	-webkit-transition: all 0.5s ease-in-out!important;
 	-o-transition: all 0.5s ease-in-out!important;
 }
-#generalcat:target {
+#produk:target {
+	left: 14vh;
+	opacity: 1;
+}
+#subkategori:target {
 	left: 14vh;
 	opacity: 1;
 }
@@ -1012,7 +1072,10 @@ max-width: 100%;
 #midform {
 	background-color: white;
 	height: 60vh;
-	margin: 5em;
+	margin-top: 5em;
+	margin-right: -7em;
+	margin-bottom: 5em;
+	margin-left: 5em;
 	border-radius: 5%;
 	box-shadow: 1em 1em #8B8B8C;
 }

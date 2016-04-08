@@ -1,7 +1,5 @@
 <?php 
 namespace App\Http\Controllers;
-//use Illuminate\Http\Request;
-//use App\Http\Requests;
 use Illuminate\Routing\Controller as BaseController;
 use App\ApiPostSender as PostSender;
 use App\ApiGetSender as GetSender;
@@ -34,7 +32,7 @@ class memberController extends Controller {
 		$kota = Request::input('kab');
 		$provinsi = Request::input('prov');
 		$keterangan = Request::input('keterangan');
-		$form2 = array('jalan'=>$jalan,'kec'=>$kecamatan,'kab'=>$kota,'prov'=>$kota,'ket'=>$keterangan);
+		$form2 = array('jalan'=>$jalan,'kec'=>$kecamatan,'kab'=>$kota,'prov'=>$provinsi,'ket'=>$keterangan);
 		Session::put('form2',$form2);
 		echo json_encode($form2);
 	}

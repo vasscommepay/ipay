@@ -5,35 +5,93 @@
     <link href="css/styles.css" rel="stylesheet" type="text/css">
     <link href="css/demo-styles.css" rel="stylesheet" type="text/css">
     <link href="css/tilestyle.css" rel="stylesheet" type="text/css">
+    <link href="css/jquery.realperson.css" rel="stylesheet" type="text/css" > 
     <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="bootstrap-3.3.5-dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="js/bootstrap-carousel.js"></script>     
     <script type="text/javascript" src="js/modernizr-1.5.min.js"></script>
+    <script type="text/javascript" src="js/jquery.plugin.js"></script> 
+    <script type="text/javascript" src="js/jquery.realperson.min.js"></script>
+    <script type="text/javascript" src="js/bootbox.min.js"></script>
+    <script type="text/javascript">
+    /*$(function(){
+        $('#defaultReal').realperson();
+    });*/
+    $(document).ready(function () {
+        $("#logbutton").click(function(){
+            var total=parseInt($('.rand1').html())+parseInt($('.rand2').html());
+            var total1=$('#total').val();
+            if (total!=total1) {
+                bootbox.dialog({
+                  message: "Wrong Calculation Entered",
+                  title: "Pesan Kesalahan",
+                  buttons: {
+                    success: {
+                      label: "Close!",
+                      className: "btn btn-warning",
+                    },
+                  }
+                });
+                randomnum();
+                return false;
+            } 
+        });
+        randomnum();
+
+        function randomnum() { //utk mengubah angka
+            var number1 = 3;
+            var number2 = 10;
+            var randomnum = (parseInt(number2) - parseInt(number1)) + 1;
+            var rand1 = Math.floor(Math.random()*randomnum)+parseInt(number1);
+            var rand2 = Math.floor(Math.random()*randomnum)+parseInt(number1);
+            $(".rand1").html(rand1);//rand1 adalah class untuk nomor pertama
+            $(".rand2").html(rand2);//rand2 adalah class untuk nomor kedua
+        }
+    });
+    </script>
 </head>
 <body>
     <div id="login" class="col-md-12 row-centered">
         <div id="loghead" class="col-md-12">
             <span><img src="images/logicon.png" />Silahkan Login</span></div>
         <div id="regform" class="col-md-7 col-centered" style="width: 40%">
-    <form action="logedin" method="post">
+    <form action="logedin" id="formlogin" method="post">
         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
         <div class="form-group">
             <label>Username</label>
-                <input type="text" required="" class="form-control pull-right" name="username" />
+                <input type="text" required="" placeholder="Username" class="form-control pull-right" name="username" />
         </div>
         <div class="form-group">
             <label>Password</label>
-                <input type="password" required="" class="form-control pull-right" name="password" />
-        </div><hr />                 
+                <input type="password" required="" placeholder="Password" class="form-control pull-right" name="password" />
+        </div><hr />           
         <div class="form-group">
-            <label>Captcha</label>
-                <input type="text" required="" class="form-control pull-right" name="Captcha" />
-        </div>                                                      
+            <i class="glyphicon glyphicon-refresh"></i> Pertanyaan Keamanan: <br>
+            <i class="rand1"></i> + <i class="rand2"></i> = ?
+            <input type="text" id="total" name="securitykey" class="form-control pull-right" placeholder="Pertanyaan Keamanan" required autocomplete="off" >
+        </div>
         <div class="clearfix"></div>
-        <button class="btn btn-warning col-md-12" name="submit"><i class="glyphicon glyphicon-send"></i> Login</button>
+        <button id="logbutton" class="btn btn-warning col-md-12" name="submit" onclick="cekLogin()"><i class="glyphicon glyphicon-send"></i> Login</button>
         <a href="daftarregistrasi"><button class="btn btn-warning col-md-12" type="button"><i class="glyphicon glyphicon-send"></i> Register</button></a>
     </form>                       
         </div>
     </div>
 </body>
+<script type="text/javascript">
+    function cekLogin(){
+        var data = $("#formlogin").serialize();
+        $.ajax({
+            url:'logedin',
+            type: 'POST',
+            data: data,
+            success: function(res){
+                var result = JSON.parse(res);
+                //alert(result.status);
+                if (result.status){
+                    bootbox.alert("username tidak bisa digunakan");
+                }
+            }
+        });
+    }
+</script>
 </html>
