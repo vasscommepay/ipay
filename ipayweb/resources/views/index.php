@@ -28,7 +28,7 @@ $.ajaxSetup({
       });
 		  $("#mainmenu").load("pages/home.html"); 
 
-var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
+    var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
      $("head").append(cssLink); 
 	
        $("#hmclk").click(function(){
@@ -101,12 +101,12 @@ var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/
      $("#signlink").click(function(){
         $('#addMem').load('pages/afiliasi.html');
     $('#switcher').remove();
- /*var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
+ var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
      $("head").append(cssLink); 
        });
 	   $("#loglink").click(function(){
         $('#mainmenu').load('pages/login.html');
-		$('#switcher').remove();*/
+		$('#switcher').remove();
  var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
      $("head").append(cssLink); 
        });
@@ -117,6 +117,7 @@ var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/
      $("head").append(cssLink); 
        });
      });
+
  var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
   $("head").append(cssLink); 
   $('body').addClass('loaded');

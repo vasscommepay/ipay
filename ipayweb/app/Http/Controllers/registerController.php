@@ -1,7 +1,5 @@
 <?php
 namespace App\Http\Controllers;
-//use Illuminate\Http\Request;
-//use App\Http\Requests;
 use Illuminate\Routing\Controller as BaseController;
 use App\ApiPostSender as PostSender;
 use App\ApiGetSender as GetSender;
@@ -25,9 +23,9 @@ class registerController extends Controller
     	$password = Request::input('password');
     	$cpassword = Request::input('confpassword');
     	$noreg = Request::input('noreg');
-		$form = array('username'=>$username,'password'=>$password,'confpassword'=>$cpassword,'noreg'=>$noreg);
+		$form = array('username'=>$username,'password'=>$password,'reg_num'=>$noreg);
 		$this->params = $form;
-		$this->url = 'users/add-new-user';
+		$this->url = 'users/add-new-users';
 		$this->sendPostRequest();
     }
     private function sendPostRequest(){

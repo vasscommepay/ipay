@@ -107,15 +107,15 @@
     </div>
 
     <div id="regform" class="col-md-7 col-centered mContact" style="display: none">
-        <form id="kontak">
+        <form name="formKontak" id="kontak">
         <div class="form-group">
             <label>Nomor Hp/Telepon </label>
             <input type="text" required class="form-control pull-right" id="telp" name="telp" />
         </div> 
         <div class="form-group">
             <label>Alamat Email </label>
-            <input type="email" required class="form-control pull-right" id="email" name="email" />
-        </div> 
+            <input type="email" required class="form-control pull-right" id="email" name="email" onchange="cekEmail()" />
+        </div>
         <div class="clearfix"></div>
              <div class="col-md-6" align="center" align="center"><a href="#" onclick="memAddressP()" ><img src="images/prevbutton.png" title="Kembali" /></a></div>
             <div class="col-md-6" align="center" align="center"><a href="#" onclick="submitContact()"><img src="images/finishbutton.png" title="Submit" /></a></div>
@@ -152,6 +152,7 @@
                         
         </div>
         <button type="button" onclick="print('#regStatus')" class="btn btn-block btn-success col-md-12"><i class="glyphicon glyphicon-print"></i> Cetak</button>      
+        <a href="#"><label>Tambah Baru</label></a>
     </div>
     </div>
 </div>
@@ -169,13 +170,11 @@
                 success: {
                   label: "Close!",
                   className: "btn btn-warning",
-                  callback: function() {
-                    nama.val(); 
-                    nama.focus();
-                  }
                 },
               }
             });
+             $('input[name="nama"]').val("");
+            $('input[name="nama"]').focus();
         } 
         else if (tgl_lahir.val() == "") {
              bootbox.dialog({
@@ -274,7 +273,7 @@
     }
     function memAddress(){
         $(".member").hide()
-        var data = $("#member").serialize();
+        var data = $("#memberForm").serialize();
         $('#loadingscr').show();
         $.ajax({
             url:'addMember',
@@ -400,5 +399,24 @@
     }
     function print(element){
         $(element).printElement();
+    }
+    function cekEmail(){
+        var x = document.forms["formKontak"]["email"].value;
+        //var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        var atpos = x.indexOf("@");
+        var dotpos = x.lastIndexOf(".");
+        if (atpos<1 || dotpos<atpos+2 || dotpos+2>=x.length) {
+        bootbox.dialog({
+              message: "Email Tidak Valid!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                },
+              }
+            });
+        }
+        return false; 
     }
 </script>
