@@ -38,8 +38,10 @@ router.post('/getForm',function(req,res){
 			console.log("get form error: "+err);
 			res.json({"error":true,"msessage":err});
 		}else{
-			var properties = rows.prop;
-			res.json({"error":false,"values":properties});
+			console.log("id_kategori: "+id_kategori);
+			var properties = rows['prop'];
+			console.log("prop :"+properties);
+			res.json(properties);
 		}
 		
 	});
@@ -81,9 +83,11 @@ router.post('/getProduk',function(req,res){
 	var uplink = req.body.uplink;
 
 	if(req.body.kategori!=null){
-    	sqlProduk = "SELECT * FROM produk_member JOIN master_produk ON product_id = id WHERE member_id= ? AND kategori_produk='"+req.body.id_kategori+"'";
+		console.log("kategori: "+req.body.kategori);
+    	sqlProduk = "SELECT *, master_produk.nominal FROM produk_member LEFT JOIN master_produk ON product_id = id WHERE member_id= ? AND kategori_produk='"+req.body.kategori+"'";
     }else{
-    	sqlProduk = "SELECT * FROM produk_member WHERE member_id=?";
+    	console.log("kategori: "+req.body.kategori);
+    	sqlProduk = "SELECT * FROM produk_member LEFT JOIN master_produk ON product_id = id  WHERE member_id=?";
     }
 
 	connection.query(sqlProduk,[uplink],function(err,rows){

@@ -7,7 +7,6 @@ use Request;
 class ProductController extends BaseController {
 	private $url;
 	private $params;
-
 	public function addMasterProduct(){
 		$this->url = 'dashbooardFranchiseeAdd';
 		$fid = Request::input('fid');
@@ -27,6 +26,22 @@ class ProductController extends BaseController {
 			$this->sendPostRequest();
 		}
 	}
+	public function produk(){
+		$this->url = 'produk/getProduk';
+		$id_kategori = Request::('id_kategori');
+		$session = Session::get('session');
+		$uplink = Session::get('uplink_id');
+		$this->params = array('session'=>$session,'uplink'=>$uplink,'kategori'=>$id_kategori);
+		$this->sendPostRequest();
+	}
+	public function form(){
+		$this->url = 'produk/getForm';
+		$id_kategori = Request::get('id_kategori');
+		$session = Session::get('session');
+		$this->params = array('id_kategori'=>$id_kategori,'session'=>$session);
+		$this->sendPostRequest();
+	}
+
 	public function editFranchise(){
 		$this->url = 'dashbooardFranchiseeEdit';
 		$fid = Request::input('newfid');

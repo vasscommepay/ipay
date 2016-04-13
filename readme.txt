@@ -62,4 +62,15 @@ Folder documents untuk menyimpan dokumentasi
 	- https://laravel.com/docs/5.2/session (Untuk mengelola session laravel)
 	- https://laravel.com/docs/5.2/routing (Untuk mengelola routing laravel)
 ------------------------------------ END --------------------------------------------------
-	
+
+-------------------------------- Fitur Transaksi ----------------------------------------------
+Fitur transaksi sudah
+
+------------------------------ COUCH DB ----------------------------------------------------------
+COUCHAPP EDITOR: Create, Edit and Upload CouchDB applications: https://smileos-8d8a45.smileupps.com/_editor
+
+BULK DOCS EDITOR: Edit multiple docs at once: https://smileos-8d8a45.smileupps.com/_costco
+
+FUTON via SMILEOS: Futon restricted to admin only: https://smileos-8d8a45.smileupps.com/_utils/index.html
+
+FAUXTON via SMILEOS: Fauxton restricted to admin only: https://smileos-8d8a45.smileupps.com/_utils/fauxton/index.html

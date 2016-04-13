@@ -49,6 +49,9 @@ router.post("/",function(req,res,next) {
 					if(rows.length>0){
 						var memberid = rows[0].member_id;
 						var level = rows[0].level_member;
+						var saldo = rows[0].total_saldo;
+						var komisi = rows[0].total_komisi;
+						var nama = rows[0].nama;
 						console.log(level);
 						var sqlAtasan;
 						if(level==2){
@@ -68,7 +71,7 @@ router.post("/",function(req,res,next) {
 									res.json({"available" : false,"message":err});
 								}else{
 									var uplink = rows[0].atasan;
-									res.json({"isLogin":"true","member_id":memberid,"session":session,"level":level,"uplink":uplink});
+									res.json({"isLogin":"true","saldo":saldo,"komisi":komisi,"nama":nama,"member_id":memberid,"session":session,"level":level,"uplink":uplink});
 								}
 							}
 						});

@@ -28,22 +28,38 @@ class produkController extends Controller {
 		$this->sendPostRequest();
 	}
 	public function produk(){
+		$this->url = 'produk/getProduk';
+		$id_kategori = Request::input('id_kategori');
 		$session = Session::get('session');
 		$uplink = Session::get('uplink_id');
-		$id_produk = Request::input('idproduk');
-		$form3 = array('session'=>$session,'uplink'=>$uplink, 'product_id'=>$id_produk);
-		$this->params = $form3;
-		$this->url = 'produk/getProduk';
+		$this->params = array('session'=>$session,'uplink'=>$uplink,'kategori'=>$id_kategori);
 		$this->sendPostRequest();
 	}
 	public function form(){
-		$session = Session::get('session');
-		$id_kategori = Request::input('id_kategori');
-		$form4 = array('session'=>$session, 'input_name'=>$id_kategori, 'input_type'=>$inputtype, 'input_label'=>$inputlabel);
-		$this->params = $form4;
 		$this->url = 'produk/getForm';
+		$id_kategori = Request::get('id_kategori');
+		$session = Session::get('session');
+		$this->params = array('id_kategori'=>$id_kategori,'session'=>$session);
 		$this->sendPostRequest();
 	}
+	// public function produk(){
+	// 	$session = Session::get('session');
+	// 	$uplink = Session::get('uplink_id');
+	// 	$id_produk = Request::input('idproduk');
+	// 	$form3 = array('session'=>$session,'uplink'=>$uplink, 'product_id'=>$id_produk);
+	// 	$this->params = $form3;
+	// 	$this->url = 'produk/getProduk';
+	// 	$this->sendPostRequest();
+	// }
+	// public function form(){
+	// 	$session = Session::get('session');
+	// 	$id_kategori = Request::input('id_kategori');
+	// 	$form4 = array('session'=>$session, 'input_name'=>$id_kategori, 'input_type'=>$inputtype, 'input_label'=>$inputlabel);
+	// 	$this->params = $form4;
+	// 	$this->url = 'produk/getForm';
+	// 	$this->sendPostRequest();
+	// }
+
 	private function sendPostRequest(){
 		$url = $this->url;
 		$params = $this->params;

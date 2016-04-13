@@ -60,10 +60,12 @@ var member_id;
         	connection.query(getIdMember,function(err,rows){
         		if (err){
 				   console.log(err);
+				   callback(err);
 				}else{
 					if (rows[0]==null){
-						res.json({"Status" : false , "Message" : "Users Not Exist"});
 						console.log('Message : User Belum Terdaftar');
+						err= "User belum terdaftar";
+						callback(err);
 					} else {
 						member_id = rows[0].id_member;
 						callback();
@@ -72,16 +74,20 @@ var member_id;
         	});
         }
 	],
-        function (callback){
+        function (err){
+        	if(err){
+        		console.log(err);
+        		res.json({"error":true,"message":err});
+        	}
         	console.log(member_id);
         	var addNewUsers = {sql : 'INSERT INTO users (username,password,email,member_id)VALUES("'+req.body.username+'","'+hash+'","'+req.body.email+'","'+member_id+'")'};
         	connection.query(addNewUsers, function(err, result) {
 				if (err){
 					console.log(err);
-					res.json({"Inserted" : false , "Message" : err});
+					res.json({"error" : true , "Message" : err});
 					console.log('Message : User Tidak Berhasil Didaftarkan');
 				}else{
-					res.json({"Inserted" : true , "Message" : "Success"});
+					res.json({"error" : false , "Message" : "Success"});
 					console.log('Message : User Berhasil Didaftarkan');
 				}
 			});

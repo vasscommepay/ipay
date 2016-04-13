@@ -51,10 +51,26 @@ class memberController extends Controller {
 		$this->url = 'member/newMember';
 		$this->sendPostRequest();
 	}
+
+	public function getDownlink(){
+		$this->url = 'member/get-downlink';
+		$session = Session::get('session');
+		$level = Session::get('level');
+		$member_id = Session::get('member_id');
+		$this->params = array('session'=>$session,"level"=>$level,"member_id"=>$member_id);
+		$this->sendPostRequest();
+
+	}
 	private function sendPostRequest(){
 		$url = $this->url;
 		$params = $this->params;
 		$sender = new PostSender($url,$params);
+		$result = $sender->sendRequest();
+		echo $result;
+	}
+	private function sendGetRequest(){
+		$url = $this->url;
+		$sender = new GetSender($url);
 		$result = $sender->sendRequest();
 		echo $result;
 	}

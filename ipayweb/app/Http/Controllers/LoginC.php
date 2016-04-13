@@ -14,7 +14,7 @@ class LoginC extends Controller
         $username = Request::input('username');
         $password = Request::input('password');
 
-        $url = "http://11.0.0.39:5000/login";
+        $url = "http://localhost:5000/login";
         $params = array("username"=>$username,"password"=>$password);
         $parameter = json_encode($params);
         $ch = curl_init($url);
@@ -35,7 +35,10 @@ class LoginC extends Controller
             Session::put('username',$username);
             Session::put('session',$session);
             Session::put('level',$level);
+            Session::put('saldo',$res->saldo);
+            Session::put('komisi',$res->komisi);
             Session::put('member_id',$member_id);
+            Session::put('nama',$res->nama);
             Session::put('uplink_id',$uplink);
             return redirect('/');
         } else {

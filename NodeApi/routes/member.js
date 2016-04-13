@@ -6,6 +6,7 @@ var bodyParser 	= require('body-parser');
 var connection  = require('./db');
 var mailer      = require('express-mailer');
 var nodemailer = require('nodemailer');
+var nano   = require('./nano');
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -63,11 +64,11 @@ router.post('/get-downlink',function(req,res){
 	var memberid = req.body.member_id;
 	var sql;
 	if(level==1){
-		sql = "SELECT * FROM member_koordinator WHERE id_korwil ="+memberid;
+		sql = "SELECT * FROM member WHERE id_member IN (SELECT id_member FROM member_koordinator WHERE id_korwil = "+memberid+")";
 	}else if(level==2){
-		sql = "SELECT * FROM member_agen WHERE id_koordinator ="+memberid;
+		sql = "SELECT * FROM member WHERE id_member IN(SELECT id_member FROM member_agen WHERE id_koordinator ="+memberid+")";
 	}else {
-		sql = "SELECT * FROM member_korwil";
+		sql = "SELECT * FROM member WHERE level_member = 1";
 	}
 	connection.query(sql,function(err,rows){
 		if(err){
@@ -130,16 +131,20 @@ router.post("/newMember",function(req, res, next) {
         //Load user to get userId first
         function(callback){
         	var getIdMember ='SELECT member_id FROM users WHERE session ="'+session+'"';
-        	connection.query(getIdMember,function(err,rows){
-        		if (err){
-				   console.log(err);
-				   res.json({"inserted" : false,"message":err});
-				}else{
-					id_atasan= rows[0].member_id;
-					console.log("id atasan= "+id_atasan);
-					callback();
-				}
-        	});
+        	if(req.body.id_atasan!=null){
+        		id_atasan = req.boy.id_atasan;
+        	}else{
+        		connection.query(getIdMember,function(err,rows){
+	        		if (err){
+					   console.log(err);
+					   res.json({"inserted" : false,"message":err});
+					}else{
+						id_atasan= rows[0].member_id;
+						console.log("id atasan= "+id_atasan);
+						callback();
+					}
+	        	});
+        	}
         },
         function(callback) {
         	var addressName = connection.escape(req.body.addressName);
@@ -260,9 +265,17 @@ router.post("/newMember",function(req, res, next) {
 				var regNum = rows[0].reg_num;
 				var createdAt = rows[0].created_at;
 				sendEmail('gallan.widyanto@gmail.com','iPay Registration','<h2>Selamat anda telah terdaftar pada sistem iPay<h2><br><p> Gunakan nomor registrasi untuk membuat user baru.</p><br><h2>Nomor Registrasi:'+regNum+'</h2>');
-				res.json({"inserted":true,"nama":nama,"reg_num":regNum,"createdAt":createdAt,"execuionTime":end-start});
+				updateProduk(function(err){
+					if(err){
+						console.log(err);
+						res.json({"inserted":true,"nama":nama,"reg_num":regNum,"createdAt":createdAt,"execuionTime":end-start,"dbupdated":false});
+					}else{
+						res.json({"inserted":true,"nama":nama,"reg_num":regNum,"createdAt":createdAt,"execuionTime":end-start,"dbupdated":true});
+					}
+				});
 			}
 		});
+		
     });
 				
 });
@@ -337,5 +350,106 @@ function sendEmail(to,subject,message){
 	    };
 	});
 }
+
+function updateProduk(callback){
+	var status = 'gagal';
+	var ipay = nano.db.use('ipay_produk');
+	var produks;
+	async.series([
+		function(callback){
+			connection.query("SELECT * FROM master_produk",function(err,rows){
+				if(err){
+					console.log(err);
+					res.json({"exported":false,"message":err});
+				}else{
+					if(rows.length==0){
+						console.log("nodata");
+						res.json({"exported":false,"message":"no data"});
+					}else{
+						produks = rows;
+						callback();
+					}
+				}
+			});
+		}
+		],function(err){
+			if(err) console.log(err);
+			async.each(produks,function(produk,callback){
+				var id_produk = produk.id;
+				var rev = produk.rev;
+				var nama = produk.nama;
+				var harga = produk.harga_beli;
+				var nominal = produk.nominal;
+				var result;
+				var start = Date.now();
+				var aktif = true;
+				if(produk.aktif!=1) aktif = false;
+				var kosong = false;
+				if(produk.kosong!=0) kosong = true;
+				var sql = "SELECT member_id,harga_jual,harga_beli FROM produk_member WHERE product_id ='"+id_produk+"' ; SELECT prioritas,id_supplier FROM supplier_produk WHERE id_produk ='"+id_produk+"' ORDER BY prioritas ASC";
+
+				connection.query(sql,function(err,rows){
+					if(err){
+						console.log(err);
+						callback(err);
+					}else{
+						if(rows[0].length==0){
+						console.log("nodata");
+						}else{
+							var memberList = rows[0];
+							var supplierList = rows[1];
+							var harga_beli ={};
+							var harga_jual={};
+							var supplier={};
+							var memlen = memberList.length;
+							var suplen = supplierList.length;
+							supplier["count"]=suplen;
+							var i;
+							for(i = 0;i<memlen;i++){
+								var member_id = memberList[i].member_id;
+								var hb = memberList[i].harga_beli;
+								var hj = memberList[i].harga_jual;
+								harga_jual[member_id] = hj;
+								harga_beli[member_id] = hb;
+							}
+							for(i=0;i<suplen;i++){
+								var supplier_id = supplierList[i].id_supplier;
+								var prioritas = supplierList[i].prioritas;
+								supplier[prioritas]=supplier_id;
+							}
+							var newRow = '{id:'+id_produk+',nama:"'+nama+'",harga:'+harga+',nominal:'+nominal+',aktif:'+aktif+',kosong:'+kosong+',harga_beli:{'+harga_beli+'},harga_jual:{'+harga_jual+'}}';
+							
+							var row = {_id:id_produk,_rev:rev, nama:nama,harga:harga,nominal:nominal,aktif:aktif,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
+							console.log(newRow);
+
+							ipay.insert(row,function(err,body){
+								if(err){
+									console.log(err);
+									callback(err);
+								}else{
+									console.log
+									callback();
+								}
+							});
+						}
+					}
+				});
+			},
+		function(err){
+			if(err){
+				console.log(err);
+				callback(err);	
+			}else{
+				status = 'sukses';
+				callback(null,status);
+			}
+			
+		});
+	});
+}
+
+
+
+
 
 module.exports = router;

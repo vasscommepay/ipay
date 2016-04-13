@@ -23,6 +23,9 @@ Route::group(['middleware' => 'web'], function () {
 	Route::post('subKategori', 'produkController@subKategori');
 	Route::post('form', 'produkController@form');
 	Route::post('produk', 'produkController@produk');
+	Route::post('getDaftarTransaksi','TransactionController@getDaftarTransaksi');
+	Route::get('getDownlink','memberController@getDownlink');
+	Route::post('quickCheckout','TransactionController@quickCheckOut');
 });
 Route::get('get_prov','AddressController@getProvinsi');
 Route::get('get_wil','AddressController@getWilayah');

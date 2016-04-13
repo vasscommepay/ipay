@@ -122,95 +122,98 @@
         var confpassword = $('input[name="confpassword"]');
         var noreg = $('input[name="noreg"]');
         var data = $("#formreg").serialize();
-        $.ajax({
-            url:'register',
-            type: 'POST',
-            data: data,
-            success: function(res){
-                //alert(res);
-                var hasil = JSON.parse(res);
-                if(hasil.inserted){
-                    bootbox.dialog({
-                      message: "User Berhasil ditambahkan, Silahkan Login Dulu",
-                      title: "Berhasil",
-                      buttons: {
-                        success: {
-                          label: "Oke",
-                          className: "btn btn-success",
-                        },
-                      }
-                    });
-                }
-                else if (username.val() == "") {
-                    bootbox.dialog({
-                      message: "Masukkan Username!",
-                      title: "Pesan Kesalahan",
-                      buttons: {
-                        success: {
-                          label: "Close!",
-                          className: "btn btn-warning",
-                        },
-                      }
-                    });
-                     $('input[name="username"]').val("");
-                    $('input[name="username"]').focus();
-                }
-                else if (password.val() == "") {
-                    bootbox.dialog({
-                      message: "Masukkan Password!",
-                      title: "Pesan Kesalahan",
-                      buttons: {
-                        success: {
-                          label: "Close!",
-                          className: "btn btn-warning",
-                        },
-                      }
-                    });
-                     $('input[name="password"]').val("");
-                    $('input[name="password"]').focus();
-                }
-                else if (confpassword.val() == "") {
-                    bootbox.dialog({
-                      message: "Masukkan Konfirmasi Password!",
-                      title: "Pesan Kesalahan",
-                      buttons: {
-                        success: {
-                          label: "Close!",
-                          className: "btn btn-warning",
-                        },
-                      }
-                    });
-                     $('input[name="confpassword"]').val("");
-                    $('input[name="confpassword"]').focus();
-                }
-                else if (noreg.val() == "") {
-                    bootbox.dialog({
-                      message: "Masukkan Nomor Registrasi!",
-                      title: "Pesan Kesalahan",
-                      buttons: {
-                        success: {
-                          label: "Close!",
-                          className: "btn btn-warning",
-                        },
-                      }
-                    });
-                     $('input[name="noreg"]').val("");
-                    $('input[name="noreg"]').focus();
-                }
-                else {
-                    bootbox.dialog({
-                      message: "User Terlalu Banyak",
-                      title: "Konfirmasi",
-                      buttons: {
-                        success: {
-                          label: "Oke",
-                          className: "btn btn-danger",
-                        },
-                      }
-                    });
-                }
-            }
-        });
+        if (username.val() == "") {
+            bootbox.dialog({
+              message: "Masukkan Username!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                },
+              }
+            });
+             $('input[name="username"]').val("");
+            $('input[name="username"]').focus();
+        }
+        else if (password.val() == "") {
+            bootbox.dialog({
+              message: "Masukkan Password!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                },
+              }
+            });
+             $('input[name="password"]').val("");
+            $('input[name="password"]').focus();
+        }
+        else if (confpassword.val() == "") {
+            bootbox.dialog({
+              message: "Masukkan Konfirmasi Password!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                },
+              }
+            });
+             $('input[name="confpassword"]').val("");
+            $('input[name="confpassword"]').focus();
+        }
+        else if (noreg.val() == "") {
+            bootbox.dialog({
+              message: "Masukkan Nomor Registrasi!",
+              title: "Pesan Kesalahan",
+              buttons: {
+                success: {
+                  label: "Close!",
+                  className: "btn btn-warning",
+                },
+              }
+            });
+             $('input[name="noreg"]').val("");
+            $('input[name="noreg"]').focus();
+        }else{
+
+
+
+          $.ajax({
+              url:'register',
+              type: 'POST',
+              data: data,
+              success: function(res){
+                  //alert(res);
+                  var hasil = JSON.parse(res);
+                  if(!hasil[0].error){
+                      bootbox.dialog({
+                        message: "User Berhasil ditambahkan, Silahkan Login Dulu",
+                        title: "Berhasil",
+                        buttons: {
+                          success: {
+                            label: "Oke",
+                            className: "btn btn-success",
+                          },
+                        }
+                      });
+                  }else {
+                      bootbox.dialog({
+                        message: "User Terlalu Banyak",
+                        title: "Konfirmasi",
+                        buttons: {
+                          success: {
+                            label: "Oke",
+                            className: "btn btn-danger",
+                          },
+                        }
+                      });
+                  }
+              }
+          });
+        }
     }
 </script>
 </html>
