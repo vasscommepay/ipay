@@ -5,29 +5,38 @@
 			type:'post',
 			url:'getDaftarTransaksi',
 			success:function(result){
-				var data = JSON.parse(result);
+				//alert(result);
+				var datas = JSON.parse(result);
+				if(!datas.error){
+					var i =0;
+					var res = datas.rows;
+					var transaksi = res.rows;
+					//alert(transaksi);
+			       	$.each(transaksi,function(key,val){
+				       	i++
+				       	var data = val.value;
+				       	
+				       	var time = new Date(data.timestamp);
+				       	var tanggal = time.toDateString();
+				       	var jam = time.toLocaleTimeString(); 
+				       	var total_biaya = setComma(data.total);
+				       	table.row.add([
+				       		i,
+				       		tanggal,
+				       		jam,
+				       		data._id,
+				       		data.orderid,
+				       		data.id_produk,
+				       		data.order_qty,
+				       		total_biaya,
+				       		data.tujuan,
+				       		"<span id='stat"+data._id+"'>"+data.status_biller+"</span>"
+			       		]).draw(false);
+					          // $("#table-body").append("<tr><td>"+i+"</td>"+"<td>"+val.created_at+"</td>"+"<td>"+val.id_transaksi+"</td>"+"<td>"+val.id_order+"</td>"+"<td>"+val.id_produk+"</td>"+"<td>"+val.quantities+"</td>"+"<td>"+val.total_biaya+"</td>"+"<td>"+val.tujuan+"</td>"+"<td><span id='stat"+val.id_transaksi+"'>"+val.status+"</span></td></tr>");
+				  });
+				}
        //alert(result);
-       var i =0;
-       	$.each(data,function(key,val){
-	       	i++
-	       	var time = new Date(val.created_at);
-	       	var tanggal = time.toDateString();
-	       	var jam = time.toLocaleTimeString(); 
-	       	var total_biaya = setComma(val.total_biaya);
-	       	table.row.add([
-	       		i,
-	       		tanggal,
-	       		jam,
-	       		val.id_transaksi,
-	       		val.id_order,
-	       		val.id_produk,
-	       		val.quantities,
-	       		total_biaya,
-	       		val.tujuan,
-	       		"<span id='stat"+val.id_transaksi+"'>"+val.status+"</span>"
-       		]).draw(false);
-		          // $("#table-body").append("<tr><td>"+i+"</td>"+"<td>"+val.created_at+"</td>"+"<td>"+val.id_transaksi+"</td>"+"<td>"+val.id_order+"</td>"+"<td>"+val.id_produk+"</td>"+"<td>"+val.quantities+"</td>"+"<td>"+val.total_biaya+"</td>"+"<td>"+val.tujuan+"</td>"+"<td><span id='stat"+val.id_transaksi+"'>"+val.status+"</span></td></tr>");
-	  });
+       
 }
 });
 	});

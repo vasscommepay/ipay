@@ -26,6 +26,11 @@
       }
     });
     $(document).ready(function(){
+
+      // $(".input-number").keyup(function() {
+      //     $(".input-number").val(this.value.match(/[0-9]*/));
+      // });
+
       $.ajaxSetup({
         headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

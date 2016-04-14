@@ -38,9 +38,7 @@ router.post('/getForm',function(req,res){
 			console.log("get form error: "+err);
 			res.json({"error":true,"msessage":err});
 		}else{
-			console.log("id_kategori: "+id_kategori);
 			var properties = rows['prop'];
-			console.log("prop :"+properties);
 			res.json(properties);
 		}
 		
@@ -56,7 +54,6 @@ router.post('/getKategori',function(req,res){
 			console.log(err);
 			res.json({"available":false,"message":err});
 		}else{
-			console.log(rows);
 			res.json(rows);
 		}
 	});
@@ -68,7 +65,7 @@ router.post('/getSubKategori',function(req,res){
 	var sql = "SELECT * FROM kategori_produk WHERE kategori_produk.id_super_kategori =?";
 	connection.query(sql,[super_kategori],function(err,rows){
 		if(err){
-			console.log(err);
+			res.json({"available":false,"message":err});
 		}else{
 			if(rows==null){
 				res.json({"available":false,"message":"produk kosong"});

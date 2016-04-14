@@ -133,7 +133,7 @@
             //alert(result);
             var res = JSON.parse(result);
             if(res.error){
-                //alert(res.message);
+                alert(res.message);
             }else{
                 //alert(res.status);
                 $('#mainmenu').load('pages/home.html');

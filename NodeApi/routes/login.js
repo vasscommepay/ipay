@@ -4,6 +4,7 @@ var router     = express.Router();
 var bodyParser = require('body-parser');
 var connection  = require('./db');
 var async 		= require('async');
+var nano   = require('./nano');
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -141,11 +142,32 @@ function setSession(username, session){
 		if(err){
 			console.log(err);
 		}else{
+			updateCouch(username,session);
 			if(rows.result===1){
 				return true;
+				
 			}else{
 				return false;
 			}
+		}
+	});
+}
+function updateCouch(username,session){
+	var member_db = nano.db.use('ipay_users');
+	member_db.get(username,function(err,body){
+		if(err){
+			console.log(err);
+		}else{
+			body["session"]=session;
+			body["updated_at"]= Date.now();
+			delete body.rev;
+			member_db.insert(body,function(err,body){
+				if(err){
+					console.log(err);
+				}else{
+					console.log("couch users updated");
+				}
+			});
 		}
 	});
 }
