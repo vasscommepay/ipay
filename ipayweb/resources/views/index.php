@@ -25,8 +25,27 @@
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       }
     });
+    Object.size = function(obj) {
+      var size = 0, key;
+      for (key in obj) {
+          if (obj.hasOwnProperty(key)) size++;
+      }
+      return size;
+    };
+      
     $(document).ready(function(){
 
+      $.ajax({
+        url:'getCart',
+        type:'get',
+        success:function(result){
+          //alert(result);
+          var cart = JSON.parse(result);
+          var count = Object.size(cart);
+          //alert(count);
+          $('#cart-count').html(count);
+        }
+      });
       // $(".input-number").keyup(function() {
       //     $(".input-number").val(this.value.match(/[0-9]*/));
       // });
@@ -48,10 +67,11 @@
          var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
          $("head").append(cssLink); 
 
-         $("#cartmodal").click(function(){
-          $("#carts").modal();
-        });
+         
        }); 
+      // $("#cartmodal").click(function(){
+      //     $("#carts").modal();
+      //   });
 
       $("#lynclk").click(function(){
 
@@ -70,6 +90,13 @@
        });
       $("#pdnclk").click(function(){
         $('#mainmenu').load('pages/panduanfaq.html');
+        $('#switcher').remove();
+        var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/blue.css'>");
+        $("head").append(cssLink); 
+         //alert("Thanks for visiting!");
+       });
+      $("#prdclk").click(function(){
+        $('#mainmenu').load('pages/aturproduk.html');
         $('#switcher').remove();
         var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/blue.css'>");
         $("head").append(cssLink); 
@@ -161,33 +188,14 @@ $.ajaxSetup({
           <div id="invgroup" class="col-md-12 col-xs-12 row-centered">
             <span class="detlogo col-md-2 col-xs-1"><img src="images/garudaicon.png" /></span>
             <span class="dettext col-md-8 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span>
-            <span><i class="glyphicon glyphicon-remove-circle"></i></span>
+            <span><button class="btn btn-link" onclick="remove()"><i class="glyphicon glyphicon-remove-circle"></i></button></span>
           </div>
-          <div id="invgroup" class="col-md-12 col-xs-12 row-centered">
-            <span class="detlogo col-md-2 col-xs-1"><img src="images/garudaicon.png" /></span>
-            <span class="dettext col-md-8 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span>
-            <span><i class="glyphicon glyphicon-remove-circle"></i></span>
-          </div>
-          <div id="invgroup" class="col-md-12 col-xs-12 row-centered">
-            <span class="detlogo col-md-2 col-xs-1"><img src="images/garudaicon.png" /></span>
-            <span class="dettext col-md-8 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span>
-            <span><i class="glyphicon glyphicon-remove-circle"></i></span>
-          </div>
-          <div id="invgroup" class="col-md-12 col-xs-12 row-centered">
-            <span class="detlogo col-md-2 col-xs-1"><img src="images/garudaicon.png" /></span>
-            <span class="dettext col-md-8 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span>
-            <span><i class="glyphicon glyphicon-remove-circle"></i></span>
-          </div>
-          <div id="invgroup" class="col-md-12 col-xs-12 row-centered">
-            <span class="detlogo col-md-2 col-xs-1"><img src="images/garudaicon.png" /></span>
-            <span class="dettext col-md-8 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span>
-            <span><i class="glyphicon glyphicon-remove-circle"></i></span>
-          </div>
+          
 
         </div>
 
         <div class="modal-footer">
-          <p><a id="chckout" class="close" data-dismiss="modal" href="#"><img src="images/finishbutton.png"  />Checkout</a></p>
+          <p><a class="close" data-dismiss="modal" onclick="checkOutCart()" href="#"><img src="images/finishbutton.png"  />Checkout</a></p>
         </div>
       </div>
     </div>
@@ -201,16 +209,22 @@ $.ajaxSetup({
         <?php if(Session::get('level')!=3){ ?>
           <div class="col-md-4 col-sm-6 hidden-xs"><a id="signlink" href="#"><div class="iconedit"></div>Add Member</a></div><?php } ?>
           <div class="col-md-4 col-sm-6 hidden-xs"><a href="logout"><div class="iconkey"></div>Logout</a></div>
-          <div class="col-md-4 col-sm-12 col-xs-12 transbutton"><a id="cartmodal" data-dismiss="modal" data-toggle="modal" href="#carts"><div class="col-md-3 col-sm-3 col-xs-6"><div class="iconcart "></div></div><div class="transtext col-md-5 col-sm-5 hidden-xs">Cart</div><div class="transamount col-md-3 col-sm-3 col-xs-6">2</div></a></div>
+          <div class="col-md-4 col-sm-12 col-xs-12 transbutton"><a id="cartmodal" onclick="showCart()"><div class="col-md-3 col-sm-3 col-xs-6"><div class="iconcart "></div></div><div class="transtext col-md-5 col-sm-5 hidden-xs">Cart</div><div class="transamount col-md-3 col-sm-3 col-xs-6" id="cart-count">0</div></a></div>
         </div>
         <div id="main-menu">	
           <div class="row row-centerd g"><a id="hmclk" href="#"><img src="images/homeicon.png" /><span class="hidden-xs">Home</span></a></div>
           <div class="row "><a id="cktclk" href="#"><img src="images/cek.png" /><span class="hidden-xs">Cek Transaksi</span></a></div>
           <div class="row g"><a id="lynclk" href="#"><img src="images/layananicon.png" /><span class="hidden-xs">Report</span></a></div>
+          <?PHP if(Session::get('level')==0){ ?>
+          <div class="row "><a id="prdclk" href="#"><img src="images/panduanfaq.png" /><span class="hidden-xs">Produk</span></a></div>
+          <div class="row g"><a id="cstclk" href="#"><img src="images/customer.png" /><span class="hidden-xs">Non Agen</span></a></div>
+          <?PHP }else{ ?>
           <div class="row "><a id="pdnclk" href="#"><img src="images/panduanfaq.png" /><span class="hidden-xs">Panduan & FAQ</span></a></div>
           <div class="row g"><a id="cstclk" href="#"><img src="images/customer.png" /><span class="hidden-xs">Customer Service</span></a></div>
-          <div class="row "><a id="brtclk" href="#"><img src="images/beritakami.png" /><span class="hidden-xs">Berita Kami</span></a></div>
-          <?PHP if(Session::get('level')<2){ ?><div class="row g"><a id="aflclk" href="#"><img src="images/afiliasi.png" /><span class="hidden-xs">Afiliasi</span></a></div><?PHP } ?>
+          <?PHP } ?>
+          <?PHP if(Session::get('level')<4){ ?>
+          <div class="row "><a id="brtclk" href="#"><img src="images/beritakami.png" /><span class="hidden-xs">Atur Produk</span></a></div>
+          <div class="row g"><a id="aflclk" href="#"><img src="images/afiliasi.png" /><span class="hidden-xs">Keagenan</span></a></div><?PHP } ?>
         </div>
         <a id="transnow" href="#">
           <div id="cta" class="row hidden-xs">
@@ -243,10 +257,10 @@ $.ajaxSetup({
       <div class="col-xs-10 mini-dashboard">
         <div class="col-sm-6">
         <label>ID Member: </label><?php echo Session::get('username'); ?><br>
-          <label>Nama: </label><?php echo Session::get('nama'); ?><br>
+          <label>Nama: </label><?php echo Session::get('nama'); ?>
         </div>
         <div class="col-sm-6">
-          <label>Sisa Saldo: </label><p id="total-saldo"><?php echo Session::get('saldo'); ?></p><br>
+          <label>Sisa Saldo: </label><p id="total-saldo"><?php echo Session::get('saldo'); ?></p>
         </div>
       </div>
       <div id="mainmenu" class=" col-xs-10">
@@ -259,6 +273,57 @@ $.ajaxSetup({
 
 
 <script type="text/javascript">
+  function showCart(){
+    $('#carts').modal('show');
+    $('#stepwrappmain').html("");
+    $.ajax({
+      url:'getCart',
+      type:'get',
+      success:function(result){
+        //alert(result);
+        var cart = JSON.parse(result);
+        $.each(cart,function(key,val){
+          var produk = val.id_produk;
+          var tujuan = val.tujuan;
+          var qty = val.qty;
+          $('#stepwrappmain').append('<div id="invgroup'+key+'" class="col-md-12 col-xs-12 row-centered"><span class="detlogo col-md-2 col-xs-1">'+qty+'</span><span class="dettext col-md-8 col-centered">Produk'+produk+' Tujuan: '+tujuan+'</span><span><button class="btn btn-link" onclick="remove_prod('+key+')"><i class="glyphicon glyphicon-remove-circle"></i></button></span></div>');
+        });
+      }
+    });
+  }
+  function remove_prod(id){
+    $.ajax({
+      url:'removeFromCart',
+      data:{'item':id},
+      type:'post',
+      success:function(res){
+        $('#invgroup'+id).remove();
+        var cart_count = $('#cart-count').html();
+        $('#cart-count').html(cart_count-1);
+      }
+    });
+  }
+  function checkOutCart(){
+    $.ajax({
+      url:'checkOutCart',
+      type:'post',
+      success:function(result){
+        alert(result);
+        var res = JSON.parse(result);
+        if(res.error){
+            alert(res.message);
+        }else{
+            $('#cart-count').html(0);
+            //alert(res.status);
+            $('#mainmenu').load('pages/home.html');
+            $('#switcher').remove();
+             //alert("Thanks for visiting!");
+            var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
+            $("head").append(cssLink); 
+        } 
+      }
+    })
+  }
   function setComma(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }

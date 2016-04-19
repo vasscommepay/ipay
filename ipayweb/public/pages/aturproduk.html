@@ -1,0 +1,513 @@
+<script type="text/javascript">
+var table = $("#daftar-produk").DataTable({scrollX:true});
+  $(document).ready(function(){
+    
+    $.ajax({
+      type:'post',
+      url:'kategori',
+      success:function(result){
+       // alert(result);
+        var res = JSON.parse(result);
+        $.each(res,function(key,val){
+          $('#kategori-produk').append('<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>');
+          $('#super-category').append('<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>');
+        });
+      }
+    });
+    $.ajax({
+      type:'post',
+      url:'produk',
+      success:function(result){
+        //alert(result);
+        var datas = JSON.parse(result);
+        //alert(result);
+        if(!datas.error){
+          var i =0;
+          //alert(transaksi);
+              $.each(datas,function(key,val){
+                i++
+                var time = new Date(val.created_at);
+                var tanggal = time.toDateString();
+                if(val.aktif==1 && val.kosong==0){
+                  var status = 'OK';
+                }else if(val.aktif==0){
+                  var status = 'Non-Aktif';
+                }else{
+                  var status = 'Kosong';
+                }
+                var harga = setComma(val.harga_beli);
+                var rownode = table.row.add([
+                  i,
+                  val.id,
+                  val.nama,
+                  harga,
+                  val.nominal,
+                  val.id_super_kategori,
+                  val.kategori_produk,
+                  val.tipe,
+                  status,
+                  "<button class='btn btn-link' type='button' onclick='editProduk("+key+")'>Edit</button>"
+                ]).draw().node();
+
+                if(status!='OK'){
+                  $(rownode).css('background-color','red');
+                  $(rownode).css('color','white');
+                }
+          });
+        }
+       //alert(result);
+       
+      }
+    });
+  });
+</script>
+<div class="page-header">Atur Produk</div>
+<div class="row" id="data-filter-area">
+
+</div>
+<div class="panel panel-default col-md-6" id="panel-add-produk">
+  <div class="panel-heading" id="add-produk-heading">Tambah Produk <button id="add-produk-btn" class="btn btn-primary" onclick="showAdd()">Buka</button></div>
+  <div class="panel-body" id="body-tambah-produk" style="display: none">
+    <form id="form-add-produk">
+      <div class="row">
+        <div class="col-md-6">
+          Id Produk
+        </div>
+        <div class="col-md-6">
+          <input class="form-control" name="id_produk"></input>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          Nama Produk
+        </div>
+        <div class="col-md-6">
+          <input class="form-control" name="nama_produk"></input>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          Harga Beli
+        </div>
+        <div class="col-md-6">
+          <input class="form-control" name="harga_produk"></input>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          Nominal
+        </div>
+        <div class="col-md-6">
+          <input class="form-control" name="nominal_produk"></input>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          Tipe Produk
+        </div>
+        <div class="col-md-6">
+          <select class="form-control" name="tipe_produk">
+            <option value="token">Token</option>
+            <option value="postpaid">Postpaid</option>
+            <option value="prepaid">Prepaid</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          Kategori
+        </div>
+        <div class="col-md-6">
+          <select class="form-control" id="kategori-produk" onchange="tampilSubKat()">
+            <option id="default-kategori">Pilih Kategori</option>
+          </select>
+        </div>
+      </div>
+      <div class="row" id="subkategori-row" style="display: none">
+        <div class="col-md-6">
+          Subkategori
+        </div>
+        <div class="col-md-6">
+          <select class="form-control" name="kategori_produk" id="subkategori-produk">
+            
+          </select>
+        </div>
+      </div>
+      <div class="row" id="edit-field" style="display: none">
+        <div class="row" id="subkategori-row">
+          <div class="col-md-6">
+            Status Aktif
+          </div>
+          <div class="col-md-6">
+            <select class="form-control" name="status_aktif" id="status-aktif">
+              <option value="1" id="aktif">Aktif</option>
+              <option value="0" id="nonaktif">Tidak Aktif</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" id="subkategori-row">
+          <div class="col-md-6">
+            Ketersediaan
+          </div>
+          <div class="col-md-6">
+            <select class="form-control" name="status_kosong" id="status-kosong">
+              <option value="0" id="tersedia">Tersedia</option>
+              <option value="1" id="kosong">Kosong</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" id="subkategori-row">
+          <div class="col-md-6">
+            Keterangan
+          </div>
+          <div class="col-md-6">
+            <textarea class="form-control" name="keterangan"></textarea>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-6">
+          
+        </div>
+        <div class="col-md-6">
+          <div id="add-btn">
+            <button class="btn btn-primary" type="button" onclick="addProduk()">Tambahkan</button>
+          </div>
+          <div id="edit-btn" style="display: none">
+            <button class="btn btn-success" type="button" onclick="updateProduk()">Simpan</button>
+            <button class="btn btn-danger" type="button" onclick="cancelEdit()">Batal</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+</div>
+<div class="panel panel-default col-md-6">
+  <div class="panel-heading">Tambah Kategori <button onclick="showAddKat()" id="add-kategori-btn" class="btn btn-primary">Buka</button></div>
+  <div class="panel-body" id="body-tambah-kategori" style="display: none" >
+  <form id="form-add-kategori">
+      <div class="row">
+        <div class="col-md-6">
+          Id Kategori
+        </div>
+        <div class="col-md-6">
+          <input class="form-control" name="id_kategori"></input>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          Nama Kategori
+        </div>
+        <div class="col-md-6">
+          <input class="form-control" name="nama_kategori"></input>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          Super Kategori
+        </div>
+        <div class="col-md-6">
+          <select id="super-category" class="form-control" name="super_kategori">
+            <option id="default-super-category">Pilih super category</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+        </div>
+        <div class="col-md-6" align="right">
+          <button id="addKategori-btn" class="btn btn-primary" onclick="addKategori()" type="button">Tambahkan</button>
+        </div>
+      </div>
+    </form>
+  </div>  
+</div>
+<div class="panel panel-default col-md-12">
+  <div class="panel-heading">Daftar Produk</div>
+  <div class="panel-body">
+    <table id="daftar-produk">
+      <thead style="background-color: #275D8D">
+        <tr>
+          <td width="5%">#</td>
+          <td width="10%">Id Produk</td>
+          <td width="15%">Nama</td>
+          <td width="10%">Harga</td>
+          <td width="10%">Nominal</td>
+          <td width="10%">Kategori</td>
+          <td width="10%">Subkategori</td>
+          <td width="10%">Tipe</td>
+          <td width="5%">Status</td>
+          <td width="5%">Opsi</td>
+        </tr>
+      </thead>
+    </table>
+  </div>  
+</div>
+<div id="new-transaksi" class="modal">
+
+</div>
+<script type="text/javascript">
+  function showAdd(){
+    $('#body-tambah-produk').fadeIn(100);
+    $('#add-produk-btn').attr('onclick','hideAdd()');
+    $('#add-produk-btn').html('Hide');
+  }
+  function hideAdd(){
+    $('#body-tambah-produk').fadeOut(100);
+    $('#add-produk-btn').attr('onclick','showAdd()');
+    $('#add-produk-btn').html('Buka');
+  }
+  function tampilSubKat(idsub){
+    $('#subkategori-produk').html('')
+    var id_kategori = $('#kategori-produk').val();
+    $.ajax({
+      url:'subKategori',
+      type: 'POST',
+      data: {'idsubkat': id_kategori},
+      success: function(res){
+          var subkategori = JSON.parse(res);
+          $("#sub-category").html("");
+          $.each(subkategori, function(key, val){
+              var option = '<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>';
+              if(idsub!=null){
+                if(val.id_kategori==idsub){
+                  //alert(idsub);
+                  option = '<option value="'+val.id_kategori+'" selected="selected">'+val.nama_kategori+'</option>';
+                }
+              }
+              $("#subkategori-produk").append(option);
+            
+          });
+          $('#subkategori-row').show();
+        }
+    });
+    }
+  function addProduk(){
+    var data = $('#form-add-produk').serialize();
+    $.ajax({
+      url:'addProduk',
+      type:'POST',
+      data:data,
+      success:function(result){
+        var res = JSON.parse(result);
+        alert(result);
+        if(res.error){
+          bootbox.dialog({
+              message: "Produk gagal ditambahkan",
+              title: "Status",
+              buttons: {
+                success: {
+                  label: "Ok!",
+                  className: "btn btn-danger",
+                },
+              }
+            });
+        }else{
+          bootbox.dialog({
+              message: "Produk Berhasil ditambahkan",
+              title: "Status",
+              buttons: {
+                success: {
+                  label: "Ok!",
+                  className: "btn btn-success",
+                },
+              }
+            });
+          updateView();
+        }
+      }
+    });
+  }
+
+  function reloadTable(){
+    $.ajax({
+      type:'post',
+      url:'produk',
+      success:function(result){
+        //alert(result);
+        var datas = JSON.parse(result);
+        //alert(result);
+        if(!datas.error){
+          table.rows().remove().draw();
+          var i =0;
+          //alert(transaksi);
+              $.each(datas,function(key,val){
+                i++
+                var time = new Date(val.created_at);
+                var tanggal = time.toDateString();
+                if(val.aktif==1 && val.kosong==0){
+                  var status = 'OK';
+                }else if(val.aktif==0){
+                  var status = 'Non-Aktif';
+                }else{
+                  var status = 'Kosong';
+                }
+                var harga = setComma(val.harga_beli);
+                var rownode = table.row.add([
+                  i,
+                  val.id,
+                  val.nama,
+                  harga,
+                  val.nominal,
+                  val.id_super_kategori,
+                  val.kategori_produk,
+                  val.tipe,
+                  status,
+                  "<button class='btn btn-link' type='button' onclick='editProduk("+key+")'>Edit</button>"
+                ]).draw().node();
+
+                if(status!='OK'){
+                  $(rownode).css('background-color','red');
+                  $(rownode).css('color','white');
+                }
+          });
+        }
+       //alert(result);
+       
+      }
+    });
+  }
+
+  function showAddKat(){
+    $('#body-tambah-kategori').fadeIn(100);
+    $('#add-kategori-btn').attr('onclick','hideAddKat()');
+    $('#add-kategori-btn').html('Hide');
+  }
+  function hideAddKat(){
+    $('#body-tambah-kategori').fadeOut(100);
+    $('#add-kategori-btn').attr('onclick','showAddKat()');
+    $('#add-kategori-btn').html('Buka');
+  }
+  function addKategori(){
+    var data = $('#form-add-kategori').serialize();
+    $.ajax({
+      url:'addKategori',
+      type:'post',
+      data:data,
+      success:function(result){
+        alert(result);
+        var res = JSON.parse(result);
+        if(!res.error){
+          bootbox.dialog({
+              message: "Kategori Berhasil ditambahkan",
+              title: "Status",
+              buttons: {
+                success: {
+                  label: "Ok!",
+                  className: "btn btn-success",
+                },
+              }
+            });
+        }else{
+          bootbox.dialog({
+              message: res.message,
+              title: "Status",
+              buttons: {
+                success: {
+                  label: "Ok!",
+                  className: "btn btn-success",
+                },
+              }
+            });
+        }
+      }
+    });
+  }
+  function editProduk(rowindex){
+    cancelEdit();
+    var data = table.row(rowindex).data();
+    var status = data[8]  
+    if(status=='OK'){
+      $('#nonaktif').removeAttr('selected');
+      $('#kosong').removeAttr('selected');
+      $('#aktif').attr('selected','selected');
+      $('#tersedia').attr('selected','selected');
+    }else if(status=='kosong'){
+      $('#nonaktif').removeAttr('selected');
+      $('#tersedia').removeAttr('selected');
+      $('#aktif').attr('selected','selected');
+      $('#kosong').attr('selected','selected');    
+    }else if(status=='nonaktif'){
+      $('#aktif').removeAttr('selected');
+      $('#kosong').removeAttr('selected');
+      $('#nonakif').attr('selected','selected');
+      $('#tersedia').attr('selected','selected');
+    }else{
+      $('#aktif').removeAttr('selected');
+      $('#tersedia').removeAttr('selected');
+      $('#nonaktif').attr('selected','selected');
+      $('#kosong').attr('selected','selected');
+    }
+    $('#edit-field').show();
+    $('input[name=id_produk]').val(data[1]);
+    $('input[name=nama_produk]').val(data[2]);
+    $('input[name=harga_produk]').val(data[3]);
+    $('input[name=nominal_produk]').val(data[4]);
+    $('option').removeAttr('selected');
+    $('option[value="'+data[5]+'"]').attr('selected','selected');
+    tampilSubKat(data[6]);
+    $('option[value="'+data[7]+'"]').attr('selected','selected');
+    $('option[value="'+data[6]+'"]').attr('selected','selected');
+    $('#panel-add-produk').attr('class','panel panel-warning col-md-6');
+    $('#add-produk-heading').html('Edit Produk: '+data[1]+' <button id="add-produk-btn" class="btn btn-primary" onclick="hideAdd()">Hide</button>');
+    $('#add-btn').hide();
+    $('#edit-btn').show();
+    showAdd();
+  }
+
+  function updateProduk(){
+    var data = $('#form-add-produk').serialize();
+    $.ajax({
+      url:'updateProduk',
+      type:'POST',
+      data:data,
+      success:function(result){
+        var res = JSON.parse(result);
+        //alert(result);
+        if(res.error){
+          bootbox.dialog({
+              message: "Produk gagal ditambahkan",
+              title: "Status",
+              buttons: {
+                success: {
+                  label: "Ok!",
+                  className: "btn btn-danger",
+                },
+              }
+            });
+        }else{
+          bootbox.dialog({
+              message: "Produk Berhasil ditambahkan",
+              title: "Status",
+              buttons: {
+                success: {
+                  label: "Ok!",
+                  className: "btn btn-success",
+                },
+              }
+            });
+          cancelEdit();
+          updateView();
+        }
+      }
+    });
+  }
+
+  function cancelEdit(){
+    $('#body-tambah-produk').hide();
+    $('#panel-add-produk').attr('class','panel panel-default col-md-6');
+    $('#add-produk-heading').html('Tambah Produk <button id="add-produk-btn" class="btn btn-primary" onclick="showAdd()">Buka</button>');
+    $('#edit-btn').hide();
+    $('#add-btn').show();
+    updateView();
+  }
+  function updateView(){
+    reloadTable();
+    $('input').val('');
+    $('#default-kategori').attr('selected','true');
+    $('#subkategori-row').hide();
+    $('#subkategori-produk').html('');
+  }
+</script>

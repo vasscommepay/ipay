@@ -42,6 +42,37 @@ class produkController extends Controller {
 		$this->params = array('id_kategori'=>$id_kategori,'session'=>$session);
 		$this->sendPostRequest();
 	}
+
+	public function addProduk(){
+		$this->url = 'produk/addProduk';
+		$session = Session::get('session');
+		$id = Request::input('id_produk');
+		$nama = Request::input('nama_produk');
+		$harga_beli = Request::input('harga_produk');
+		$kategori_produk = Request::input('kategori_produk');
+		$nominal = Request::input('nominal_produk');
+		$tipe = Request::input('tipe_produk');
+		$this->params = array('session'=>$session,'idproduk'=>$id,'namaproduk'=>$nama,'harga_beli'=>$harga_beli,'kategori_produk'=>$kategori_produk,'nominal'=>$nominal,'tipe'=>$tipe);
+		//echo json_encode($this->params);
+		$this->sendPostRequest();
+	}
+
+	public function updateProduk(){
+		$session = array('session'=>Session::get('session'));
+		$params = array_merge($session,Request::all());
+		//echo json_encode($params);
+		$this->params = $params;
+		$this->url = 'produk/updateProduk';
+		$this->sendPostRequest();
+	}
+	public function addKategori(){
+		$session = array('session'=>Session::get('session'));
+		$params = array_merge(Request::all(),$session);
+		//echo json_encode($params);
+		$this->params = $params;
+		$this->url = 'produk/addKategori';
+		$this->sendPostRequest();
+	}
 	// public function produk(){
 	// 	$session = Session::get('session');
 	// 	$uplink = Session::get('uplink_id');

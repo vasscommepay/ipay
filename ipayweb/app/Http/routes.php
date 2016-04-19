@@ -26,6 +26,14 @@ Route::group(['middleware' => 'web'], function () {
 	Route::post('getDaftarTransaksi','TransactionController@getDaftarTransaksi');
 	Route::get('getDownlink','memberController@getDownlink');
 	Route::post('quickCheckout','TransactionController@quickCheckOut');
+	Route::post('addToCart','TransactionController@addToCart');
+	Route::post('checkOutCart','TransactionController@checkOutCart');
+	Route::get('getCart','TransactionController@getCart');
+	Route::post('removeFromCart','TransactionController@removeFromCart');
+	Route::post('tambahSaldo','memberController@tambahSaldo');
+	Route::post('addProduk','produkController@addProduk');
+	Route::post('addKategori','produkController@addKategori');
+	Route::post('updateProduk','produkController@updateProduk');
 });
 Route::get('get_prov','AddressController@getProvinsi');
 Route::get('get_wil','AddressController@getWilayah');

@@ -1,65 +1,10 @@
-<!-- 
-<div id="afiliasi" class="row bg7">
-<div id="afiliasiwrapp" class="col-md-12 dashboard">
-<div id="logoes" class="col-md-5 col-xs-6"><img src="images/afiliasicon.png" /><span class="textlayanan">AFILIASI</span></div>
-<div id="mid" class="col-md-12">
-<div id="afftop" class="col-md-12">
-<ul id="laytile" class="tiles">
-<li class=" "><div class="tile tbh metro-tile col-md-12 ">
-<span class="col-md-2 tile-parmed">Afiliasi iPay</span>
-<span class="col-md-4 centering"></span>
-<span class="col-md-5 col-xs-12  al-left title-parsmall">
-iPay memberikan kesempatan bagi anda untuk
-mendapatkan penghasilan tambahan yang 
-sangat<br />
-<i>Baca Selengkapnya</i></span>
-</div></li>
-</ul>
-</div>
 
-<div id="afiliasileftcont" class="col-md-6 col-xs-12">
-<ul id="laytile" class="tiles">
-<div class="row row-centered">
-<li class="col-md-12 "><div class="tile tile-blue metro-tile afiliatereg"><img src="images/afiliatereg.png" /></div></li>
-</div>
-<div class="row row-centered">
-</div>
-
-</ul>
-</div>
-<div id="afiliasirightcont" class="col-md-6 col-xs-12">
-<ul id="laytile" class="tiles">
-<div class="row row-centered">
-<li class="col-md-12 col-sm-12"><div class="tile tile-trans rotate3d rotate3dX metro-tile">
-<div class="faces">
-<div class="front tbhrev">
-<span class="col-md-3 pull-left hidden-xs iconrp"><img src="images/iconrp.png" /></span>
-<span class="tile-parbig">
-Komisi
-</span></div>
-<div class="back tbhrev">
-            <span>Dapatkan komisi
-untuk setiap
-pendaftaran
-melalui link
-referal anda</span>
-          </div></div>
-          </div></li>
-</div>
-
-</ul>
-</div>
-</div>
-</div>
-<script src="js/tileJs.js" type="text/javascript"></script>
-<script type="text/javascript">(function () {
-        return window.SIG_EXT = {};
-      })()</script> -->
 <script type="text/javascript">
-	$(document).ready(function(){
-		var member_table = $("#member-data").DataTable({
+	var member_table = $("#member-data").DataTable({
 			"scrollX":true
 		});
+	$(document).ready(function(){
+		
 		
 		$.ajax({
 			url:"getDownlink",
@@ -123,17 +68,22 @@ referal anda</span>
 			</div>
 			<div class="modal-body">
 				<form id="form-tambah-saldo">
+					<input name="id_member" type="hidden" id="id_member"></input>
 					<div class="form-group">
 						<label>Jumlah Saldo</label>
-						<input class="form-control" type="number" name="saldo"></input>	
+						<input class="form-control" type="number" name="jumlah"></input>	
 					</div>
 					<div class="form-group">
 						<label>Tipe Pembayaran</label>
-						<select id="tipe-pembayaran" name="tipe_bayar" class="form-control">
+						<select id="tipe-pembayaran" name="jalur" class="form-control">
 							<option value="cash">Cash</option>
 							<option value="transfer">Transfer Bank</option>
 							<option value="card">Kartu Kredit</option>
 						</select>
+					</div>
+					<div id="rekening" class="form-group" style="display: none">
+						<label>Rekening</label>
+						<input name="rekening" type="text" class="form-control" value="cash"></input>
 					</div>
 					<div class="form-group">
 						<label>Nama Pembayar</label>
@@ -143,7 +93,7 @@ referal anda</span>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary">Tambahkan</button>
+				<button type="button" class="btn btn-primary" onclick="sendSaldo()">Tambahkan</button>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
@@ -151,5 +101,66 @@ referal anda</span>
 <script type="text/javascript">
 	function tambahSaldo(id_member){
 		$("#modal-tambah-saldo").modal('show');
+		$("#id_member").val(id_member);
 	}
+
+	function sendSaldo(){
+		var data = $('#form-tambah-saldo').serialize();
+		$.ajax({
+			url:'tambahSaldo',
+			data: data,
+			type:'post',
+			success: function(res){
+				//alert(res);
+				var result = JSON.parse(res);
+				if(!result.error){
+					bootbox.dialog({
+		              message: "Saldo telah ditambahkan",
+		              title: "Tambah saldo member",
+		              buttons: {
+		                success: {
+		                  label: "Ok!",
+		                  className: "btn btn-success",
+		                },
+		              }
+		            });
+		            reloadTable();
+		            $('#modal-tambah-saldo').modal('hide');
+				}
+			}
+		})
+	}
+
+	function reloadTable(){
+	member_table.rows().remove().draw();
+    $.ajax({
+		url:"getDownlink",
+		type:"get",
+		success:function(result){
+			member_table.rows().remove().draw();
+			var data = JSON.parse(result);
+			var i = 0;
+			$.each(data,function(key,val){
+				i++;
+				var time = new Date(val.created_at);
+				var daftar = time.toDateString();
+				var total_komisi = setComma(val.total_komisi);
+				var total_saldo = setComma(val.total_saldo);
+				member_table.row.add([
+					i,
+					val.id_member,
+					val.nama.toUpperCase(),
+					val.reg_num,
+					val.level_member,
+					total_komisi,
+					total_saldo,
+					daftar,
+					"<a onclick='memberOption("+val.id_member+")'>Detail</a>",
+					"<a onclick='tambahSaldo("+val.id_member+")'>Tambah Saldo</a>"
+					]).draw(false);
+			});
+		}
+	});
+  }
+
 </script>

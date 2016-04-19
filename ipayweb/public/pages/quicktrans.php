@@ -53,7 +53,7 @@
                     <div class="col-md-3"></div>
 
                     <button type="button" onclick="checkout()" class="col-md-3 btn btn-default"><i class=""></i>Checkout</button>
-                    <button type="button" class="col-md-3 btn btn-default"><i class=""></i>Add To Cart</button>
+                    <button type="button" onclick="addToCart()" class="col-md-3 btn btn-default"><i class=""></i>Add To Cart</button>
             </div>
         </form>
     </div>
@@ -85,7 +85,7 @@
             //alert(success); 
             $("#produk_list").html("");
             $.each(list_produk,function(key,val){
-                var idpro = val.product_id;
+                var idpro = val.id;
                 var nominal = setComma(val.nominal);
                 $("#select-field").append('<option value="'+idpro+'">'+nominal+'</option>');
             });
@@ -141,11 +141,32 @@
                  //alert("Thanks for visiting!");
                 var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
                 $("head").append(cssLink); 
-                $("#cartmodal").click(function(){
-                    $("#carts").modal();
-                });
             }   
         }
         });
+   }
+   function addToCart(){
+    var data = $("#checkout-form").serialize();
+    $.ajax({
+        url:"addToCart",
+        data:data,
+        type:'post',
+        success:function(result){
+            bootbox.dialog({
+              message: "Produk telah ditambahkan",
+              title: "Tambah keranjang belanja",
+              buttons: {
+                success: {
+                  label: "Ok!",
+                  className: "btn btn-success",
+                },
+              }
+            });
+
+            var cart_count = $('#cart-count').html();
+            $('#cart-count').html(+cart_count + 1);
+            $("input").val("");
+        }
+    });
    }
 </script>

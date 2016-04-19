@@ -331,7 +331,7 @@ function sendEmail(to,subject,message){
         service: 'Gmail',
         auth: {
             user: 'bfibrianto@gmail.com', // Your email id
-            pass: 'kitibriti' // Your password
+            pass: '' // Your password
         }
     });
 

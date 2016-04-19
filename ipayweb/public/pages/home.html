@@ -1,6 +1,6 @@
 <script type="text/javascript">
 	$(document).ready(function(){
-		var table = $("#member-data").DataTable({scrollX:true});
+		var table = $("#member-data").DataTable({"scrollX": true, "order":[[3,"desc"]]});
 		$.ajax({
 			type:'post',
 			url:'getDaftarTransaksi',
@@ -20,7 +20,7 @@
 				       	var tanggal = time.toDateString();
 				       	var jam = time.toLocaleTimeString(); 
 				       	var total_biaya = setComma(data.total);
-				       	table.row.add([
+				       	var rownode = table.row.add([
 				       		i,
 				       		tanggal,
 				       		jam,
@@ -31,7 +31,12 @@
 				       		total_biaya,
 				       		data.tujuan,
 				       		"<span id='stat"+data._id+"'>"+data.status_biller+"</span>"
-			       		]).draw(false);
+			       		]).draw().node();
+
+			       		if(data.status_biller!=true){
+			       			$(rownode).css('background-color','red');
+			       			$(rownode).css('color','white');
+			       		}
 					          // $("#table-body").append("<tr><td>"+i+"</td>"+"<td>"+val.created_at+"</td>"+"<td>"+val.id_transaksi+"</td>"+"<td>"+val.id_order+"</td>"+"<td>"+val.id_produk+"</td>"+"<td>"+val.quantities+"</td>"+"<td>"+val.total_biaya+"</td>"+"<td>"+val.tujuan+"</td>"+"<td><span id='stat"+val.id_transaksi+"'>"+val.status+"</span></td></tr>");
 				  });
 				}
@@ -51,8 +56,8 @@
 			<tr>
 				<th width="5%">#</th>
 				<th width="15%">Tanggal</th>
-				<th width="10%">Jam</th>
-				<th width="10%">Id-Tr</th>
+				<th width="12%">Jam</th>
+				<th width="8%">Id-Tr</th>
 				<th width="10%">Id Order</th>
 				<th width="10%">Produk</th>
 				<th width="5%">Qty</th>

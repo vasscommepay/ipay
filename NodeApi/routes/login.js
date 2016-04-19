@@ -72,6 +72,7 @@ router.post("/",function(req,res,next) {
 									res.json({"available" : false,"message":err});
 								}else{
 									var uplink = rows[0].atasan;
+									if(level==0)uplink=1;
 									res.json({"isLogin":"true","saldo":saldo,"komisi":komisi,"nama":nama,"member_id":memberid,"session":session,"level":level,"uplink":uplink});
 								}
 							}
@@ -143,6 +144,7 @@ function setSession(username, session){
 			console.log(err);
 		}else{
 			updateCouch(username,session);
+			console.log("userlogin, username: "+username+" session: "+session);
 			if(rows.result===1){
 				return true;
 				

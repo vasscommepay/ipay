@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var connection = require('./db');
 var nano   = require('./nano');
 var app = express();
-var updatecouch = require('./updatecouch');
+var couchdb = require('./couchdbfunction');
 var cek_session = require('./session');
 var schedule = require('node-schedule');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -38,8 +38,9 @@ router.use(function(req, res, next) {//Untuk cek apakah ada session
 });
 router.post('/getTransaction',function(req,res){
 	var id_member = req.body.id_member;
+	console.log("transaction for member: "+id_member);
 	var limit = req.body.limit;
-	transaction_db.view('transaction','bymember',{'id_member':id_member},function(err,body){
+	transaction_db.view('transaction','bymember',{keys:[id_member]},function(err,body){
 		if(err){
 			res.json({"error":true,"message":err});
 		}else{
@@ -86,18 +87,18 @@ router.post('/count',function(req,res){
 	});
 });
 
-// router.post('/createOrder',function(req,res){
-// 	var id_member = req.body.id_member;
-// 	var kode_order = createKodeOrder(8);
-// 	var sql = "INSERT INTO member_order(id_member,kode_order) VALUES(?,?)";
-// 	connection.query(sql,[id_member,kode_order],function(err,result){
-// 		if(err){
-// 			console.log(err);
-// 		}else{
-// 			res.json({"isSuccess":true,"orderid":result.insertId});
-// 		}
-// 	});
-// });
+router.post('/createOrder',function(req,res){
+	var id_member = req.body.id_member;
+	var kode_order = createKodeOrder(8);
+	var sql = "INSERT INTO member_order(id_member,kode_order) VALUES(?,?)";
+	connection.query(sql,[id_member,kode_order],function(err,result){
+		if(err){
+			console.log(err);
+		}else{
+			res.json({"isSuccess":true,"orderid":result.insertId});
+		}
+	});
+});
 
 
 router.post('/simulasiTransaksi',function(req,res){//UNTUK TRANSAKSI
@@ -358,7 +359,7 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 							var begin = Date.now();
 							var sql = "CALL transaksi_sp('"+orderid+"',"+id_member+","+id_uplink+","+qty+",'"+id_produk+"',"+total_biaya+",'"+tujuan+"','"+username+"')";
 							if(total_saldo-total_biaya<0){
-								callback("saldo tidak cukup");
+								callback("saldo tidak cukup, total biaya: "+total_biaya+", total saldo: "+total_saldo);
 							}else{
 								total_saldo = total_saldo-total_biaya;
 								connection.query(sql,function(err,rows){
@@ -472,7 +473,6 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 						if(err) {
 							console.log(err);
 							res.json({"error":true,"message":err});
-							
 						}
 						else{
 							if(total_saldo<total_biaya){
@@ -488,7 +488,7 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 								"saldo_cukup":saldo_cukup,
 								"prod_stat":prod_stat
 								}];
-							updatecouch('ipay_member',id_member,{"saldo":total_saldo},function(err,body){
+							couchdb.updateDb('ipay_member',id_member,{"saldo":total_saldo},function(err,body){
 								if(err){
 									console.log("update couch member error: "+err);
 								}else{
@@ -505,11 +505,6 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 				});	
 			}
 		});
-
-			
-		
-	
-			
 });
 
 function cekSaldo(id_member,callback){
@@ -519,17 +514,13 @@ function cekSaldo(id_member,callback){
 		}else{
 			if(body.length==0){
 				err = "No record found";
-				callBiller(err);
+				callback(err);
 			}else{
 				var saldo = body.saldo;
 				callback(null,saldo);
 			}
 		}
 	});
-}
-
-function updateSaldo(id_member,saldo,callback){
-
 }
 
 router.post('/cekTransaksi',function(req,res){
@@ -654,7 +645,7 @@ function callBiller(transaksi){
 	if(stat!=0){
 		return false;
 	}else{
-		updatecouch('ipay_transaction',transaksi.id_transaksi,{'status_biller':true},function(err,body){
+		couchdb.updateDb('ipay_transaction',transaksi.id_transaksi,{'status_biller':true},function(err,body){
 			if(err){
 				console.log("update ipay_transaction error");
 				return true;
