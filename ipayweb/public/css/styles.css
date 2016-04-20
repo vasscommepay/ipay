@@ -294,9 +294,9 @@ body {
 #footmenu ul {
 	float: left;
 	list-style: none;
-	width: 20vw;
+	width: auto;
 	text-align: center;
-	padding-left: 5vw;
+	padding-left: 0vw;
 }
 #socmedwrapp div {
 	padding: 0;
@@ -317,7 +317,7 @@ body {
 	color: #CFCECE;
 	font-family: Myriad;
 	font-size: 0.8vw;
-	padding-left: 2.5vw;
+	padding-left: 0vw;
 }
 .bg1 {
 	background-image: url(../images/bg1.jpg);
@@ -449,7 +449,7 @@ max-width: 100%;
 }
 #transpage {
 	background-color: #DCDDDD;
-	min-height: 100vh;
+	min-height: 88vh;
 }
 
 #logoes img {
@@ -912,6 +912,7 @@ max-width: 100%;
 	z-index: 2!important;
 	opacity: 1!important;
 	display: block;
+
 }
 #healthtile:target {
 	z-index: 2!important;
@@ -941,9 +942,10 @@ max-width: 100%;
 #categoryleft {
 	position: absolute;
 	background-color: #8B8B8C;
-	width: 9%;
-	height: 84vh;
+	width: 7%;
+	height: 74vh;
 	z-index: 99;
+	overflow-y: scroll;
 }
 #subkategori, #healthcat, #membercat, #insurecat, #pincat, #creditcat {
 	position: absolute;
@@ -952,7 +954,7 @@ max-width: 100%;
 	background-color: #ADADAD;
 	overflow-y: scroll;
 	width: 7vw;
-	height: 84vh;
+	height: 74vh;
 	left: 0vh;
 	padding: 0;
 	opacity: 0;
@@ -1009,7 +1011,7 @@ max-width: 100%;
 	opacity: 1;
 }
 #subkategori:target {
-	left: 14vh;
+	left: 11.9vh;
 	opacity: 1;
 }
 #healthcat:target {
@@ -1071,7 +1073,7 @@ max-width: 100%;
 }
 #midform {
 	background-color: white;
-	height: 60vh;
+	height: 41vh;
 	margin-top: 5em;
 	margin-right: -7em;
 	margin-bottom: 5em;
@@ -1331,7 +1333,7 @@ max-width: 100%;
 	text-align: center;
 	background: linear-gradient ( rgba(255,255,255,0), rgba(255,255,255,1));
 	background: -webkit-linear-gradient( rgba(255,255,255,0), rgba(255,255,255,1));
-	margin-top: 77.5vh!important;
+	margin-top: 67.5vh!important;
 }
 .transparent {
 	opacity: 0.4;
@@ -1503,4 +1505,36 @@ display:none;
 
 /* Large devices (large desktops, 1200px and up) */
 @media (min-width: @screen-lg-min) {
+}
+
+/*table.dataTable tbody tr {
+    background-color: #FFF581;
+}
+
+table.dataTable.stripe tbody tr.odd, table.dataTable.display tbody tr.odd {
+    background-color: rgb(255, 221, 63);
+}*/
+
+thead {
+	background-color: #F08519;
+	color: white;
+}
+
+.afiliasi{
+	background-color: #1EB7F7;
+	color: white;
+}
+
+.mini-dashboard{
+	background-color: rgba(255, 240, 133, 0.28);
+	height: 5%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.page-header {
+    padding-bottom: 9px;
+    font-size: 20px;
+    margin: 20px 0 20px;
+    border-bottom: 2px solid #eee;
 }

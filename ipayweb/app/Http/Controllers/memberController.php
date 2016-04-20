@@ -51,10 +51,41 @@ class memberController extends Controller {
 		$this->url = 'member/newMember';
 		$this->sendPostRequest();
 	}
+
+	public function getDownlink(){
+		$this->url = 'member/get-downlink';
+		$session = Session::get('session');
+		$level = Session::get('level');
+		$member_id = Session::get('member_id');
+		$this->params = array('session'=>$session,"level"=>$level,"member_id"=>$member_id);
+		$this->sendPostRequest();
+
+	}
+
+	public function tambahSaldo(){
+		$id_member = Request::input('id_member');
+		$uplink = Session::get('uplink_id');
+		$jumlah = Request::input('jumlah');
+		$nama =  Request::input('nama_pembayar');
+		$rekening = Request::input('rekening');
+		$jalur = Request::input('jalur');
+		$session = Session::get('session');
+		$this->params = array('session'=>$session,'id_member'=>$id_member,'uplink'=>$uplink,'nama_pembayar'=>$nama,'jumlah'=>$jumlah, 'rekening'=>$rekening,'jalur'=>$jalur);
+		//echo json_encode($this->params);
+		$this->url = 'saldo/tambah-saldo';
+		$this->sendPostRequest();
+	}
+
 	private function sendPostRequest(){
 		$url = $this->url;
 		$params = $this->params;
 		$sender = new PostSender($url,$params);
+		$result = $sender->sendRequest();
+		echo $result;
+	}
+	private function sendGetRequest(){
+		$url = $this->url;
+		$sender = new GetSender($url);
 		$result = $sender->sendRequest();
 		echo $result;
 	}

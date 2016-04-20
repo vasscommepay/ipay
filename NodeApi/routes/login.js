@@ -4,6 +4,7 @@ var router     = express.Router();
 var bodyParser = require('body-parser');
 var connection  = require('./db');
 var async 		= require('async');
+var nano   = require('./nano');
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -49,6 +50,9 @@ router.post("/",function(req,res,next) {
 					if(rows.length>0){
 						var memberid = rows[0].member_id;
 						var level = rows[0].level_member;
+						var saldo = rows[0].total_saldo;
+						var komisi = rows[0].total_komisi;
+						var nama = rows[0].nama;
 						console.log(level);
 						var sqlAtasan;
 						if(level==2){
@@ -68,7 +72,8 @@ router.post("/",function(req,res,next) {
 									res.json({"available" : false,"message":err});
 								}else{
 									var uplink = rows[0].atasan;
-									res.json({"isLogin":"true","member_id":memberid,"session":session,"level":level,"uplink":uplink});
+									if(level==0)uplink=1;
+									res.json({"isLogin":"true","saldo":saldo,"komisi":komisi,"nama":nama,"member_id":memberid,"session":session,"level":level,"uplink":uplink});
 								}
 							}
 						});
@@ -138,11 +143,33 @@ function setSession(username, session){
 		if(err){
 			console.log(err);
 		}else{
+			updateCouch(username,session);
+			console.log("userlogin, username: "+username+" session: "+session);
 			if(rows.result===1){
 				return true;
+				
 			}else{
 				return false;
 			}
+		}
+	});
+}
+function updateCouch(username,session){
+	var member_db = nano.db.use('ipay_users');
+	member_db.get(username,function(err,body){
+		if(err){
+			console.log(err);
+		}else{
+			body["session"]=session;
+			body["updated_at"]= Date.now();
+			delete body.rev;
+			member_db.insert(body,function(err,body){
+				if(err){
+					console.log(err);
+				}else{
+					console.log("couch users updated");
+				}
+			});
 		}
 	});
 }
