@@ -19,12 +19,15 @@ var produk      = require('./routes/produk');
 var address     = require('./routes/address');
 var saldo       = require('./routes/saldo');
 var transaction = require('./routes/transaction');
-var couch = require('./routes/couchdb');
+var nonagen     = require('./routes/nonagen');
+var wilayah     = require('./routes/wilayah');
+var kategori    = require('./routes/kategori');
+var couch       = require('./routes/couchdb');
 var app         = require('express')(),
     mailer      = require('express-mailer');
 
 // view engine setup
-app.set('port', process.env.PORT || 5000, '11.0.0.39');
+app.set('port', process.env.PORT || 5000, '11.0.0.48');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -45,7 +48,9 @@ app.use('/saldo',saldo);
 app.use('/transaction',transaction);
 app.use('/users', users);
 app.use('/couchdb',couch);
-
+app.use('/nonagen',nonagen);
+app.use('/wilayah',wilayah);
+app.use('/kategori',kategori);
 
 app.post('/mail', function(req, res){
     mailer.extend(app,{

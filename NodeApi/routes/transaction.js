@@ -443,5 +443,25 @@ function createKodeOrder(length){
 	return "OR"+date+result;
 }
 
+router.post('/cekHarga',function(req,res,next){
+	var product_id = req.body.product_id;
+	var harga_jual;
+	var uplink = req.body.uplink;
+	async.series([
+		function(callback){
+        	var sql = 'SELECT product_id,harga_jual FROM produk_member WHERE member_id="'+uplink+'" AND product_id="'+product_id+'"';
+        	connection.query(sql,[uplink],function(err,field){
+        		if (err){
+				   console.log(err);
+				}else{
+    				res.json(field);
+    				console.log(field);
+    				//res.send(field);
+				}
+        	});
+        }
+	])
+});
+
 module.exports = async;
 module.exports = router;
