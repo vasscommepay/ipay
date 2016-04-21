@@ -223,7 +223,7 @@ $.ajaxSetup({
           <div class="row g"><a id="cstclk" href="#"><img src="images/customer.png" /><span class="hidden-xs">Customer Service</span></a></div>
           <?PHP } ?>
           <?PHP if(Session::get('level')<4){ ?>
-          <div class="row "><a id="brtclk" href="#"><img src="images/beritakami.png" /><span class="hidden-xs">Atur Produk</span></a></div>
+          <div class="row "><a id="brtclk" href="#"><img src="images/beritakami.png" /><span class="hidden-xs">Supplier</span></a></div>
           <div class="row g"><a id="aflclk" href="#"><img src="images/afiliasi.png" /><span class="hidden-xs">Keagenan</span></a></div><?PHP } ?>
         </div>
         <a id="transnow" href="#">
@@ -254,15 +254,19 @@ $.ajaxSetup({
           <div id="foottext" class="row row-centered">iPay Copyright © 2010-2015 All Rights Reserved</div>
         </div>	
       </div>
-      <div class="col-xs-10 mini-dashboard">
-        <div class="col-sm-6">
+      <div class="col-xs-10 mini-dashboard" id="mini-dashboard">
+        <div class="col-sm-5">
         <label>ID Member: </label><?php echo Session::get('username'); ?><br>
           <label>Nama: </label><?php echo Session::get('nama'); ?>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-5">
           <label>Sisa Saldo: </label><p id="total-saldo"><?php echo Session::get('saldo'); ?></p>
         </div>
+        
       </div>
+      <div class="dashboard-button">
+          <button class="btn btn-warning" onclick="hideDashboard()" id="hide-btn" ><i id="hide-sym" class="glyphicon glyphicon-chevron-up"></i></button>
+        </div>
       <div id="mainmenu" class=" col-xs-10">
 
 
@@ -273,6 +277,16 @@ $.ajaxSetup({
 
 
 <script type="text/javascript">
+  function hideDashboard(){
+    $('#mini-dashboard').hide();
+    $('#hide-sym').attr('class','glyphicon glyphicon-chevron-down');
+    $('#hide-btn').attr('onclick','showDashboard()');
+  }
+  function showDashboard(){
+    $('#mini-dashboard').show();
+    $('#hide-sym').attr('class','glyphicon glyphicon-chevron-up');
+    $('#hide-btn').attr('onclick','hideDashboard()');
+  }
   function showCart(){
     $('#carts').modal('show');
     $('#stepwrappmain').html("");

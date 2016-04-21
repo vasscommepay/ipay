@@ -394,7 +394,7 @@ var couchdb = {
 				if(produk.aktif!=1) aktif = false;
 				var kosong = false;
 				if(produk.kosong!=0) kosong = true;
-				var sql = "SELECT member_id,harga_jual,harga_beli FROM produk_member WHERE product_id ='"+id_produk+"' ; SELECT prioritas,id_supplier FROM supplier_produk WHERE id_produk ='"+id_produk+"' ORDER BY prioritas ASC";
+				var sql = "SELECT member_id,harga_jual,harga_beli FROM produk_member WHERE product_id ='"+id_produk+"' ; SELECT harga_terkini, id_supplier FROM supplier_produk WHERE id_produk ='"+id_produk+"'";
 
 				connection.query(sql,function(err,rows){
 					if(err){
@@ -424,13 +424,13 @@ var couchdb = {
 							}
 							for(i=0;i<suplen;i++){
 								var supplier_id = supplierList[i].id_supplier;
-								var prioritas = supplierList[i].prioritas;
-								supplier[prioritas]=supplier_id;
+								var harga_terkini = supplierList[i].harga_terkini;
+								supplier[supplier_id]=harga_terkini;
 							}
-							var newRow = '{id:'+id_produk+',nama:"'+nama+'",harga:'+harga+',nominal:'+nominal+',aktif:'+aktif+',kosong:'+kosong+',harga_beli:{'+harga_beli+'},harga_jual:{'+harga_jual+'}}';
+							// var newRow = '{id:'+id_produk+',nama:"'+nama+'",harga:'+harga+',nominal:'+nominal+',aktif:'+aktif+',kosong:'+kosong+',harga_beli:{'+harga_beli+'},harga_jual:{'+harga_jual+'}}';
 							
 							var row = {nama:nama,harga:harga,nominal:nominal,postpaid:postpaid,aktif:aktif,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
-							console.log(newRow);
+							//console.log(newRow);
 
 							ipay.insert(row,id_produk,function(err,body){
 								if(err){
@@ -500,7 +500,7 @@ var couchdb = {
 				if(produk.aktif!=1) aktif = false;
 				var kosong = false;
 				if(produk.kosong!=0) kosong = true;
-				var sql = "SELECT member_id,harga_jual,harga_beli FROM produk_member WHERE product_id ='"+id_produk+"' ; SELECT prioritas,id_supplier FROM supplier_produk WHERE id_produk ='"+id_produk+"' ORDER BY prioritas ASC";
+				var sql = "SELECT member_id,harga_jual,harga_beli FROM produk_member WHERE product_id ='"+id_produk+"' ; SELECT harga_terkini, id_supplier FROM supplier_produk WHERE id_produk ='"+id_produk+"'";
 
 				connection.query(sql,function(err,rows){
 					if(err){
@@ -530,8 +530,8 @@ var couchdb = {
 							}
 							for(i=0;i<suplen;i++){
 								var supplier_id = supplierList[i].id_supplier;
-								var prioritas = supplierList[i].prioritas;
-								supplier[prioritas]=supplier_id;
+								var harga_terkini = supplierList[i].harga_terkini;
+								supplier[supplier_id]=harga_terkini;
 							}
 							var newRow = '{id:'+id_produk+',nama:"'+nama+'",harga:'+harga+',nominal:'+nominal+',aktif:'+aktif+',kosong:'+kosong+',harga_beli:{'+harga_beli+'},harga_jual:{'+harga_jual+'}}';
 							
@@ -610,7 +610,7 @@ var couchdb = {
 					if(produk.aktif!=1) aktif = false;
 					var kosong = false;
 					if(produk.kosong!=0) kosong = true;
-					var sql = "SELECT member_id,harga_jual,harga_beli FROM produk_member WHERE product_id ='"+id_produk+"' ; SELECT prioritas,id_supplier FROM supplier_produk WHERE id_produk ='"+id_produk+"' ORDER BY prioritas ASC";
+					var sql = "SELECT member_id,harga_jual,harga_beli FROM produk_member WHERE product_id ='"+id_produk+"' ;  SELECT harga_terkini, id_supplier FROM supplier_produk WHERE id_produk ='"+id_produk+"'";
 
 					connection.query(sql,function(err,rows){
 						if(err){
@@ -638,8 +638,8 @@ var couchdb = {
 								}
 								for(i=0;i<suplen;i++){
 									var supplier_id = supplierList[i].id_supplier;
-									var prioritas = supplierList[i].prioritas;
-									supplier[prioritas]=supplier_id;
+									var harga_terkini = supplierList[i].harga_terkini;
+									supplier[supplier_id]=harga_terkini;
 								}
 								
 								var row = {_id:id_produk,_rev:rev, nama:nama,harga:harga,nominal:nominal,aktif:aktif,postpaid:postpaid,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
@@ -711,7 +711,7 @@ var couchdb = {
 				if(produk.aktif!=1) aktif = false;
 				var kosong = false;
 				if(produk.kosong!=0) kosong = true;
-				var sql = "SELECT member_id,harga_jual,harga_beli FROM produk_member WHERE product_id ='"+id_produk+"' ; SELECT prioritas,id_supplier FROM supplier_produk WHERE id_produk ='"+id_produk+"' ORDER BY prioritas ASC";
+				var sql = "SELECT member_id,harga_jual,harga_beli FROM produk_member WHERE product_id ='"+id_produk+"' ;  SELECT harga_terkini, id_supplier FROM supplier_produk WHERE id_produk ='"+id_produk+"'";
 				console.log(sql);
 				connection.query(sql,function(err,rows){
 					if(err){
@@ -739,8 +739,8 @@ var couchdb = {
 							}
 							for(i=0;i<suplen;i++){
 								var supplier_id = supplierList[i].id_supplier;
-								var prioritas = supplierList[i].prioritas;
-								supplier[prioritas]=supplier_id;
+								var harga_terkini = supplierList[i].harga_terkini;
+								supplier[supplier_id]=harga_terkini;
 							}
 							row = {_id:id_produk,_rev:rev, nama:nama,harga:harga,nominal:nominal,aktif:aktif,postpaid:postpaid,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
 							callback();
@@ -781,67 +781,67 @@ var couchdb = {
 			}
 		});
 	}
-	,"exportSupplier":function(callback){
-		var supplier = {};
-		var ipay_sup = nano.db.use('ipay_supplier');
-		var bod = [];
-		var sql = "SELECT DISTINCT id_produk FROM supplier_produk";
-		connection.query(sql,function(err,rows){
-			if(err){
-				console.log(err);
-				res.json({"exported":false,"message":err});
-			}else{
-				if(rows.length==0){
-					console.log('no produk data');
-					res.json({"exported":false,"message":"tidak ada data produk"});
-				}else{
-					async.each(rows,function(row,callback){
-						var id_produk = row.id_produk;
-						var this_supplier = {};
-						var get_supplier = "SELECT id_supplier,harga_terkini,is_ready FROM supplier_produk WHERE id_produk = '"+id_produk+"'";
-						connection.query(get_supplier,function(err,result){
-							if(err){
-								console.log(err);
-								res.json({"exported":false,"message":err});
-							}else{
-								if(result.length==0){
-									console.log('no produk data');
-									res.json({"exported":false,"message":"tidak ada data produk"});
-								}else{
-									var i;
-									for(i=0;i<result.length;i++){
-										var supplier_prop = {};
-										supplier_prop["id"]=result[i].id_supplier;
-										supplier_prop["is_ready"]=result[i].is_ready;
-										supplier_prop["harga_terkini"]=result[i].harga_terkini;
-										supplier[result[i].id_supplier] = supplier_prop;
-									}
-									ipay_sup.insert({supplier:supplier},id_produk,function(err,body){
-										if(err){
-											console.log(err);
-											res.json({"exported":false,"message":"no data"});
-										} 
-										console.log
-										bod.push(body);
-										callback();
-									});
+	// ,"exportSupplier":function(callback){
+	// 	var supplier = {};
+	// 	var ipay_sup = nano.db.use('ipay_supplier');
+	// 	var bod = [];
+	// 	var sql = "SELECT DISTINCT id_produk FROM supplier_produk";
+	// 	connection.query(sql,function(err,rows){
+	// 		if(err){
+	// 			console.log(err);
+	// 			res.json({"exported":false,"message":err});
+	// 		}else{
+	// 			if(rows.length==0){
+	// 				console.log('no produk data');
+	// 				res.json({"exported":false,"message":"tidak ada data produk"});
+	// 			}else{
+	// 				async.each(rows,function(row,callback){
+	// 					var id_produk = row.id_produk;
+	// 					var this_supplier = {};
+	// 					var get_supplier = "SELECT id_supplier,harga_terkini,is_ready FROM supplier_produk WHERE id_produk = '"+id_produk+"'";
+	// 					connection.query(get_supplier,function(err,result){
+	// 						if(err){
+	// 							console.log(err);
+	// 							res.json({"exported":false,"message":err});
+	// 						}else{
+	// 							if(result.length==0){
+	// 								console.log('no produk data');
+	// 								res.json({"exported":false,"message":"tidak ada data produk"});
+	// 							}else{
+	// 								var i;
+	// 								for(i=0;i<result.length;i++){
+	// 									var supplier_prop = {};
+	// 									supplier_prop["id"]=result[i].id_supplier;
+	// 									supplier_prop["is_ready"]=result[i].is_ready;
+	// 									supplier_prop["harga_terkini"]=result[i].harga_terkini;
+	// 									supplier[result[i].id_supplier] = supplier_prop;
+	// 								}
+	// 								ipay_sup.insert({supplier:supplier},id_produk,function(err,body){
+	// 									if(err){
+	// 										console.log(err);
+	// 										res.json({"exported":false,"message":"no data"});
+	// 									} 
+	// 									console.log
+	// 									bod.push(body);
+	// 									callback();
+	// 								});
 									
-								}
-							}
-						});
-					},
-					function(err){
-						if(err){
-							console.log(err);
-							callback(err);
-						}else{
-							callback(null,bod);
-						}
-					});
-				}
-			}
-		});
-	}
+	// 							}
+	// 						}
+	// 					});
+	// 				},
+	// 				function(err){
+	// 					if(err){
+	// 						console.log(err);
+	// 						callback(err);
+	// 					}else{
+	// 						callback(null,bod);
+	// 					}
+	// 				});
+	// 			}
+	// 		}
+	// 	});
+	// }
 	,"getProduk":function(id_produk,callback){
 		var produk = nano.db.use('ipay_produk');
 		produk.get(id_produk,function(err,hasil){

@@ -73,6 +73,12 @@ class produkController extends Controller {
 		$this->url = 'produk/addKategori';
 		$this->sendPostRequest();
 	}
+
+	public function getSupplier(){
+		$this->params = array('session'=>Session::get('session'));
+		$this->url = 'produk/getSupplier';
+		$this->sendPostRequest();
+	}
 	// public function produk(){
 	// 	$session = Session::get('session');
 	// 	$uplink = Session::get('uplink_id');

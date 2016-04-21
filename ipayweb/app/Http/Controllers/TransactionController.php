@@ -17,6 +17,15 @@ class TransactionController extends BaseController {
 		$this->sendPostRequest();
 	}
 	
+	public function getMutasi(){
+		$session = Session::get('session');
+		$member = Session::get('member_id');
+		$level = Session::get('level');
+		$this->url = 'transaction/getMutasi';
+		$this->params = array('session'=>$session,'id_member'=>$member,'level'=>$level);
+		$this->sendPostRequest();
+	}
+
 	public function quickCheckOut(){
 		$session = Session::get('session');
 		$id_produk = Request::input('produk');

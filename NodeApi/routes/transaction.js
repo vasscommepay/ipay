@@ -435,8 +435,8 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 								selected_supplier = list_supplier[1];
 								callback();
 							}else{	
-								console.log(list_supplier);
-								console.log(len);
+								//console.log(list_supplier);
+								//console.log(len);
 								var i;
 								var try_supplier;
 								supplier_db.get(id_produk,function(err,rows){
@@ -445,6 +445,9 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 										console.log("Error pada get proudk couchdb :"+err);
 										callback(err);
 									}else{
+										for(var key in list_supplier){
+											
+										}
 										for(i=1;i<len;i++){
 											var test_supplier = {};
 											test_supplier["is_ready"]=true;

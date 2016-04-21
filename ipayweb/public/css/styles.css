@@ -1538,3 +1538,19 @@ thead {
     margin: 20px 0 20px;
     border-bottom: 2px solid #eee;
 }
+
+input {
+    display: block;
+    line-height: 27px;
+    padding: 0 2px;
+    width: 257px;
+    height: 28px;
+    float: left;
+}
+
+.dashboard-button {
+    position: fixed;
+    top: 2%;
+    left: 90%;
+    z-index: 10;
+}

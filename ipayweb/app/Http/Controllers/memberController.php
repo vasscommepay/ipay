@@ -64,13 +64,14 @@ class memberController extends Controller {
 
 	public function tambahSaldo(){
 		$id_member = Request::input('id_member');
-		$uplink = Session::get('uplink_id');
+		$uplink = Session::get('member_id');
 		$jumlah = Request::input('jumlah');
 		$nama =  Request::input('nama_pembayar');
 		$rekening = Request::input('rekening');
 		$jalur = Request::input('jalur');
 		$session = Session::get('session');
-		$this->params = array('session'=>$session,'id_member'=>$id_member,'uplink'=>$uplink,'nama_pembayar'=>$nama,'jumlah'=>$jumlah, 'rekening'=>$rekening,'jalur'=>$jalur);
+		$username = Session::get('username');
+		$this->params = array('username'=>$username,'session'=>$session,'id_member'=>$id_member,'uplink'=>$uplink,'nama_pembayar'=>$nama,'jumlah'=>$jumlah, 'rekening'=>$rekening,'jalur'=>$jalur);
 		//echo json_encode($this->params);
 		$this->url = 'saldo/tambah-saldo';
 		$this->sendPostRequest();

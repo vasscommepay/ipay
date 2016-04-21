@@ -389,8 +389,8 @@ router.post('/delProduk',function(req,res){
 	});
 });
 
-router.post('/getSupplier',function(){
-	var sql_query = "SELECT supplier.id_supplier as id_sup, supplier.*,address.jalan,kecamatan.Nama as kec,kabupaten.Nama as kab,provinsi.Nama as prov,supplier_contact.name,(SELECT value FROM supplier_contact WHERE id_channel = 'em' AND id_supplier = id_sup ) as email,supplier_contact.value,(SELECT value FROM supplier_contact WHERE id_channel = 'ph' AND id_supplier = id_sup ) FROM supplier LEFT JOIN address ON alamat_supplier = id_address LEFT JOIN kecamatan ON IDKecamatan = id_kecamatan LEFT JOIN kabupaten ON kabupaten.IDKabupaten = id_kota LEFT JOIN provinsi ON provinsi.IDProvinsi = id_provinsi LEFT JOIN supplier_contact ON supplier.id_supplier = supplier_contact.id_supplier";
+router.post('/getSupplier',function(req,res){
+	var sql_query = "SELECT supplier.id_supplier as id_sup, supplier.*,address.jalan,kecamatan.Nama as kec,kabupaten.Nama as kab,provinsi.Nama as prov,(SELECT value FROM supplier_contact WHERE id_channel = 'em' AND id_supplier = id_sup ) as email,(SELECT value FROM supplier_contact WHERE id_channel = 'ph' AND id_supplier = id_sup ) as hp FROM supplier LEFT JOIN address ON alamat_supplier = id_address LEFT JOIN kecamatan ON IDKecamatan = id_kecamatan LEFT JOIN kabupaten ON kabupaten.IDKabupaten = id_kota LEFT JOIN provinsi ON provinsi.IDProvinsi = id_provinsi LEFT JOIN supplier_contact ON supplier.id_supplier = supplier_contact.id_supplier";
 	getData(sql_query,function(err,rows){
 		if(err){
 			console.log(res.url,err);

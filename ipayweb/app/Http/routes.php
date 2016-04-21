@@ -34,6 +34,8 @@ Route::group(['middleware' => 'web'], function () {
 	Route::post('addProduk','produkController@addProduk');
 	Route::post('addKategori','produkController@addKategori');
 	Route::post('updateProduk','produkController@updateProduk');
+	Route::post('getMutasi','TransactionController@getMutasi');
+	Route::post('getSupplier','produkController@getSupplier');
 });
 Route::get('get_prov','AddressController@getProvinsi');
 Route::get('get_wil','AddressController@getWilayah');
