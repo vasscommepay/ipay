@@ -46,7 +46,7 @@ router.use(function(req, res, next) {
 
 
 router.post("/tampil-get",function(req, res, next) {
-var tampilGet = { sql : 'SELECT * from member' }
+	var tampilGet = { sql : 'SELECT * from member' }
 
 	connection.query(tampilGet, function(err, rows, fields) {
 		if (err){

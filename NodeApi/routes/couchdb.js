@@ -12,7 +12,14 @@ app.use(bodyParser.json());
 
 
 router.get('/exportUser',function(req,res){
-	
+	couchdb.exportUser(function(err,result){
+		if(err){
+			console.log(req.url, "error: "+err);
+			res.json({"error":true,"message":err});
+		}else{
+			res.json(result);
+		}
+	});
 });
 router.get('/getMember',function(req,res){
 	

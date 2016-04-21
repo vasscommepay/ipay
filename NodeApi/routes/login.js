@@ -6,6 +6,7 @@ var connection  = require('./db');
 var async 		= require('async');
 var nano   = require('./nano');
 var app = express();
+var couchdb = require('./couchdbfunction');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 router.post("/",function(req,res,next) {
@@ -88,32 +89,6 @@ router.post("/",function(req,res,next) {
 	);
 
 });
-// 	var queryString = 'SELECT * from users LEFT JOIN member ON member_id = id_member where username ="'+username+'" and password="'+hash+'" ';
-// 	connection.query(queryString, function(err, rows, fields) {
-// 		if (err){
-// 		   console.log(err);
-// 		   console.log(queryString);
-// 		   res.json({"status":"error","message":queryString});
-// 		}else{
-// 			if(rows.length>0){
-// 				var session = randomString(10);
-// 				var check = checkSession(session);
-// 				var memberid = rows[0].member_id;
-// 				var level = rows[0].level_member;
-// 				while(check){
-// 					session = randomString(10);
-// 					check = checkSession(session);
-// 				}
-// 				var memberlevel;
-// 				setSession(username,session);
-// 				console.log(lv);
-// 				res.json({"isLogin":"true","member_id":memberid,"session":session,"level":level});
-// 			}else{
-// 				res.json({"status":queryString});
-// 			}
-// 		}
-// 	});
-// });
 
 function randomString(length) {
 	var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@&"
@@ -121,56 +96,21 @@ function randomString(length) {
     for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
     return result;
 }
-// function checkSession(session){
-// 	var retval;
-// 	connection.query('Select EXISTS(SELECT * from users Where session="'+session+'") as result',function(err, rows, fields){
-// 		if(err){
-// 			console.log(err);
-// 		}else{
-// 			if(rows.result===1){
-// 				retval = "false";
-// 				return false;
-// 			}else{
-// 				return true;
-// 				retval = "true";
-// 			}
-// 		}
-// 	});
-// }
 function setSession(username, session){
 	connection.query('UPDATE users SET session ="'+session+'" WHERE username = "'+username+'" ',function(err, rows, fields){
 
 		if(err){
 			console.log(err);
 		}else{
-			updateCouch(username,session);
-			console.log("userlogin, username: "+username+" session: "+session);
-			if(rows.result===1){
-				return true;
-				
-			}else{
-				return false;
-			}
-		}
-	});
-}
-function updateCouch(username,session){
-	var member_db = nano.db.use('ipay_users');
-	member_db.get(username,function(err,body){
-		if(err){
-			console.log(err);
-		}else{
-			body["session"]=session;
-			body["updated_at"]= Date.now();
-			delete body.rev;
-			member_db.insert(body,function(err,body){
+			couchdb.updateDb('ipay_users',username,{'session':session,'updated_at':Date.now()},function(err,body){
 				if(err){
 					console.log(err);
 				}else{
-					console.log("couch users updated");
+					console.log('New user login: '+username+' session: '+session);
 				}
 			});
 		}
 	});
 }
+
 module.exports = router;

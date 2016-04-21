@@ -329,6 +329,8 @@ var couchdb = {
 							callback("no record found");
 						}else{
 							oldbody = body;
+							//console.log("doc_id: ",doc_id);
+							//console.log(oldbody);
 							callback();
 						}
 					}
@@ -341,8 +343,8 @@ var couchdb = {
 			}else{
 				//delete oldbody.rev;
 				for(keys in params){
-					console.log("keys: "+keys);
-					console.log("values: "+params[keys]);
+					//console.log("keys: "+keys);
+					//console.log("values: "+params[keys]);
 					oldbody[keys]=params[keys];
 				}
 				db.insert(oldbody,function(err,body){

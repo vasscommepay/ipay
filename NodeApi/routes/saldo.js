@@ -55,13 +55,15 @@ router.post("/tambah-saldo", function(req,res){
 	var member_id = req.body.id_member;
 	var uplink = req.body.uplink;
 	var jumlah_transaksi = req.body.jumlah;
+	var username = connection.escape(req.body.username);
 	var nama_pembayar = req.body.nama_pembayar;
 	var rekening = req.body.rekening;
 	var jalur_pembayar = req.body.jalur;
 	var status=true;
 	var id_mutasi;
-	var sql = "Call tambah_saldo("+member_id+","+jumlah_transaksi+",'tambah',"+uplink+",'"+nama_pembayar+"','"+rekening+"','"+jalur_pembayar+"')";	
-	console.log("SQL: "+sql);
+	var id_transaksi;
+	var kode_order = createKodeOrder(4);
+	//console.log("SQL: "+sql);
 	async.series([
 		function(callback){
 			console.log('cekSaldo');
@@ -79,6 +81,32 @@ router.post("/tambah-saldo", function(req,res){
 			})
 		}
 		,function(callback){
+			var biaya = jumlah_transaksi;
+			var sql_query = "INSERT INTO member_order(id_order,id_member,biaya_total,status) VALUES('"+kode_order+"',"+member_id+","+jumlah_transaksi+",'sc')";
+			connection.query(sql_query,function(err,result){
+				if(err){
+					callback(err);
+				}else{
+					console.log('new order inserted');
+					callback();
+				}
+			});
+		}
+		,function(callback){
+			var sql_query = "INSERT INTO transaksi(id_order,id_produk,id_member_produk,username,quantities,tujuan,status,total_biaya) VALUES('"+kode_order+"','deposit',"+uplink+","+username+",1,"+member_id+",'sc',"+jumlah_transaksi+")";
+			connection.query(sql_query,function(err,result){
+				if(err){
+					callback(err);
+				}else{
+					console.log('new tran inserted');
+					id_transaksi = result.insertId;
+					callback();
+				}
+			});
+		}
+		,function(callback){
+			var sql = "Call tambah_saldo('"+kode_order+"',"+id_transaksi+","+member_id+","+jumlah_transaksi+",'tambah',"+uplink+",'"+nama_pembayar+"','"+rekening+"','"+jalur_pembayar+"')";
+			console.log(sql);	
 			connection.query(sql,function(err,result){
 				if(err){
 					callback(err);
@@ -122,5 +150,25 @@ function cekSaldo(id_member,callback){
 			}
 		}
 	});
+}
+
+function createKodeOrder(length){
+	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var result = '';
+    var d = new Date();
+    var day = d.getDate();
+    var mon = d.getMonth();
+    var month = 0;
+    var h = d.getHours();
+    var hour = 0;
+    if(mon<10){
+    	month = '0'.concat((mon+1));
+    }else{
+    	month = mon+1;
+    }
+    var year = d.getFullYear();
+    for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    var date = day.toString()+month.toString()+year.toString().substring(2,4);
+	return date+result;
 }
 module.exports = router;

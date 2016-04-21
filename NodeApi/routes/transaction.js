@@ -21,14 +21,14 @@ router.use(function(req, res, next) {//Untuk cek apakah ada session
     console.log(req.method, req.url);
     var session = req.body.session;
 	if(session!=null){
-		cek_session(session,function(err,exists,time){
+		cek_session(session,function(err,exists,timeout){
 			if(err){
 				res.json({"error":true,"message":err});
 			}else{
 				if(exists){
 					next();
-				}else{
-					res.json({"error":true,"message":time})
+				}else if(timeout){
+					res.json({"error":true,"timeout":true});
 				}
 			}
 		});
@@ -36,6 +36,33 @@ router.use(function(req, res, next) {//Untuk cek apakah ada session
 		res.json({"status":"error","message":"Tidak Ada Session"});
 	}
 });
+
+router.post('/getMutasi',function(req,res){
+	var id_member = req.body.id_member;
+	var id = connection.escape(id_member);
+	var level = req.body.level;
+	var sql_query;
+	if(level==2){
+		sql_query = "SELECT * FROM mutasi_saldo_member WHERE id_member ="+id+" OR id_member IN (SELECT id_member FROM member_agen WHERE id_koordinator ="+id+")";
+	}else if(level==3){
+		sql_query = "SELECT * FROM mutasi_saldo_member WHERE id_member ="+id;
+	}else if(level == 0){
+		sql_query = "SELECT * FROM mutasi_saldo_member WHERE id_member ="+id+" OR id_member IN (SELECT id_member FROM member_korwil)";
+	}else{
+		sql_query = "SELECT * FROM mutasi_saldo_member WHERE id_member ="+id+" OR id_member IN (SELECT id_member FROM member_koordinator WHERE id_korwil ="+id+")";
+	}
+	sql_query = sql_query+" ORDER BY id DESC";
+	console.log(sql_query, "level: ",level);
+	getData(sql_query,function(err,rows){
+		if(err){
+			console.log(err);
+			res.json({"error":true,"message":err});
+		}else{
+			res.json(rows);
+		}
+	});
+});
+
 router.post('/getTransaction',function(req,res){
 	var id_member = req.body.id_member;
 	console.log("transaction for member: "+id_member);
@@ -172,6 +199,21 @@ router.post('/simulasiTransaksi',function(req,res){//UNTUK TRANSAKSI
 		});			
 });
 
+function getData(sql,callback){
+	connection.query(sql,function(err,rows){
+		if(err){
+			callback(err);
+		}else{
+			if(rows.length==0){
+				err = sql+"empty table";
+				callback(err);
+			}else{
+				callback(null,rows);
+			}
+		}
+	});
+}
+
 function getSaldo(id_member,callback){
 	connection.query(sql,[id_member],function(err,rows){
 		if(err){
@@ -234,7 +276,7 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 	var index;
 	var username = req.body.username;
 	var date = new Date();
-	var orderid = "od"+date.getTime();
+	var orderid = createKodeOrder(4);
 	var total_biaya=0;
 	var total_saldo;
 	var status_biaya;
@@ -694,24 +736,24 @@ function updateTabelOrder(orderid,biaya,status){
 	});
 }
 
-// function createKodeOrder(length){
-// 	var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-//     var result = '';
-//     var d = new Date();
-//     var day = d.getDate();
-//     var mon = d.getMonth();
-//     var month = 0;
-//     var h = d.getHours();
-//     var hour = 0;
-//     if(mon<10){
-//     	month = '0'.concat((mon+1));
-//     }else{
-//     	month = mon+1;
-//     }
-//     var year = d.getFullYear();
-//     for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
-//     var date = day.toString()+month.toString()+year.toString();
-// 	return "OR"+date+result;
-// }
+function createKodeOrder(length){
+	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    var result = '';
+    var d = new Date();
+    var day = d.getDate();
+    var mon = d.getMonth();
+    var month = 0;
+    var h = d.getHours();
+    var hour = 0;
+    if(mon<10){
+    	month = '0'.concat((mon+1));
+    }else{
+    	month = mon+1;
+    }
+    var year = d.getFullYear();
+    for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    var date = day.toString()+month.toString()+year.toString().substring(2,4);
+	return date+result;
+}
 
 module.exports = router;
