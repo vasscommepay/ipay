@@ -756,7 +756,6 @@ function createKodeOrder(length){
 	return date+result;
 }
 
-<<<<<<< HEAD
 router.post('/cekHarga',function(req,res,next){
 	var product_id = req.body.product_id;
 	var harga_jual;
@@ -777,7 +776,4 @@ router.post('/cekHarga',function(req,res,next){
 	])
 });
 
-module.exports = async;
-=======
->>>>>>> origin/master
 module.exports = router;
