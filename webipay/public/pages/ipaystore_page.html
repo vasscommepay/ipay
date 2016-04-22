@@ -1,0 +1,56 @@
+<script>
+$(document).ready(function(){
+loadjscssfile("assets/css/ipay.css", "css");
+		$('.ipay').click(function(){
+        $('#mainslider').load('pages/ipay_page.html');
+       });
+	   $('.ipaystore').click(function(){
+        $('#mainslider').load('pages/ipaystore_page.html');
+       });
+	   $('.afiliasi').click(function(){
+        $('#mainslider').load('pages/affiliation_page.html');
+       });
+     $('.contact').click(function(){
+        $('#mainslider').load('pages/contact_page.html');
+       });
+		$('.produk_layanan').click(function(){
+        $('#main_container').load('pages/ipaystore/produk_layanan.html');
+       });
+	   $('.pendaftaran').click(function(){
+         $('#main_container').load('pages/ipaystore/pendaftaran.html');
+       });
+	   $('.syarat_ketentuan').click(function(){
+         $('#main_container').load('pages/ipaystore/syarat_ketentuan.html');
+       });
+	   $('.faq_ipaystore').click(function(){
+         $('#main_container').load('pages/ipaystore/faq_ipaystore.html');
+       });
+	    $('.bantuan_ipaystore').click(function(){
+         $('#main_container').load('pages/ipaystore/bantuan_ipaystore.html');
+       });
+      $("#slide2").hide()
+      $("#slide3").hide()
+      $("#slide1footer").hide()
+      $("#footer").hide()
+});
+
+</script>
+<div id="slide1top" class="col-md-12 col-sm col-xs-12 shd wbg">
+
+</div>
+
+<div id="ipay_container" class="col-md-12 col-xs-12 bg3">
+<div id="main_container" class="col-md-12 col-xs-12 row-centered">
+
+</div>
+<div id="bottom_nav" class="col-md-12 col-sm-12 col-xs-12">
+			<ul>
+			  <li class="active"><a href="#" class="ipaystore trs">Home<span class="sr-only">(current)</span></a></li>
+              <li><a href="#" class="produk_layanan trs">Produk & Layanan</a></li>
+              <li><a href="#" class="pendaftaran trs">Pendaftaran iPayStore</a></li>
+              <li><a href="#" class="syarat_ketentuan trs">Syarat dan Ketentuan</a></li>
+			  <li><a href="#" class="faq_ipaystore trs">F.A.Q</a></li>
+			  <li><a href="#" class="bantuan_ipaystore trs">Bantuan iPayStore</a></li>
+            </ul>
+</div>
+</div>

@@ -1,0 +1,50 @@
+	  @media only screen and (max-width:320px) {
+
+	  }
+	  	@media only screen and (max-width : 480px) {
+			#sidetext p{font-size:3vw;}
+			.dashboard{width:100%!important;margin-left:0!important;}
+			.headtext {font-size:9vw!important;}
+			.headtextbottom{font-size:3vw!important;}
+			.dashboard{padding-top:8vw!important;}
+
+		}
+			@media only screen and (max-width : 765px) {
+
+			#slide1{height:100vh!important;}
+			#minislide{height:75vh;}
+			#minislide-carousel, #minislide2-carousel, #minislide3-carousel{height:48vh;font-size:2vw;}
+			#sidetext h1{font-size:5vw;}
+			#sidetext p{font-size:2vw;}
+			#minislide-carousel .carousel-indicators, #minislide2-carousel .carousel-indicators, #minislide3-carousel .carousel-indicators {bottom:-8vh;}
+.dashboard{width:70%;margin-left:0!important;}
+.tile-parbig{
+			font-size: 4vh!important;
+			}
+			.tile-parmed{
+			font-size: 4vh!important;
+			}
+			.tile-parnorm{
+			font-size: 3vh!important;
+			}
+
+			.tile-parsmall{
+			font-size: 2vh!important;
+			}
+			.tilepad{padding:1%!important;}
+			#rttrans span{padding-right:0!important;}
+			#nextbutton{font-size:2vh!important;}
+}
+			}
+			@media only screen and (max-width : 768px){
+			#copyright{font-size:5vh!important;margin-top:-2vw!important;}
+			
+			}
+			/* Small Devices, Tablets */
+	@media only screen and (min-width : 768px) {
+
+}
+	/* Medium Devices, Desktops */
+	@media only screen and (min-width : 992px) {
+		
+}

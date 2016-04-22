@@ -1,0 +1,218 @@
+<script type="text/javascript">
+    /*$(document).ready(function(){
+        //var table = $("#member-data").DataTable({"scrollX": true, "order":[[3,"desc"]]});
+       $.ajax({
+            url:'getDaftarTransaksi',
+            type:'POST',
+            success:function(result){
+                //alert(result);
+                var datas = JSON.parse(result);
+                //if(!datas.error){
+                    //var i =0;
+                    //var res = datas.rows;
+                    //var transaksi = res.rows;
+                    //alert(transaksi);
+                    /*$.each(transaksi,function(key,val){
+                        i++
+                        var data = val.value;
+                        
+                        var time = new Date(data.timestamp);
+                        var tanggal = time.toDateString();
+                        var jam = time.toLocaleTimeString(); 
+                        var total_biaya = setComma(data.total);
+                        var rownode = table.row.add([
+                            i,
+                            tanggal,
+                            jam,
+                            data._id,
+                            data.orderid,
+                            data.id_produk,
+                            data.order_qty,
+                            total_biaya,
+                            data.tujuan,
+                            "<span id='stat"+data._id+"'>"+data.status_biller+"</span>"
+                        ]).draw().node();
+
+                        if(data.status_biller!=true){
+                            $(rownode).css('background-color','red');
+                            $(rownode).css('color','white');
+                        }
+                              // $("#table-body").append("<tr><td>"+i+"</td>"+"<td>"+val.created_at+"</td>"+"<td>"+val.id_transaksi+"</td>"+"<td>"+val.id_order+"</td>"+"<td>"+val.id_produk+"</td>"+"<td>"+val.quantities+"</td>"+"<td>"+val.total_biaya+"</td>"+"<td>"+val.tujuan+"</td>"+"<td><span id='stat"+val.id_transaksi+"'>"+val.status+"</span></td></tr>");
+                  });*/
+                    //$.each(transaksi,function(key,val){
+                   /* $.each(datas,function(key,val){
+                        var data = val.value;
+                        var time = new Date(data.timestamp);
+                        var tanggal = time.toDateString();
+                        var jam = time.toLocaleTimeString(); 
+                        var total_biaya = setComma(data.total);
+                        var total_bayar = setComma(total_biaya);
+                        var orderid = val.orderid;
+                        var id_produk = val.id_produk;
+                        var order_qty = val.order_qty;
+                        var tujuan = val.tujuan;
+                        $('#cekout').append('<span class="checkouttanggal row">Tanggal Transaksi: '+tanggal+'</span><div id="stepwrapp" class="col-md-12"><div id="stepwrappmain" class="col-md-12"><div id="invgroup" class="col-md-12"><span class="detlogo col-md-1"></span><span class="dettext col-md-6 col-centered">Produk '+id_produk+', Kuantiti: '+order_qty+'</span><span class="detprice col-md-4 col-centered">Rp. '+total_biaya+'</span><span><i class="glyphicon glyphicon-remove-circle"></i></span></div></div><div id="footwrapper" class="col-md-12"><div id="stepwrapptotal" class="col-md-3"><span class="totaltext">Total yang harus dibayar:</span><span class="totalnum col-md-12">Rp.'+total_bayar+'</span></div><a href="#step2"><div id="next2" class="col-md-3"><span class="nextbutton"><img src="images/nextbutton.png"  />Berikutnya</span></div></a></div></div>');
+                    });
+                //}
+            }
+        });
+    });*/
+
+/*$(document).ready(function(){
+    $.ajax({
+      url:'checkOutCart',
+      type:'post',
+      success:function(result){
+        alert(result);
+        var ceklist = JSON.parse(result);
+        $.each(ceklist, function(key, val){
+
+        });
+      }
+    }); 
+});*/
+ $('#midformwiz li').on('click', function(){
+    $('#midformwiz li').removeClass('wizactive');
+    $(this).addClass('wizactive');
+});
+$('#prev').on('click', function(){
+    $('#midformwiz li').removeClass('wizactive');
+    $('#1').addClass('wizactive');
+});
+$('#next2').on('click', function(){
+    $('#midformwiz li').removeClass('wizactive');
+    $('#2').addClass('wizactive');
+});
+$('#next3').on('click', function(){
+    $('#midformwiz li').removeClass('wizactive');
+    $('#3').addClass('wizactive');
+});
+$('#finish').on('click', function(){
+    $('#midformwiz li').removeClass('wizactive');
+    $('#3').addClass('wizactive');
+});
+$('#kategori_list').hide()
+$('#cart-count').hide()
+$('#shopping_cart').hide()
+$('#logocart').show()
+$('#backgfrom').show()
+$('#midform').hide()
+$('#midform1').show()
+$("#tambahsaldo").hide()
+$("#atasmid").show()          
+</script>
+<body>
+<div id="transpagewrapp" class="col-md-12 dashboard1">
+<div id="midformwiz" class="row row-centered">
+<ul>
+<a href="#step1"><li id="1" class="bullet wizactive">1</li></a>
+<a href="#step2"><li id="2" class="bullet">2</li></a>
+<a href="#step3"><li id="3" class="bullet">3</li></a>
+</ul>
+<div id="border" class="col-md-12"></div>
+</div>
+<div id="midformpayment" class="row">
+<div id="step1" class="midformcheckout col-md-12">
+    <span class="headcheckout row">LIST PEMBAYARAN</span>
+    
+    <span class="checkouttanggal row">Tanggal Transaksi: [06-09-2015]</span>
+    <div id="stepwrapp" class="col-md-12">
+    <div id="stepwrappmain" class="col-md-12">
+    <div id="invgroup1" class="col-md-12">
+    <!--<span class="detlogo col-md-1"><img src="images/bpjsicon.png" /></span><span class="dettext col-md-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-centered">Rp. 20.000,00</span><span><i class="glyphicon glyphicon-remove-circle"></i></span>-->
+    </div>
+    </div>
+    <div id="footwrapper" class="col-md-12">
+    <div id="stepwrapptotal" class="col-md-3">
+    <span class="totaltext">Total yang harus dibayar:</span>
+    <span class="totalnum col-md-12">Rp.195.000</span>
+    </div><a href="#step2">
+    <div id="next2" class="col-md-3"><span class="nextbutton">
+    <img src="images/nextbutton.png"  />Berikutnya</span>
+    </div></a>
+    </div>
+    </div>
+
+    
+</div>
+<div id="step2" class="midformcheckout checkactive col-md-12">
+
+<span class="headcheckout row">METODE PEMBAYARAN</span>
+<span class="checkouttanggal row">Tanggal Transaksi: 06-09-2015</span>
+<div id="stepwrapp" class="col-md-12">
+<div id="stepwrappmain" class="col-md-12 secondstep">
+    <br>
+    <div id="invgroup" class="col-md-12">
+    <span class="detlogo col-md-1"></span>Transfer bank
+    </div>
+</div>
+<div id="footwrapper" class="col-md-12">
+<a href="#step1">
+<div id="prev" class="col-md-3"><span class="nextbutton">
+<img src="images/prevbutton.png"  />Kembali</span>
+</div></a>
+<a href="#step3">
+<div id="next3" class="col-md-3"><span class="nextbutton">
+<img src="images/nextbutton.png"  />Berikutnya</span>
+</div></a>
+</div>
+
+</div>
+
+</div>
+
+
+<div id="step3" class="midformcheckout col-md-12">
+<span class="checkouttanggal row">Tanggal Transaksi: 06-09-2015</span>
+<div id="stepwrapp" class="col-md-12">
+<div id="stepwrappmain" class="row laststep">
+
+</div>
+<div id="footwrapper" class="col-md-12">
+<a href="#finish">
+<div id="finish" class="row" onclick="checkOutCart()"><span class="nextbutton">
+<img src="images/finishbutton.png"  />Finish</span>
+</div></a>
+</div>
+
+</div>
+
+</div>
+
+<div id="finish" style="display: none" class="midformcheckout col-md-12">
+<span class="checkouttanggal row">Tanggal Transaksi: 06-09-2015</span>
+<div id="stepwrapp" class="col-md-12">
+<div id="stepwrappmain" class="row laststep">
+
+</div>
+<div id="footwrapper" class="col-md-12">
+<span>Transaksi sukses</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+</body>
+<script type="text/javascript">
+function checkOutCart(){
+    $.ajax({
+        url:'checkOutCart',
+        type:'post',
+        success:function(result){
+            alert(result);
+            var res = JSON.parse(result);
+            if(res.error){
+                alert(res.message);
+            }else{
+            alert("checkout transaksi")
+            //$('#cart-count').html(0);
+            alert(res.status);
+            $('#midformwiz').hide()
+            $('#finish').show()
+            }
+        }
+    });
+}
+</script>

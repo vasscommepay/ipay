@@ -1,0 +1,77 @@
+<head>
+    <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
+</head>
+<script type="text/javascript" src="js/jquery.printelement.min.js"></script>
+<script>
+$(document).ready(function(){
+  var lv = $("#level_member").val();
+        if(lv==0){
+          $('.pendaftaran_afiliasi').show()
+          $('.faq_afiliasi').show()
+        }
+  $.ajaxSetup({
+            headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+loadjscssfile("assets/css/ipay.css", "css")
+
+		$('.ipay').click(function(){
+        $('#mainslider').load('pages/ipay_page.html');
+       });
+	   $('.ipaystore').click(function(){
+        $('#mainslider').load('pages/ipaystore_page.html');
+       });
+	   $('.afiliasi').click(function(){
+        $('#mainslider').load('pages/affiliation_page.html');
+       });
+     $('.contact').click(function(){
+        $('#mainslider').load('pages/contact_page.html');
+       });
+		$('.tentang_afiliasi').click(function(){
+        $('#main_container').load('pages/afiliasi/tentang_afiliasi.html');
+       });
+	   $('.pendaftaran_afiliasi').click(function(){
+         $('#main_container').load('pages/afiliasi/pendaftaran_afiliasi.html');
+       });
+	   $('.syarat_ketentuan').click(function(){
+         $('#main_container').load('pages/afiliasi/syarat_ketentuan.html');
+       });
+	   $('.faq_afiliasi').click(function(){
+         $('#main_container').load('pages/afiliasi/faq_afiliasi.html');
+       });
+	   $('.bantuan_afiliasi').click(function(){
+         $('#main_container').load('pages/afiliasi/bantuan_afiliasi.html');
+       });	  
+       $("#slide2").hide()
+       $("#slide3").hide()
+       $("#slide1footer").hide()
+       $("#footer").hide()
+});
+</script>
+<div id="slide1top" class="col-md-12 col-sm col-xs-12 shd wbg">
+</div>
+<div id="ipay_container" class="col-md-12 col-xs-12 bg2">
+<div id="main_container" class="col-md-12 col-xs-12 row-centered">
+
+</div>
+<div id="bottom_nav" class="col-md-12 col-sm-12 col-xs-12">
+			<ul>
+      <!--<?php 
+        /*if (Session::get('session') == null) {
+          echo '<li class="active"><a href="#" class="ipay trs">Home<span class="sr-only">(current)</span></a></li><li><a href="#" class="tentang_afiliasi trs">Tentang Afiliasi</a></li><li><a href="#" class="syarat_ketentuan trs">Syarat & Ketentuan</a></li><li><a href="#" class="faq_afiliasi trs">F.A.Q Afiliasi</a></li><li><a href="#" class="bantuan_afiliasi trs">Bantuan Afiliasi</a></li>';
+        }
+        else {
+          echo '<li class="active"><a href="#" class="ipay trs">Home<span class="sr-only">(current)</span></a></li><li><a href="#" class="tentang_afiliasi trs">Tentang Afiliasi</a></li><li><a href="#" class="pendaftaran_afiliasi trs">Pendaftaran Afiliasi</a></li><li><a href="#" class="syarat_ketentuan trs">Syarat & Ketentuan</a></li><li><a href="#" class="faq_afiliasi trs">F.A.Q Afiliasi</a></li><li><a href="#" class="bantuan_afiliasi trs">Bantuan Afiliasi</a></li>';
+        }*/
+      ?>-->
+			  <li class="active"><a href="#" class="ipay trs">Home<span class="sr-only">(current)</span></a></li>
+              <li><a href="#" class="tentang_afiliasi trs">Tentang Afiliasi</a></li>
+              <li><a href="#" style="display: none" class="pendaftaran_afiliasi trs">Pendaftaran Afiliasi</a></li>
+              <li><a href="#" class="syarat_ketentuan trs">Syarat & Ketentuan</a></li>
+      			  <li><a href="#" style="display: none" class="faq_afiliasi trs">Daftar member</a></li>
+              <!--<li><a href="#" class="faq_afiliasi trs">F.A.Q Afiliasi</a></li>-->
+      			  <li><a href="#" class="bantuan_afiliasi trs">Bantuan Afiliasi</a></li>
+            </ul>
+</div>
+</div>

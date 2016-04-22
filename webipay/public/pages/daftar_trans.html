@@ -1,0 +1,73 @@
+<script type="text/javascript">
+	$(document).ready(function(){
+		var table = $("#member-data").DataTable({"scrollX": true, "order":[[3,"desc"]]});
+		$.ajax({
+			type:'post',
+			url:'getDaftarTransaksi',
+			success:function(result){
+				//alert(result);
+				var datas = JSON.parse(result);
+				if(!datas.error){
+					var i =0;
+					var res = datas.rows;
+					var transaksi = res.rows;
+					//alert(transaksi);
+			       	$.each(transaksi,function(key,val){
+				       	i++
+				       	var data = val.value;
+				       	
+				       	var time = new Date(data.timestamp);
+				       	var tanggal = time.toDateString();
+				       	var jam = time.toLocaleTimeString(); 
+				       	var total_biaya = setComma(data.total);
+				       	var rownode = table.row.add([
+				       		i,
+				       		tanggal,
+				       		jam,
+				       		data._id,
+				       		data.orderid,
+				       		data.id_produk,
+				       		data.order_qty,
+				       		total_biaya,
+				       		data.tujuan,
+				       		"<span id='stat"+data._id+"'>"+data.status_biller+"</span>"
+			       		]).draw().node();
+
+			       		if(data.status_biller!=true){
+			       			$(rownode).css('background-color','red');
+			       			$(rownode).css('color','white');
+			       		}
+					          // $("#table-body").append("<tr><td>"+i+"</td>"+"<td>"+val.created_at+"</td>"+"<td>"+val.id_transaksi+"</td>"+"<td>"+val.id_order+"</td>"+"<td>"+val.id_produk+"</td>"+"<td>"+val.quantities+"</td>"+"<td>"+val.total_biaya+"</td>"+"<td>"+val.tujuan+"</td>"+"<td><span id='stat"+val.id_transaksi+"'>"+val.status+"</span></td></tr>");
+				  });
+				}
+       //alert(result);
+       
+}
+});
+	});
+</script>
+<div class="page-header">Transaksi</div>
+<div class="row" id="data-filter-area">
+
+</div>
+<div  id="data-transaksi">
+	<table id="member-data" class="stripe hover" style="width: 100%">
+		<thead>
+			<tr>
+				<th width="5%">#</th>
+				<th width="15%">Tanggal</th>
+				<th width="12%">Jam</th>
+				<th width="8%">Id-Tr</th>
+				<th width="10%">Id Order</th>
+				<th width="10%">Produk</th>
+				<th width="5%">Qty</th>
+				<th width="10%">Biaya</th>
+				<th width="15%">Tujuan</th>
+				<th width="10%">Status</th>
+			</tr>
+		</thead>
+	</table>
+</div>
+<div id="new-transaksi" class="modal">
+
+</div>

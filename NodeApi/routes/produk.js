@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 var sessionStat = false;
 
-router.use(function(req, res, next) {//Untuk cek apakah ada session
+/*router.use(function(req, res, next) {//Untuk cek apakah ada session
     console.log(req.method, req.url);
     var session = req.body.session;
 	if(session!=null){
@@ -23,6 +23,27 @@ router.use(function(req, res, next) {//Untuk cek apakah ada session
 					next();
 				}else{
 					res.json({"error":true,"message":time})
+				}
+			}
+		});
+	}else{
+		res.json({"status":"error","message":"Tidak Ada Session"});
+	}
+});*/
+
+router.use(function(req, res, next) {
+    console.log(req.method, req.url);
+    var session = req.body.session;
+	if(session!=null){
+		connection.query('Select exists(Select * from users where session = "'+session+'") as result',function(err, rows, fields){
+			if(err){
+				console.log(err);
+				res.json({"status":"error","message":err});
+			}else{
+				if(rows[0].result===0){
+					res.json({"status":"error","message":"Session tidak terdaftar"});
+				}else{
+					next();
 				}
 			}
 		});

@@ -1,0 +1,324 @@
+<script>
+	// Cache the Window object
+	$window = $(window);
+                
+   $('div[data-type="background"]').each(function(){
+     var $bgobj = $(this); // assigning the object
+                    
+      $(window).scroll(function() {
+                    
+		// Scroll the background at var speed
+		// the yPos is a negative value because we're scrolling it UP!								
+		var yPos = -($window.scrollTop() / $bgobj.data('speed')); 
+		
+		// Put together our final background position
+		var coords = '50% '+ yPos + 'vw';
+
+		// Move the background
+		$bgobj.css({ backgroundPosition: coords });
+		
+}); // window scroll Ends
+
+ });	
+</script>
+<div id="main-carousel" class="row row-centered">
+<div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+<div class="carousel-inner" role="listbox">
+<div data-type="background" data-speed="50" id="slide1" class="item active text-center bg1 col-md-12"> 
+<div class="dashboard col-md-8 col-sm-8 col-xs-7">
+<div class="h1 headtext">
+Solusi Untuk Semua<br />
+Pembayaran Anda
+</div>
+<div class="h4 headtextbottom">
+Berbagai Macam Tagihan, Angsuran dan Pembelian secara Online 
+</div>
+
+<ul id="maintile" class="tiles col-md-12 col-xs-12">
+<div class="row">
+<li class="col-md-12 col-xs-12">
+<div class="col-md-12 hidden-xs  tile tile-green metro-tile ">
+<span class="col-md-3 col-sm-4 col-xs-12 pull-left"><p class="tile-parmed">Cakupan Layanan</p></span>
+<span class="col-md-6 col-sm-8 hidden-xs centering longpic"><img src="assets/images/fronticons.png" /></span>
+<span class="col-md-3 col-sm-4 hidden-xs hidden-sm pull-right al-left">Berbagai macam layanan 
+pembayaran terintegrasi 
+dengan sistem kami</span>
+</div>
+<div class="tile tile-trans rotate3d rotate3dX metro-tile visible-xs ">
+<div class="faces">
+<div class="front tile-green"><p class="tile-parmed">Cakupan Layanan</p></div>
+<div class="back tile-green centering longpic"><img src="assets/images/fronticons.png" /></div>
+</div>
+</div>
+</li>
+</div>
+<div class="row row-centered">
+<li class="col-md-6 col-sm-12"><div class="tile tile-blue metro-tile  fig2">
+<span class="col-md-3 col-sm-12 col-xs-12 pull-left">
+<span class="tile-parmed">Testimoni</span>
+<span class="tile-parsmall">Bang Toyib</span>
+</span>
+<span class="col-md-5 hidden-sm hidden-xs centering"></span>
+<span class="col-md-4 col-sm-12 col-xs-12 pull-right al-left transblack tile-parsmall">
+"Saya menggunakan iPay dengan sangat praktis dan mudah"
+</span>
+
+</div> 
+</li>
+<li class="col-md-3 col-sm-6 col-xs-6"><div class="tile tile-trans rotate3d rotate3dX metro-tile ">
+<div class="faces">
+<div class="front tile-pink iconpic centering"><img src="assets/images/aboutusicon.png" /></div>
+<div class="back tile-pink"><p class="tile-parmed">Tentang<br />Kami</p></div>
+</div>
+</div></li>
+<li class="col-md-3 col-sm-6 col-xs-6"><div class="tile tile-trans rotate3d rotate3dY metro-tile ">
+<div class="faces">
+<div class="front tile-blue iconpic centering"><img src="assets/images/cashiericon.png" /></div>
+<div class="back tile-blue"><p class="tile-parmed">Transaksi<br />Sekarang</p></div>
+</div></div></li>
+</div>
+
+</ul>
+
+
+</div>
+</div>
+<div data-type="background" data-speed="50" id="slide1" class="item text-center bg2 col-md-12"> 
+<div class="dashboard col-md-8 col-sm-8 col-xs-7">
+<div class="h1 headtext">
+Transaksi Praktis<br />
+Tanpa Daftar
+</div>
+<div class="h4 headtextbottom">
+Gunakan layanan transaksi sekarang untuk pembayaran tanpa login.
+</div>
+
+<ul id="maintile" class="tiles col-md-12">
+<div class="row">
+<li class="col-md-12 ">
+<div class="tile tile-deepblue hidden-xs hidden-sm metro-tile">
+<span class="col-md-3 col-sm-3 pull-left iconpic centering"><img src="assets/images/cashiericon.png" /></span>
+<span class="col-md-6 col-sm-6 centering"><p class="tile-parsmall tilepad">Lakukan pembelian atau pembayaran tanpa menjadi member dan tanpa deposit</p></span>
+<span class="col-md-3 pull-right al-left"></span>
+</div>
+<div class="tile tile-trans rotate3d rotate3dX metro-tile visible-sm visible-xs">
+<div class="faces">
+<div class="front tile-blue iconpic centering"><img src="assets/images/cashiericon.png" /></div>
+<div class="back tile-blue">
+<p class="tile-parnorm tilepad">Lakukan pembelian atau pembayaran tanpa menjadi member dan tanpa deposit</p>
+</div>
+</div>
+</div>
+</li>
+</div>
+<div class="row row-centered">
+<li class="col-md-3 col-sm-3 col-xs-12"><div class="tile tile-trans rotate3d rotate3dX metro-tile">
+<div class="faces">
+<div class="front tile-blue"><p class="tile-parmed">Tanpa<br /> Deposit</p></div>
+<div class="back tile-blue">
+<span class="tile-parsmall hidden-xs tilepad">
+Pembayaran cukup 
+dengan transfer, 
+e-banking, e-money, dll 
+tanpa melalui proses 
+penambahan deposit 
+terlebih dahulu</span>
+<span class="tile-parnorm visible-xs tilepad">
+Pembayaran cukup 
+dengan transfer, 
+e-banking, e-money, dll 
+tanpa melalui proses 
+penambahan deposit 
+terlebih dahulu</span>
+</div>
+</div>
+</div></li>
+<li class="col-md-9 col-sm-9 col-xs-12"><div class="tile tile-trans rotate3d rotate3dX metro-tile"><div class="faces">
+<div class="front tile-green">
+<span class="col-md-4 col-xs-12 pull-left"><p class="tile-parmed">Cara Transaksi</p></span>
+<span class="col-md-4 centering"></span>
+<span class="col-md-4 pull-right hidden-xs hidden-sm al-left">
+1. Pilih Transaksi<br />
+2. Isi Informasi<br />
+3. Masuk ke Cart<br />
+4. Bayar 
+</span>
+</div>
+<div class="back tile-green centering longpic"><img class="howtotransimg" src="assets/images/howtotrans.png" /></div>
+</div></div></li> 
+</div>
+
+</ul>
+
+
+</div>
+          </div>
+<div data-type="background" data-speed="50" id="slide1" class="item text-center bg3 col-md-12"> 
+          <div class="dashboard col-md-8 col-sm-8 col-xs-7">
+<div class="h1 headtext">
+Kapanpun <br>dan Dimanapun
+</div>
+<div class="h4 headtextbottom">
+Kemudahan akses pembayaran kapan saja dan dimana saja anda berada
+</div>
+
+<ul id="maintile" class="tiles col-md-12">
+
+<div class="row row-centered">
+<li class="col-md-3 col-sm-3 col-xs-12">
+<div class="tile tile-trans rotate3d rotate3dX metro-tile ">
+<div class="faces">
+<div class="front tile-deepblue"><p class="tile-parmed">Transaksi Terbaru</p></div>
+<div class="back tile-deepblue iconpic centering"><img src="assets/images/rttrans.png" /></div>
+</div>
+</div></li>
+<li class="col-md-9 col-sm-9 col-xs-12 hidden-xs "><div id="realtime" class="tile tile-deepblue metro-tile">
+<div id="rttrans" class="col-md-12 tile-parsmall">
+<span class="col-md-1 col-sm-1 col-xs-1 time">14:30</span>
+<span class="col-md-2 col-sm-2  col-xs-2 type">PDAM</span>
+<span class="col-md-5 col-sm-5  hidden-xs number">No. 48464138xxxx</span>
+<span class="col-md-2 col-sm-2  col-xs-5 nominal">Rp.100.000,-</span>
+<span class="col-md-2 col-sm-2  col-xs-2 rtimg"><img src="assets/images/transtypeconsms.png" /></span>
+</div>
+<div id="rttrans" class="col-md-12 tile-parsmall">
+<span class="col-md-1 col-sm-1 col-xs-1 time">14:30</span>
+<span class="col-md-2 col-sm-2  col-xs-2 type">PDAM</span>
+<span class="col-md-5 col-sm-5  hidden-xs number">No. 48464138xxxx</span>
+<span class="col-md-2 col-sm-2  col-xs-5 nominal">Rp.100.000,-</span>
+<span class="col-md-2 col-sm-2  col-xs-2 rtimg"><img src="assets/images/transtypeconsms.png" /></span>
+</div>
+<div id="rttrans" class="col-md-12 tile-parsmall">
+<span class="col-md-1 col-sm-1 col-xs-1 time">14:30</span>
+<span class="col-md-2 col-sm-2  col-xs-2 type">PDAM</span>
+<span class="col-md-5 col-sm-5  hidden-xs number">No. 48464138xxxx</span>
+<span class="col-md-2 col-sm-2  col-xs-5 nominal">Rp.100.000,-</span>
+<span class="col-md-2 col-sm-2  col-xs-2 rtimg"><img src="assets/images/transtypeconsms.png" /></span>
+</div>
+<div id="rttrans" class="col-md-12 tile-parsmall">
+<span class="col-md-1 col-sm-1 col-xs-1 time">14:30</span>
+<span class="col-md-2 col-sm-2  col-xs-2 type">PDAM</span>
+<span class="col-md-5 col-sm-5  hidden-xs number">No. 48464138xxxx</span>
+<span class="col-md-2 col-sm-2  col-xs-5 nominal">Rp.100.000,-</span>
+<span class="col-md-2 col-sm-2  col-xs-2 rtimg"><img src="assets/images/transtypeconsms.png" /></span>
+</div>
+<div id="rttrans" class="col-md-12 tile-parsmall">
+<span class="col-md-1 col-sm-1 col-xs-1 time">14:30</span>
+<span class="col-md-2 col-sm-2  col-xs-2 type">PDAM</span>
+<span class="col-md-5 col-sm-5  hidden-xs number">No. 48464138xxxx</span>
+<span class="col-md-2 col-sm-2  col-xs-5 nominal">Rp.100.000,-</span>
+<span class="col-md-2 col-sm-2  col-xs-2 rtimg"><img src="assets/images/transtypeconsms.png" /></span>
+</div>
+</div>
+</li>
+
+</div>
+<div class="row">
+<li class="col-md-9 col-xs-6"><div class="tile tile-trans rotate3d rotate3dX metro-tile">
+<div class="faces">
+<div class="front tile-darkore"><span class="col-md-4 col-xs-12 pull-left"><p class="tile-parmed">Akses Dimanapun</p></span>
+<span class="col-md-6 col-sm-7 pull-right centering longpic hidden-xs hidden-sm"><img src="assets/images/transev.png" /></span>
+</div>
+<div class="back tile-darkore"><span class="col-md-4 col-xs-12 pull-left"><p class="tile-parmed">Bayar Dimanapun</p></span>
+<span class="col-md-4 longpic centering hidden-sm hidden-xs"><img src="assets/images/transrek.png" /></span>
+<span class="col-md-4 col-sm-5 pull-right hidden-xs hidden-sm tile-parsmall al-left">
+1. Internet Banking<br />
+2. Mobile Banking<br />	
+3. ATM<br />
+4. E-Money<br />
+</span></div>
+</div>
+</div></li>
+
+<li class="col-md-3 col-xs-6"><div class="tile tile-trans rotate3d rotate3dY metro-tile"><div class="faces">
+<div class="front tile-green"><p class="tile-parmed">Transaksi Sekarang</p></div>
+<div class="back tile-green iconpic centering"><img src="assets/images/cashiericon.png" /></div>
+
+</div></div></li>
+</div>
+</ul>
+
+
+</div>
+          </div>
+<div data-type="background" data-speed="50" id="slide1" class="item text-center bg4 col-md-12"> 
+<div class="dashboard col-md-8 col-sm-8 col-xs-5">
+<div class="h1 headtext">
+Ingin Penghasilan <br>Lebih?
+</div>
+<div class="h4 headtextbottom">
+Daftarkan diri anda menjadi mitra afiliasi kami
+</div>
+
+<ul id="maintile" class="tiles col-md-12">
+<div class="row">
+<li class="col-md-12 ">
+<div class="tile tile-trans visible-xs rotate3d rotate3dX metro-tile">
+<div class="faces">
+<div class="front tile-blue"><p class="tile-parmed">Mitra Afiliasi</p></div>
+<div class="back tile-blue centering">
+<span class="col-xs-12 al-left aftext tile-parsmall">iPay membuka kesempatan
+bagi siapapun untuk menjadi mitra kami,pasang Widget maupun Banner di website maupun media sosial anda.</span>
+</div>
+</div>
+</div>
+
+<div class="col-md-12 hidden-xs tile tile-darkblue metro-tile">
+
+<span class="col-md-3 col-sm-2 pull-left"><p class="tile-parmed">Mitra Afiliasi</p></span>
+<span class="col-md-8 col-sm-7 al-left aftext hidden-sm tile-parsmall">iPay membuka kesempatan
+bagi siapapun untuk menjadi mitra kami,pasang Widget maupun Banner di website maupun media sosial anda.</span>
+<span class="col-md-8 col-sm-10 al-left aftext visible-sm tile-parnorm">iPay membuka kesempatan
+bagi siapapun untuk menjadi mitra kami,pasang Widget maupun Banner di website maupun media sosial anda. </span>
+</div></li>
+</div>
+<div class="row row-centered">
+<li class="col-md-7 col-sm-12 col-xs-12"><div class="tile tile-darkore metro-tile"> 
+<span class="col-md-3 col-sm-3 col-xs-3 pull-left"><p class="tile-parmed">Cara Daftar</p></span>
+<span class="col-md-8 col-sm-7 col-xs-7 longpic centering"><img src="assets/images/afiliatereg.png" /></span>
+</span>
+
+</div></li>
+          
+<li class="col-md-2 col-sm-6 col-xs-6"><div class="tile tile-trans rotate3d rotate3dX metro-tile">
+<div class="faces">
+<div class="front tile-blue iconpic centering"><img src="assets/images/iconrp.png" /></div>
+<div class="back hidden-xs hidden-sm tile-blue tile-parsmall tilepad">
+Dapatkan komisi untuk setiap pendaftaran melalui link referal anda</div>
+<div class="back visible-xs visible-sm tile-blue tile-parnorm tilepad">
+Dapatkan komisi untuk setiap pendaftaran melalui link referal anda</div>
+</div>
+</div></li>
+<li class="col-md-3 col-sm-6 col-xs-6"><div class="tile tile-trans rotate3d rotate3dY metro-tile"><div class="faces">
+<div class="front tile-green"><p class="tile-parmed">Daftarkan Sekarang</p></div>
+<div class="back tile-green iconpic centering"><img src="assets/images/iconafreg.png" /></div>
+</div>
+</div></div></li>
+
+
+
+</ul>
+
+
+</div>
+          </div>
+        </div>
+         <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+        <ol id="under_carousel" class="carousel-indicators">
+          <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+          <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+          <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+          <li data-target="#carousel-example-generic" data-slide-to="3"></li>
+        </ol>
+      </div>
+    </div>
+<script src="assets/js/tileJs.js" type="text/javascript"></script>
+<script type="text/javascript">(function () {
+        return window.SIG_EXT = {};
+      })()</script>
