@@ -12,7 +12,8 @@ var session = function cekSession(session,callback) {
 			var result = body.rows;
 			if(result.length==0){
 				console.log("session notfound");
-				callback(null,false);
+				err = 'session not found';
+				callback(err);
 			}else{
 				//console.log("result: %j",result);
 				// var last_active = result[0].value;

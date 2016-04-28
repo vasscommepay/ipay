@@ -51,7 +51,14 @@ class memberController extends Controller {
 		$this->url = 'member/newMember';
 		$this->sendPostRequest();
 	}
-
+	public function loadDownlink(){
+		$level = Session::get('level');
+		if($level==3){
+			echo 'noaccess';
+		}else{
+			$this->getDownlink();
+		}
+	}
 	public function getDownlink(){
 		$this->url = 'member/get-downlink';
 		$session = Session::get('session');
@@ -59,7 +66,18 @@ class memberController extends Controller {
 		$member_id = Session::get('member_id');
 		$this->params = array('session'=>$session,"level"=>$level,"member_id"=>$member_id);
 		$this->sendPostRequest();
+	}
 
+	public function loadWilayah(){
+		$this->url = 'member/get-wilayah';
+		$session = Session::get('session');
+		$level = Session::get('level');
+		if($level!=0){
+			echo 'noaccess';
+		}else{
+			$this->params = array('session'=>$session);
+			$this->sendPostRequest();
+		}
 	}
 
 	public function tambahSaldo(){

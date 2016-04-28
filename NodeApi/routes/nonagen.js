@@ -7,7 +7,6 @@ var connection 		= require('./db');
 var nano   			= require('./nano');
 var transaction   	= require('./transaction');
 var app 			= express();
-var schedule 		= require('node-schedule');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 var supplier_db 	= nano.db.use('ipay_supplier');

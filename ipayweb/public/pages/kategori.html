@@ -1,0 +1,433 @@
+<script type="text/javascript">
+var table= $('#daftar-kategori').DataTable();
+  function reloadTable(){
+    
+  }
+
+  $(document).ready(function(){
+
+    $('.startdate').datepicker();
+    $('.enddate').datepicker();
+
+    new $.fn.dataTable.Buttons( table, {
+      buttons: [
+      'excel', 'pdf','print'
+      ],
+      select:true
+    } );
+
+    table.buttons().container().appendTo( $('.col-sm-6:eq(1)', table.table(".table1").container() ) );
+    $.ajax({
+      url:'allKategori',
+      type:'post',
+      success: function(result){
+        var res = JSON.parse(result);
+        var i = 0;
+        $.each(res,function(key,val){
+          i++;
+          table.row.add([
+            i,
+            val.id_kategori
+            val.nama_kategori,
+            val.id_super_kategori,
+            val.jml_produk,
+            "<div class='btn-group'><button class='btn btn-warning' type='button' onclick='editKategori("+key+")'><i class='glyphicon glyphicon-edit'></i></button><button class='btn btn-danger' type='button' onclick='delProduk("+key+")'><i class='glyphicon glyphicon-trash'></i></button></div>"
+            ]).draw(false);
+        });
+      }
+    });
+    $.ajax({
+      type:'post',
+      url:'kategori',
+      success:function(result){
+        //alert(result);
+        reloadTable();
+        var res = JSON.parse(result);
+        $.each(res,function(key,val){
+          $('#kategori-produk').append('<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>');
+          $('#super-category').append('<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>');
+        });
+      }
+    });
+
+  });
+</script>
+
+<div id="basemain" class="col-md-12 col-xs-12 col-sm-12 row-centered">
+  <div id="maintitle" class="col-md-12 col-xs-12 col-sm-12 g4 fbig">
+    <h1 class="col-md-6 col-sm-6 col-xs-6">ATUR PRODUK</h1>
+  </div>
+  <div id="datecont" class="col-centered or1bg sharpshadow">
+    <form method="POST" action="<?php echo base_url();?>panelcontrol/filterTagihan">
+      <div id='datecont' class='date-time col-md-12 col-sm-12 col-xs-12 col-centered'>
+        <div class='col-md-4 col-xs-3 row-centered nopad'>From : <input id='startdate' name="start" class="startdate"></div>
+        <div class='col-md-3 col-xs-3 row-centered nopad'>To : <input id='enddate' name="end" class="enddate" width="2vw"></div>
+        <div class='col-md-4 col-xs-4 row-centered'>Filter : 
+          <select name="filtering">
+            <option value="">Opsi Filter</option>
+            <option value="1">Terbayar</option>
+            <option value="2">Belum Terbayar</option>
+            <option value="3">View All</option>
+          </select>
+        </div>
+        <div class='col-md-1 col-xs-1 row-centered g1'>
+          <button type='submit' name='filter' id='filter' class='roundbutton wbg g1'><i class='glyphicon glyphicon-filter'></i></button> 
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+
+
+  <div class="panel panel-default col-md-12" id="panel-add-kategori" >
+    <div class="panel-heading"><img src="images/addcat.png" style="width: 4%" /><a id="add-kategori-btn" class="f1w navbutton" onclick="showAddKat()">Tambah Kategori</a></div>
+    <div class="panel-body vistrs" id="body-tambah-kategori" style="display: none;">
+      <form id="form-add-kategori">
+      <div class="row">
+		<div class="col-md-6">
+	        <div class="row">
+	          <div class="col-md-6">
+	            <input  name="tipe-kategori" type="radio" value="kategori">Kategori
+	          </div>
+	          <div class="col-md-6">
+	            <input  name="tipe-kategori" type="radio" value="subkategori">Subkategori
+	          </div>
+	        </div><br>
+	        <div class="row subkat-field" style="display: none">
+	          <div class="col-md-6">
+	            Super Kategori
+	          </div>
+	          <div class="col-md-6">
+	            <select id="super-category" class="form-control" name="super_kategori">
+	              <option id="default-super-category" value="">Pilih super category</option>
+	            </select>
+	          </div>
+	        </div>
+	        <div class="row">
+	          <div class="col-md-6">
+	            Id Kategori
+	          </div>
+	          <div class="col-md-6">
+	            <input class="form-control" name="id_kategori">
+	          </div>
+	        </div>
+	        <div class="row">
+	          <div class="col-md-6">
+	            Nama Kategori
+	          </div>
+	          <div class="col-md-6">
+	            <input class="form-control" name="nama_kategori">
+	          </div>
+	        </div>
+        </div>
+     
+        <br>
+        <div class="col-md-6 subkat-field" style="display: none">
+          <div class="col-md-6">
+            Pilih Formulir          
+          </div>
+          <table class="tabel subkat-field" style="width: 90%;margin-left: 10%; display: none">
+	          <thead>
+	            <tr>
+	              <td><i class="glyphicon glyphicon-check"></i></td>
+	              <td >Jenis Formulir</td>
+	              <td >Label</td>
+	            </tr>
+	          </thead>
+	          <tbody>
+	            <tr id="pilih-produk">
+	              <td ><input type="checkbox" id="ck-pilih-produk" name="produk"></td>
+	              <td >Pilih Produk</td>
+	              <td >
+	              <input type="hidden" name="form[1][tipe]" class="inp-pilih-produk" disabled="" value="select">
+	              <input type="hidden" name="form[1][nama]" class="inp-pilih-produk" disabled="" value="produk">
+	              <input type="text" name="form[1][label]" class="form-control inp-pilih-produk" id="inp-pilih-produk" disabled=""></td>
+	            </tr>
+	            <tr id="pilih-produk">
+	              <td><input type="checkbox" id="ck-tujuan-kirim" name="tujuan"></td>
+	              <td>Tujuan Kirim</td>
+	              <td>
+	              <input type="hidden" name="form[2][tipe]" class="inp-tujuan" disabled="" value="text">
+	              <input type="hidden" name="form[2][nama]" class="inp-tujuan" disabled="" value="tujuan">
+	              <input type="text" name="form[2][label]" class="form-control inp-tujuan" id="inp-tujuan" disabled=""></td>
+	            </tr>
+	            <tr id="pilih-produk">
+	              <td><input type="checkbox" id="ck-kuantitas" name="kuantitas"></td>
+	              <td>Kuantitas</td>
+	              <td>
+	                <input type="hidden" name="form[3][tipe]" class="inp-kuantitas" disabled="" value="number">
+	                <input type="hidden" name="form[3][nama]" class="inp-kuantitas" disabled="" value="quantity">
+	                <input type="text" name="form[3][label]" class="form-control inp-kuantitas" id="inp-kuantitas" disabled="">
+	              </td>
+	            </tr>
+	          </tbody>
+        	</table>
+        </div>
+        </div>
+        <br>
+        
+         <br>
+        <div class="row">
+          <div class="col-md-6">
+          </div>
+          <div class="col-md-6" align="right">
+            <button id="addKategori-btn" class="btn btn-primary" onclick="addKategori()" type="button">Tambahkan</button>
+          </div>
+        </div>
+      </form>
+    </div>  
+  </div>
+
+
+
+  <div id="maintable" class="col-md-12 col-xs-12 col-sm-12">
+    <table id="daftar-kategori" class="display table table1 table-striped table-bordered" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <td width="5%">#</td>
+          <td width="10%">Id Kategori</td>
+          <td width="15%">Nama</td>
+          <td width="10%">Super Kategori</td> 
+          <td width="10%">Jumlah Produk</td>
+          <td width="10%">Pilihan </td>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+<div id="modal-set-supplier" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Tambah Supplier</h4>
+      </div>
+      <div class="modal-body">
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">Daftar Supplier</div>
+            <div class="panel-body">
+              <table class="table table-hover table-striped" id="sup-table">
+                <thead>
+                  <tr>
+                    <td><i class="glyphicon glyphicon-check"></i></td>
+                    <td>Id</td>
+                    <td>Nama</td>
+                  </tr>
+                </thead>
+                <tbody id="list-sup">
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="panel panel-primary">
+            <div class="panel-heading">Assigned Supplier</div>
+            <div class="panel-body">
+              <form id="form-tambah-supplier">
+                <table class="table table-hover table-striped" id="sup-table">
+                  <thead>
+                    <tr>
+                      <td>Id</td>
+                      <td>Harga</td>
+                      <td><i class="glyphicon glyphicon-trash"></i></td>
+                    </tr>
+                  </thead>
+                  <tbody id="list-assigned-sup">
+
+                  </tbody>
+                </table>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="submitSup()">Tambahkan</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+<div id="modal-set-agen" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Atur Harga Keagenan</h4>
+      </div>
+      <div class="modal-body">
+        <div id="per-level" class="col-md-12">
+          <div class="row">
+            <div class="col-md-4">
+              <label>Terapkan harga untuk semua downlink</label>
+            </div>
+            <div class="col-md-8">
+              <input type="number" name="harga_all" class="form-control">
+            </div>
+          </div>
+        </div>  
+        <div id="per-wilayah" class="col-md-6" style="display: none">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              Atur per wilayah
+            </div>
+            <div class="panel-body">
+              <table class="table table-hover table-stripped" id="tabel-daftar-wilayah">
+                <thead id="thead-daftar-wilayah">
+                  <tr>
+                    <td>Id</td>
+                    <td>Nama</td>
+                    <td>Harga</td>
+                  </tr>
+                </thead>
+                <tbody id="tbody-daftar-wilayah">
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div id="per-id" class="col-md-6" style="display: none">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              Atur Per Downlink
+            </div>
+            <div class="panel-body">
+              <table class="table table-hover table-stripped" id="table-daftar-agen">
+                <thead id="thead-daftar-agen">
+                  <tr>
+                    <td>Id</td>
+                    <td>Nama</td>
+                    <td>Harga</td>
+                  </tr>
+                </thead>
+                <tbody id="tbody-daftar-agen">
+                  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="submitHarga()">Tambahkan</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+<script type="text/javascript">
+  $('#ck-pilih-produk').change(function(){
+    if($(this).is(':checked')){
+      $('.inp-pilih-produk').removeAttr('disabled');
+    }else{
+      $('.inp-pilih-produk').attr('disabled',true);
+    }
+  });
+  $('#ck-kuantitas').change(function(){
+    if($(this).is(':checked')){
+      $('.inp-kuantitas').removeAttr('disabled');
+    }else{
+      $('.inp-kuantitas').attr('disabled',true);
+    }
+  });
+  $('#ck-tujuan-kirim').change(function(){
+    if($(this).is(':checked')){
+      $('.inp-tujuan').removeAttr('disabled');
+    }else{
+      $('.inp-tujuan').attr('disabled',true);
+    }
+  });
+  $('input[name=tipe-kategori]').change(function(){
+    if($(this).val()=='subkategori'){
+      $('.subkat-field').show();
+    }else{
+      $('.subkat-field').hide();
+    }
+  });
+
+  function showSuper(){
+    $('#superCategory').show();
+  }
+  function hideSuper(){
+    $('#super-category').val('');
+    $('#default-super-category').attr('selected','selected');
+    $('#superCategory').hide();
+  }
+ 
+  function tampilSubKat(idsub){
+    $('#subkategori-produk').html('')
+    var id_kategori = $('#kategori-produk').val();
+    $.ajax({
+      url:'subKategori',
+      type: 'POST',
+      data: {'idsubkat': id_kategori},
+      success: function(res){
+        var subkategori = JSON.parse(res);
+        $("#sub-category").html("");
+        $.each(subkategori, function(key, val){
+          var option = '<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>';
+          if(idsub!=null){
+            if(val.id_kategori==idsub){
+                  //alert(idsub);
+                  option = '<option value="'+val.id_kategori+'" selected="selected">'+val.nama_kategori+'</option>';
+                }
+              }
+              $("#subkategori-produk").append(option);
+
+            });
+        $('#subkategori-row').show();
+      }
+    });
+  }
+  
+  function showAddKat(){
+    $('#body-tambah-kategori').fadeIn(100);
+    $('#add-kategori-btn').attr('onclick','hideAddKat()');
+    $('#add-kategori-btn').html('Tutup');
+    $('#body-tambah-produk').fadeOut(100);
+    $('#add-produk-btn').attr('onclick','showAdd()');
+    $('#add-produk-btn').html('Tambah Produk');
+  }
+  function hideAddKat(){
+    $('#body-tambah-kategori').fadeOut(100);
+    $('#add-kategori-btn').attr('onclick','showAddKat()');
+    $('#add-kategori-btn').html('Tambah Kategori');
+  }
+  function addKategori(){
+    var data = $('#form-add-kategori').serialize();
+    $.ajax({
+      url:'addKategori',
+      type:'post',
+      data:data,
+      success:function(result){
+        alert(result);
+        var res = JSON.parse(result);
+      }
+    });
+  }
+  
+  function cancelEdit(){
+    $('#body-tambah-produk').hide();
+    $('#panel-add-produk').attr('class','panel panel-default col-md-6');
+    $('#add-produk-heading').html('Tambah Produk <button id="add-produk-btn" class="btn btn-primary" onclick="showAdd()">Buka</button>');
+    $('#edit-btn').hide();
+    $('#add-btn').show();
+    updateView();
+  }
+  function updateView(){
+    reloadTable();
+    $('input').val('');
+    $('#default-kategori').attr('selected','true');
+    $('#subkategori-row').hide();
+    $('#subkategori-produk').html('');
+  }
+</script>

@@ -1,21 +1,39 @@
 <script type="text/javascript">
-var daftar_prod = $("#daftar-produk").DataTable();
-var daftar_sup = $("#daftar-supplier").DataTable();
- function loadTabelSup(){
+  function getProvinceList(){
+    $.getJSON('get_prov',function(success){
+      $.each(success,function(key,val){
+        var id = val.IDProvinsi;
+        var nama = val.Nama;
+        $("#prov_list").append('<option value="'+id+'">'+nama+'</option>');
+      });
+    });
+  }
+  var daftar_sup = $('#daftar-supplier').DataTable();
+    
+    new $.fn.dataTable.Buttons( daftar_sup, {
+      buttons: [
+      'excel', 'pdf','print'
+      ],
+      select:true
+    } );
+
+    daftar_sup.buttons().container()
+    .appendTo( $('.col-sm-6:eq(1)', daftar_sup.table("#daftar-supplier").container() ) );
+  function loadTabelSup(){
     $.ajax({
       url:'getSupplier',
       type:'post',
       success:function(result){
-        alert(result);
+        //alert(result);
         var res = JSON.parse(result);
         $.each(res,function(key,val){
           var ph = "-";
-          if(val.ph!=null){
-            ph = val.ph;
+          if(val.hp!=null){
+            ph = val.hp;
           }
           var em = "-";
-          if(val.em!=null){
-            em = val.em;
+          if(val.email!=null){
+            em = val.email;
           }
           var deposit = setComma(val.total_deposit);
           daftar_sup.row.add([
@@ -33,148 +51,180 @@ var daftar_sup = $("#daftar-supplier").DataTable();
     });
   }
   $(document).ready(function(){
+    getProvinceList();
     loadTabelSup();
-  
+    $('.startdate').datepicker();
+    $('.enddate').datepicker();
+    var table = $('#daftar-produk').DataTable();
+
+    var table2 = $('#daftar-supplier').DataTable();
+
   });
 </script>
-<div class="page-header">Atur Supplier</div>
-<div class="row" id="data-filter-area">
-
-</div>
-<div class="panel panel-default col-md-12" id="panel-add-supplier">
-  <div class="panel-heading" id="add-produk-heading">Tambah Supplier <button id="add-produk-btn" class="btn btn-primary" onclick="showAdd()">Buka</button></div>
-  <div class="panel-body sup-panel" id="body-tambah-produk" style="display: none">
-    <form id="form-add-supplier">
-      <div class="col-md-6">
-        <div class="row">
-          <div class="col-md-6">
-            Id Supplier
-          </div>
-          <div class="col-md-6">
-            <input class="form-control" name="id_supplier">
-          </div>
+<div id="basemain" class="col-md-12 col-xs-12 col-sm-12 row-centered">
+  <div id="maintitle" class="col-md-12 col-xs-12 col-sm-12 g4 fbig">
+    <h1 class="col-md-6 col-sm-6 col-xs-6">SUPPLIER</h1>
+  </div>
+  <div id="datecont" class="col-centered or1bg sharpshadow">
+    <form method="POST" action="<?php echo base_url();?>panelcontrol/filterTagihan">
+      <div id='datecont' class='date-time col-md-12 col-sm-12 col-xs-12 col-centered'>
+        <div class='col-md-4 col-xs-3 row-centered nopad'>From : <input id='startdate' name="start" class="startdate"></div>
+        <div class='col-md-3 col-xs-3 row-centered nopad'>To : <input id='enddate' name="end" class="enddate" width="2vw"></div>
+        <div class='col-md-4 col-xs-4 row-centered'>Filter : 
+          <select name="filtering">
+            <option value="">Opsi Filter</option>
+            <option value="1">Terbayar</option>
+            <option value="2">Belum Terbayar</option>
+            <option value="3">View All</option>
+          </select>
         </div>
-        <div class="row">
-          <div class="col-md-6">
-            Nama Supplier
-          </div>
-          <div class="col-md-6">
-            <input class="form-control" name="nama_supplier">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            Deposit
-          </div>
-          <div class="col-md-6">
-            <input class="form-control" name="deposit">
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-6">
-            Kontak PIC
-          </div>
-          <div class="col-md-6">
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Nama PIC" name="pic_supplier">              
-              <span class="input-group-btn">
-                <button class="btn btn-default" type="button" onclick="addContact()">Kontak</button>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            Alamat Supplier <i class="glyphicon glyphicon-ok" id="status-alamat" style="color: green; display: none"></i>
-          </div>
-          <div class="col-md-6">
-            <input type="hidden" id="inp-status-alamat">
-            <button class="btn btn-default" type="button" onclick="addAddress()">Tambah Alamat</button>
-          </div>
+        <div class='col-md-1 col-xs-1 row-centered g1'>
+          <button type='submit' name='filter' id='filter' class='roundbutton wbg g1'><i class='glyphicon glyphicon-filter'></i></button> 
         </div>
       </div>
-      <div class="col-md-6">
-        <div class="row">
-          <div class="col-md-4">
-            Supplier Gateway
-          </div>
-          <div class="col-md-8">
-            <input type="text" name="nama_gateway" class="btn btn-default" value="Tambah">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <td>Nama</td>
-                  <td>Metode</td>
-                  <td>Opt</td>
-                </tr>
-              </thead>
-              <tbody id="sup-gateway-body">
-                
-              </tbody>
-            </table>
-          </div>
-        </div>
-        
-      </div>
+
     </form>
   </div>
 
-</div>
-<div class="panel panel-default col-md-12 sup-panel" id="panel-daftar-supplier">
-  <div class="panel-heading">Daftar Supplier</div>
-  <div class="panel-body">
-    <table id="daftar-supplier">
-      <thead style="background-color: #275D8D">
-        <tr>
-          <td width="10%">Id</td>
-          <td width="10%">Nama</td>
-          <td width="10%">Deposit</td>
-          <td width="12.5%">PIC</td>
-          <td width="12.5%">Email</td>
-          <td width="10%">Telepon</td>
-          <td width="30%">Alamat</td>
-          <td width="5%">Pilihan</td>
-        </tr>
-      </thead>
-    </table>
-  </div>  
-</div>
-<div class="panel panel-default col-md-12 sup-panel" id="panel-assign-produk" style="display: none">
-  <div class="panel-heading">Produk <button onclick="showAddKat()" id="add-kategori-btn" class="btn btn-primary">Buka</button></div>
-  <div class="panel-body" id="body-tambah-kategori" style="display: none" >
-    <div class="col-md-6">
-      <table id="daftar-produk">
-        <thead style="background-color: #275D8D">
+
+  <div class="panel panel-default col-md-12" id="panel-add-supplier">
+    <div class="panel-heading" id="add-produk-heading"><img src="images/addsupp.png"/><a id="add-produk-btn" class="f1w navbutton" onclick="showAdd()">Tambah Supplier</a></div>
+    <div class="panel-body sup-panel" id="body-tambah-produk" style="display: none">
+      <form id="form-add-supplier">
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-md-6">
+              Id Supplier
+            </div>
+            <div class="col-md-6">
+              <input class="form-control" name="id_supplier">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              Nama Supplier
+            </div>
+            <div class="col-md-6">
+              <input class="form-control" name="nama_supplier">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              Deposit
+            </div>
+            <div class="col-md-6">
+              <input class="form-control" name="deposit">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              Kontak PIC
+            </div>
+            <div class="col-md-6">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Nama PIC" name="pic_supplier">              
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button" id="kontak-btn">Kontak</button>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              Alamat Supplier <i class="glyphicon glyphicon-ok" id="status-alamat" style="color: green; display: none"></i>
+            </div>
+            <div class="col-md-6">
+              <input type="hidden" id="inp-status-alamat">
+              <button class="btn btn-default" type="button" id="address-btn">Tambah Alamat</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-md-4">
+              Supplier Gateway
+            </div>
+            <div class="col-md-8">
+              <input type="text" name="nama_gateway" class="btn btn-default" id="btn-gateway" value="Tambah">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <td>Nama</td>
+                    <td>Metode</td>
+                    <td>Opt</td>
+                  </tr>
+                </thead>
+                <tbody id="sup-gateway-body">
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+  </div>
+  <div class="panel panel-default col-md-12 sup-panel" id="panel-daftar-supplier">
+    <div id="maintitle" class="col-md-12 col-xs-12 col-sm-12 g4 fbig">
+      <h1 class="col-md-6 col-sm-6 col-xs-6">Daftar Supplier</h1>
+    </div>
+    <div class="panel-body">
+      <table id="daftar-supplier" class="display table table1 table-striped">
+        <thead>
           <tr>
             <td width="10%">Id</td>
-            <td width="15%">Nama</td>
-            <td width="15%">Deposit</td>
-            <td width="10%">PIC</td>
-            <td width="10%">Email</td>
+            <td width="10%">Nama</td>
+            <td width="10%">Deposit</td>
+            <td width="12.5%">PIC</td>
+            <td width="12.5%">Email</td>
             <td width="10%">Telepon</td>
-            <td width="20%">Alamat</td>
-            <td width="10%">Pilihan</td>
+            <td width="30%">Alamat</td>
+            <td width="5%">Pilihan</td>
           </tr>
         </thead>
       </table>
-    </div>
-    <div class="col-md-6">
-      <form id="form-assign-produk">
-        <table class="table table-stripe table-hover">
-          <thead>
+    </div>  
+  </div>
+  <div class="panel panel-default col-md-12 sup-panel" id="panel-assign-produk" style="display: none">
+    <div class="panel-heading" id="add-kategori-heading"><img src="images/addprod.png"/><a id="add-kategori-btn" class="f1w navbutton" onclick="showAddKat()">Tambah Produk</a></div>
+    <div class="panel-body" id="body-tambah-kategori" style="display: none" >
+      <div class="col-md-6">
+        <table id="daftar-produk" class="table">
+          <thead style="background-color: #275D8D">
             <tr>
-              <td>ID Produk</td>
-              <td>Harga</td>
-              <td>Prioritas</td>
+              <td width="10%">Id</td>
+              <td width="15%">Nama</td>
+              <td width="15%">Deposit</td>
+              <td width="10%">PIC</td>
+              <td width="10%">Email</td>
+              <td width="10%">Telepon</td>
+              <td width="20%">Alamat</td>
+              <td width="10%">Pilihan</td>
             </tr>
           </thead>
-          <tbody id="assigned-product"></tbody>
         </table>
-      </form>
-    </div>
-    
-  </div>  
+      </div>
+      <div class="col-md-6">
+        <form id="form-assign-produk">
+          <table class="table table-stripe table-hover">
+            <thead>
+              <tr>
+                <td>ID Produk</td>
+                <td>Harga</td>
+                <td>Prioritas</td>
+              </tr>
+            </thead>
+            <tbody id="assigned-product"></tbody>
+          </table>
+        </form>
+      </div>
+
+    </div>  
+  </div>
+
 </div>
 
 <!-- MODAL Supplier Gateway -->
@@ -183,16 +233,24 @@ var daftar_sup = $("#daftar-supplier").DataTable();
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Tambah Saldo</h4>
+        <h4 class="modal-title">Tambah Gateway</h4>
       </div>
       <div class="modal-body">
         <form id="form-tambah-gatway">
-          <div class="row" id="subkategori-row">
+          <div class="row" >
+            <div class="col-md-6">
+              Alamat Gateway
+            </div>
+            <div class="col-md-6">
+              <input type="text" name="gateway_address" class="form-contorl req" placeholder="">
+            </div>
+          </div>
+          <div class="row">
             <div class="col-md-6">
               Metode
             </div>
             <div class="col-md-6">
-              <select class="form-control" name="metode_gateway">
+              <select class="form-control req" name="metode_gateway">
                 <option value="xml">XML</option>
                 <option value="h2h">Host To Host</option>
                 <option value="ym">Yahoo Messenger</option>
@@ -205,43 +263,242 @@ var daftar_sup = $("#daftar-supplier").DataTable();
               Format Kirim
             </div>
             <div class="col-md-6">
-              <textarea class="form-control" name="keterangan"></textarea>
+              <textarea class="req form-control" name="format_kirim"></textarea>
             </div>
           </div>
-          
-        
-          <div class="row">
-            <div class="col-md-6">
-              
-            </div>
-            <div class="col-md-6">
-              <div id="add-btn">
-                <button class="btn btn-primary" type="button" onclick="addProduk()">Tambahkan</button>
-              </div>
-              <div id="edit-btn" style="display: none">
-                <button class="btn btn-success" type="button" onclick="updateProduk()">Simpan</button>
-                <button class="btn btn-danger" type="button" onclick="cancelEdit()">Batal</button>
-              </div>
-            </div>
-          </div>
+
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="sendSaldo()">Tambahkan</button>
+        <button type="button" class="btn btn-primary" onclick="assignGateway()">Tambahkan</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div>
 
 <!-- MODAL Supplier Address -->
-
+<div id="modal-supplier-address" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Tambah Address</h4>
+      </div>
+      <div class="modal-body">
+        <form id="form-address-supplier">
+          <div class="row" id="subkategori-row">
+            <div class="col-md-6">
+              Nama Alamat
+            </div>
+            <div class="col-md-6">
+              <input type="text" name="addressName" placeholder="Kantor, rumah, etc..." class="form-control alamat">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              Jalan
+            </div>
+            <div class="col-md-6">
+              <textarea class="form-control alamat" name="jalan"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              Provinsi
+            </div>
+            <div class="col-md-6">
+              <select id="prov_list" name="prov" class="form-controll pull-right alamat">
+                <option value="null">Pilih Provinsi</option>
+              </select>
+            </div>
+          </div>
+          <div class="row" id="row-kab">
+            <div class="col-md-6">
+              Kabupaten
+            </div>
+            <div class="col-md-6">
+              <select id="kab_list" name="kot" class="form-controll pull-right alamat">
+                <option value="null">Pilih Kabupaten/Kota</option>
+              </select>
+            </div>
+          </div>
+          <div class="row" id="row-kec">
+            <div class="col-md-6">
+              Kecamatan
+            </div>
+            <div class="col-md-6">
+              <select id="kec_list" name="kec" class="form-controll pull-right alamat">
+                <option value="null">Pilih Kecamatan</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal" id="alamat-ok">OK</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
 
 <!-- MODAL Supplier Contact-->
-
+<div id="modal-supplier-contact" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Tambah Kontak</h4>
+      </div>
+      <div class="modal-body">
+        <form id="form-kontak-supplier">
+          <div class="row" id="subkategori-row">
+            <div class="col-md-6">
+              Nomor Telelpon
+            </div>
+            <div class="col-md-6">
+              <input type="text" name="telp" placeholder="0310..." class="form-control kontak">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              Nomor Hp
+            </div>
+            <div class="col-md-6">
+              <input type="text" name="hp" placeholder="08......" class="form-control kontak">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              Email
+            </div>
+            <div class="col-md-6">
+              <input type="email" name="em" placeholder="someone@example.com" class="form-control kontak"> 
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              Yahoo Messenger
+            </div>
+            <div class="col-md-6">
+              <input type="email" name="ym" placeholder="someone@yahoo.com" class="form-control kontak"> 
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              Whatsapp
+            </div>
+            <div class="col-md-6">
+              <input type="text" name="wa" placeholder="08........." class="form-control kontak"> 
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-dismiss="modal" id="kontak-ok">OK</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
 
 <script type="text/javascript">
+  $('#address-btn').click(function(){
+    $('#modal-supplier-address').modal('show');
+  });
+  $('#kontak-btn').click(function(){
+    $('#modal-supplier-contact').modal('show');
+  });
+  $('#btn-gateway').click(function(){
+    $('#modal-supplier-gateway').modal('show');
+  });
+  $('#alamat-ok').click(function (){
+    var sup_address = $('#form-address-supplier').serialize();
+    //if($('.alamat')!=null){
+      $.ajax({
+        url:'submit-address-supplier',
+        type:'post',
+        data:sup_address,
+        success:function (result) {
+          alert(result);
+        }
+      });
+    // }else{
+    //   alert('alamat harus diisi');
+    // }
+    $('#status-alamat').show();
+  });
+  $('#kontak-ok').click(function (){
+    var sup_kontak = $('#form-kontak-supplier').serialize();
+    if($('.kontak')!=null){
+      $.ajax({
+        url:'submit-kontak-supplier',
+        type:'post',
+        data:sup_kontak,
+        success:function (result) {
+          alert(result);
+        }
+      });
+    }else{
+      alert('kontak harus diisi');
+    }
+    $('status-kontak').show();
 
+  });
+  $("#prov_list").change(function(){
+    $("#kab_list").html("<option value='null'>Pilih Kota/Kabupaten</option>");
+    $("#kec_list").html("<option value='null'>Pilih Kecamatan</option>"); 
+    var id_prov = $("#prov_list").val();
+    $.post('get_kab',{'id_prov':id_prov},function(success){
+      var kabupaten = JSON.parse(success);
+      $.each(kabupaten, function(key,val){
+        var id = val.IDKabupaten;
+        var nama = val.Nama;
+        $("#kab_list").append('<option value="'+id+'">'+nama+'</option>');
+      });
+      $("#kab_select").show();
+      $("#kec_select").val(null);
+      $("#kec_select").hide();
+    });
+  });
+  $("#kab_list").change(function(){
+    $("#kec_list").html("<option value='null'>Pilih Kecamatan</option>");
+    var id_kab = $("#kab_list").val();
+    $.post('get_kec',{'id_kab':id_kab},function(success){
+      var kec = JSON.parse(success);
+      $.each(kec, function(key,val){
+        var id = val.IDKecamatan;
+        var nama = val.Nama;
+        $("#kec_list").append('<option value="'+id+'">'+nama+'</option>');
+      });
+      $("#kec_select").show();
+    });
+  });
+
+  function submitSupplier() {
+    var sup_data = $('#form-add-supplier').serialize();
+    var sup_gw = $('#form-sup-gateway').serialize();
+    $.ajax({
+      url:'addSupplier',
+      type:'post',
+      data:sup_data+sup_gw,
+      success:function (result) {
+        alert(result);
+      }
+    });
+  }
+  function assignGateway() {
+    var address = $('input[name=gateway_address]').val();
+    var method = $('select[name=metode_gateway] option:selected').text();
+    var format = $('textarea[name=format_kirim]').val();
+    var btn = '<div class="btn-group"><button class="btn btn-warning" onclick="editGateway()"><i class="glyphicon glyphicon-edit"></i></button><button class="btn btn-danger" onclick="delGw()"><i class="glyphicon glyphicon-trash"></i></button></div>'
+    //alert($('.req').val());
+    if($('.req').val()!=null){
+      $('#sup-gateway-body').append("<tr><td><input type='hidden' name='gw_address[]' value='"+address+"'><input type='hidden' name='gw_format[]' value='"+format+"'>"+address+"</td><td><input value='"+method+"' type='hidden' name='gw_method[]'>"+method+"</td><td>"+btn+"</td></tr>");
+    }else{
+      alert('semua data harus diisi');
+    }
+    
+  }
 
   function showAdd(){
     $('#body-tambah-produk').fadeIn(100);
@@ -254,32 +511,31 @@ var daftar_sup = $("#daftar-supplier").DataTable();
     $('#add-produk-btn').html('Buka');
   }
   function tampilSubKat(idsub){
-    $('#subkategori-produk').html('')
+    $('#subkategori-produk').html('');
     var id_kategori = $('#kategori-produk').val();
     $.ajax({
       url:'subKategori',
       type: 'POST',
       data: {'idsubkat': id_kategori},
       success: function(res){
-          var subkategori = JSON.parse(res);
-          $("#sub-category").html("");
-          $.each(subkategori, function(key, val){
-              var option = '<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>';
-              if(idsub!=null){
-                if(val.id_kategori==idsub){
+        var subkategori = JSON.parse(res);
+        $("#sub-category").html("");
+        $.each(subkategori, function(key, val){
+          var option = '<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>';
+          if(idsub!=null){
+            if(val.id_kategori==idsub){
                   //alert(idsub);
                   option = '<option value="'+val.id_kategori+'" selected="selected">'+val.nama_kategori+'</option>';
                 }
               }
               $("#subkategori-produk").append(option);
-            
-          });
-          $('#subkategori-row').show();
-        }
+            });
+        $('#subkategori-row').show();
+      }
     });
-    }
+  }
   function addProduk(){
-    
+
   }
 
   function reloadTable(){
@@ -297,14 +553,14 @@ var daftar_sup = $("#daftar-supplier").DataTable();
     $('#add-kategori-btn').html('Buka');
   }
   function addKategori(){
-   
+
   }
   function editProduk(rowindex){
- 
+
   }
 
   function updateProduk(){
-    
+
   }
 
   function cancelEdit(){

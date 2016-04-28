@@ -3,7 +3,7 @@
     <link href="bootstrap-3.3.5-dist/css/bootstrap.css" rel="stylesheet" type="text/css">
     <link href="bootstrap-3.3.5-dist/css/bootstrap-theme.css" rel="stylesheet" type="text/css">
     <link href="css/styles.css" rel="stylesheet" type="text/css">
-    <link href="css/demo-styles.css" rel="stylesheet" type="text/css">
+    <link href="css/global.css" rel="stylesheet" type="text/css">
     <link href="css/tilestyle.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="bootstrap-3.3.5-dist/js/bootstrap.js"></script>
@@ -55,9 +55,11 @@
     </script>
 </head>
 <body>
-    <div id="login" class="col-md-12 row-centered">
+    <div id="registrastion" class="col-md-12 row-centered">
         <div id="loghead" class="col-md-12">
-            <span><img src="images/logicon.png" />Silahkan Melakukan Registrasi</span></div>
+            <img src="images/ipaylogo.png" />
+			<h1>Registrasi iPay</h1>
+			<h5>Isi Formulir Berikut untuk mendaftar</h5></div>
         <div id="regform" class="col-md-7 col-centered" style="width: 40%">
     <form id="formreg" method="post">
         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
@@ -79,11 +81,11 @@
         </div>
         <div class="form-group">
             <i class="glyphicon glyphicon-refresh"></i> Pertanyaan Keamanan: <br>
-            <i class="rand1"></i> + <i class="rand2"></i> = ?
+            <div class="row row-centered"><i class="rand1"></i> + <i class="rand2"></i> = ?</div>
             <input type="text" id="total" name="securitykey" class="form-control pull-right" placeholder="Pertanyaan Keamanan" required autocomplete="off" />
         </div>
         <div class="clearfix"></div>
-        <button type="button" class="btn btn-warning col-md-12" name="submit" onclick="signup()"><i class="glyphicon glyphicon-send"></i> Sign Up</button>
+        <button type="button" class="btn regbtn col-md-12" name="submit" onclick="signup()"><i class="glyphicon glyphicon-pencil"></i>Daftarkan</button>
         <label>Sudah punya akun? klik <a href="login"> Login</a></label>
     </form>                       
         </div>    
@@ -188,7 +190,7 @@
               success: function(res){
                   //alert(res);
                   var hasil = JSON.parse(res);
-                  if(!hasil[0].error){
+                  if(!hasil.error){
                       bootbox.dialog({
                         message: "User Berhasil ditambahkan, Silahkan Login Dulu",
                         title: "Berhasil",

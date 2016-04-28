@@ -3,8 +3,7 @@
     <link href="bootstrap-3.3.5-dist/css/bootstrap.css" rel="stylesheet" type="text/css">
     <link href="bootstrap-3.3.5-dist/css/bootstrap-theme.css" rel="stylesheet" type="text/css">
     <link href="css/styles.css" rel="stylesheet" type="text/css">
-    <link href="css/demo-styles.css" rel="stylesheet" type="text/css">
-    <link href="css/tilestyle.css" rel="stylesheet" type="text/css">
+	<link href="css/global.css" rel="stylesheet" type="text/css">
     <link href="css/jquery.realperson.css" rel="stylesheet" type="text/css" > 
     <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="bootstrap-3.3.5-dist/js/bootstrap.js"></script>
@@ -53,26 +52,29 @@
 <body>
     <div id="login" class="col-md-12 row-centered">
         <div id="loghead" class="col-md-12">
-            <span><img src="images/logicon.png" />Silahkan Login</span></div>
+            <img src="images/ipaylogo.png" />
+			<h1>Member Login</h1></div>
         <div id="regform" class="col-md-7 col-centered" style="width: 40%">
     <form action="logedin" id="formlogin" method="post">
         <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
         <div class="form-group">
             <label>Username</label>
-                <input type="text" required="" placeholder="Username" class="form-control pull-right" name="username" />
+                <input type="text" required="" placeholder="Masukkan Username Anda" class="form-control pull-right" name="username" />
         </div>
         <div class="form-group">
             <label>Password</label>
-                <input type="password" required="" placeholder="Password" class="form-control pull-right" name="password" />
+                <input type="password" required="" placeholder="Masukkan Password" class="form-control pull-right" name="password" />
         </div><hr />           
         <div class="form-group">
             <i class="glyphicon glyphicon-refresh"></i> Pertanyaan Keamanan: <br>
-            <i class="rand1"></i> + <i class="rand2"></i> = ?
+            <div class="row row-centered"><i class="rand1"></i> + <i class="rand2"></i> = ?</div>
             <input type="text" id="total" name="securitykey" class="form-control pull-right" placeholder="Pertanyaan Keamanan" required autocomplete="off" >
         </div>
         <div class="clearfix"></div>
-        <button id="logbutton" class="btn btn-warning col-md-12" name="submit" onclick="cekLogin()"><i class="glyphicon glyphicon-send"></i> Login</button>
-        <a href="daftarregistrasi"><button class="btn btn-warning col-md-12" type="button"><i class="glyphicon glyphicon-send"></i> Register</button></a>
+		<div class="form-group">
+        <button id="loginbutton" class="btn col-md-5 col-sm-5 col-xs-5 trs" name="submit" onclick="cekLogin()"><i class="glyphicon glyphicon-send"></i> Login</button>
+        <a href="daftarregistrasi"><button class="btn regbtn col-md-5 col-sm-5 col-xs-5 trs" type="button"><i class="glyphicon glyphicon-pencil"></i> Register</button></a>
+		</div>
     </form>                       
         </div>
     </div>

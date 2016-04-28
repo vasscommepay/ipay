@@ -1,10 +1,20 @@
-
 <script type="text/javascript">
-	var member_table = $("#member-data").DataTable({
-			"scrollX":true
-		});
 	$(document).ready(function(){
-		
+		    
+$('.startdate').datepicker();
+$('.enddate').datepicker();
+ var table = $('#member-data').DataTable();
+ 
+new $.fn.dataTable.Buttons( table, {
+    buttons: [
+        'excel', 'pdf','print'
+    ],
+	select:true
+} );
+
+table.buttons().container()
+    .appendTo( $('.col-sm-6:eq(1)', table.table(".table1").container() ) );
+
 		
 		$.ajax({
 			url:"getDownlink",
@@ -18,7 +28,7 @@
 					var daftar = time.toDateString();
 					var total_komisi = setComma(val.total_komisi);
 					var total_saldo = setComma(val.total_saldo);
-					member_table.row.add([
+					table.row.add([
 						i,
 						val.id_member,
 						val.nama.toUpperCase(),
@@ -35,14 +45,34 @@
 		});
 	});
 </script>
-
-<div class="page-header">Daftar Member</div>
-<div class="row" id="data-filter-area">
-	
+<div id="basemain" class="col-md-12 col-xs-12 col-sm-12 row-centered">
+<div id="maintitle" class="col-md-12 col-xs-12 col-sm-12 g4 fbig">
+<h1 class="col-md-6 col-sm-6 col-xs-6">DAFTAR MEMBER</h1>
 </div>
-<div class="row" id="data-table-area">
-	<table id="member-data" style="width: 100%" class="compact stripe hover">
-		<thead class="afiliasi">
+<div id="datecont" class="col-centered or1bg sharpshadow">
+<form method="POST" action="<?php echo base_url();?>panelcontrol/filterTagihan">
+<div id='datecont' class='date-time col-md-12 col-sm-12 col-xs-12 col-centered'>
+<div class='col-md-4 col-xs-3 row-centered nopad'>From : <input id='startdate' name="start" class="startdate"></div>
+<div class='col-md-3 col-xs-3 row-centered nopad'>To : <input id='enddate' name="end" class="enddate" width="2vw"></div>
+<div class='col-md-4 col-xs-4 row-centered'>Filter : 
+<select name="filtering">
+<option value="">Opsi Filter</option>
+<option value="1">Terbayar</option>
+<option value="2">Belum Terbayar</option>
+<option value="3">View All</option>
+</select>
+</div>
+<div class='col-md-1 col-xs-1 row-centered g1'>
+<button type='submit' name='filter' id='filter' class='roundbutton wbg g1'><i class='glyphicon glyphicon-filter'></i></button> 
+</div>
+</div>
+
+</form>
+</div>
+
+<div id="maintable" class="col-md-12 col-xs-12 col-sm-12">
+<table id="member-data" class="display table table1 table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
 			<tr>
 				<th width="5%">#</th>
 				<th width="5%">Id</th>
@@ -55,8 +85,12 @@
 				<th width="5%">Opsi</th>
 				<th width="10%"></th>
 			</tr>
-		</thead>
-	</table>
+        </thead>
+        <tbody>
+           
+        </tbody>
+    </table>
+</div>
 </div>
 
 <div id="modal-tambah-saldo" class="modal fade" tabindex="-1" role="dialog">

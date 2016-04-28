@@ -136,7 +136,7 @@
                 alert(res.message);
             }else{
                 //alert(res.status);
-                $('#mainmenu').load('pages/home.html');
+                $('#mainmenu').load('pages/dashboard.html');
                 $('#switcher').remove();
                  //alert("Thanks for visiting!");
                 var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
@@ -152,16 +152,16 @@
         data:data,
         type:'post',
         success:function(result){
-            bootbox.dialog({
-              message: "Produk telah ditambahkan",
-              title: "Tambah keranjang belanja",
-              buttons: {
-                success: {
-                  label: "Ok!",
-                  className: "btn btn-success",
-                },
-              }
-            });
+            // bootbox.dialog({
+            //   message: "Produk telah ditambahkan",
+            //   title: "Tambah keranjang belanja",
+            //   buttons: {
+            //     success: {
+            //       label: "Ok!",
+            //       className: "btn btn-success",
+            //     },
+            //   }
+            // });
 
             var cart_count = $('#cart-count').html();
             $('#cart-count').html(+cart_count + 1);

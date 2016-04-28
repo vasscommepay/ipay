@@ -41,8 +41,33 @@ var couchdb = {
 				});
 			}
 		});
-	},
-	"getMember":function(callback){
+	}
+	,"exportSingleUser":function(username, callback){
+		var users_db = nano.db.use('ipay_users');
+		var sql = "Select * FROM users";
+		getData(sql,function(err,rows){
+			if(err){
+				console.log(err);
+				callback(err);
+			}else{
+				users_db.insert(user,username,function(err,body){
+					if(err){
+						callback(err);
+					}else{ 
+						var update = "UPDATE users SET rev ='"+body.rev+"' WHERE username ='"+username+"'";
+						getData(update,function(err,rows){
+							if(err){
+								callback(err);
+							}else{
+								callback(null.body);
+							}
+						});
+					}
+				});
+			}
+		});
+	}
+	,"getMember":function(callback){
 		var member_db = nano.db.use('ipay_member');
 		member_db.get(1,function(err,rows){
 			if(err){
@@ -51,8 +76,8 @@ var couchdb = {
 				callback(null,rows);
 			}
 		});
-	},
-	"exportMember":function(callback){
+	}
+	,"exportMember":function(callback){
 		var member_db = nano.db.use('ipay_member');
 		var beginall = Date.now();
 		connection.query("SELECT * FROM member",function(err,rows){
@@ -78,6 +103,7 @@ var couchdb = {
 				var get_level1;
 				var get_level2;
 				var get_level3;
+				var deposit = null;
 				var get_contact = "SELECT name,channel_id,channel_value FROM member_contact WHERE id_member="+id_member;
 				var contact_list;
 				if(level_member==1){
@@ -111,7 +137,7 @@ var couchdb = {
 									callback(err);
 								}else{
 
-									console.log("Get level 1 for member: "+id_member+" finished id "+speed+"ms");
+									//console.log("Get level 1 for member: "+id_member+" finished id "+speed+"ms");
 									level1_list = rows;
 									callback();
 								}
@@ -129,7 +155,7 @@ var couchdb = {
 								if(err){
 									callback(err);
 								}else{
-									console.log("Get level 2 for member: "+id_member+"  finished id "+speed+"ms");
+									//console.log("Get level 2 for member: "+id_member+"  finished id "+speed+"ms");
 									level2_list = rows;
 									callback();
 								}
@@ -147,7 +173,7 @@ var couchdb = {
 								if(err){
 									callback(err);
 								}else{
-									console.log("Get level 3 for member: "+id_member+"  finished id "+speed+"ms");
+									//console.log("Get level 3 for member: "+id_member+"  finished id "+speed+"ms");
 									level3_list = rows;
 									callback();
 								}
@@ -170,22 +196,34 @@ var couchdb = {
 							}
 						});
 					}
+					,function(callback){
+						if(get_level1!=null){
+							connection.query("SELECT total_deposit FROM member_korwil WHERE id_member="+connection.escape(id_member),function(err,rows){
+								if(err)callback(err);
+								deposit = rows.total_deposit;
+								callback();
+							});
+						}
+					}
 					],
 					function(err){
 						if(err){
 
 						}else{
 							var doc = {nama:nama,tgl_lahir:tgl_lahir,jk:jenis_kelamin,id_num:identity_number,npwp:npwp,level:level_member,komisi:total_komisi,saldo:total_saldo,reg_num:reg_num,max_users:max_users,cur_user:cur_user,address:address,lv0:1,lv1:level1_list,lv2:level2_list,lv3:level3_list,contact:contact_list};
+							if(deposit!=null){
+								doc['deposit']=deposit;
+							}
 							var begin = Date.now();
 							member_db.insert(doc,""+id_member+"",function(err,body){
 								if(err){
 									console.log(err);
+									callback(err);
 								}else{
 									bod.push(body);
 									var speed = Date.now()-begin;
 									console.log("Insert into couchdb for member: "+id_member+" finised in: "+speed+"ms");
 									console.log("################ Finish exporting member: "+id_member+" ##################################");
-
 									callback();
 								}
 							});			
@@ -203,8 +241,8 @@ var couchdb = {
 				}
 			});
 		});
-	},
-	"exportForm":function(callback){
+	}
+	,"exportForm":function(callback){
 		var form_db = nano.db.use('ipay_form');
 		var bod = [];
 		sql = "SELECT DISTINCT id_kategori FROM kategori_form";
@@ -256,8 +294,8 @@ var couchdb = {
 				}
 			});
 		});
-	},
-	"updateForm":function(callback){
+	}
+	,"updateForm":function(callback){
 		var form_db = nano.db.use('ipay_form');
 		var bod = [];
 		sql = "SELECT DISTINCT id_kategori FROM kategori_form";
@@ -314,8 +352,8 @@ var couchdb = {
 				}
 			});
 		});
-	},
-	"updateDb":function(dbname,doc_id,params,callback){
+	}
+	,"updateDb":function(dbname,doc_id,params,callback){
 		var db = nano.db.use(dbname);
 		var oldbody;
 		var newbody;
@@ -330,7 +368,7 @@ var couchdb = {
 						}else{
 							oldbody = body;
 							//console.log("doc_id: ",doc_id);
-							//console.log(oldbody);
+							//console.log('oldbody: ',oldbody);
 							callback();
 						}
 					}
@@ -339,7 +377,7 @@ var couchdb = {
 		],function(err){
 			if(err){
 				callback(err);
-				console.log("Updatedb ERORR: "+err);
+				//console.log("Updatedb ERORR: "+err);
 			}else{
 				//delete oldbody.rev;
 				for(keys in params){
@@ -350,15 +388,15 @@ var couchdb = {
 				db.insert(oldbody,function(err,body){
 					if(err){
 						callback(err);
-						console.log("Updatedb ERORR: "+err);
+						//console.log("Updatedb ERORR: "+err);
 					}else{
 						callback(null,body);
 					}
 				});
 			}
 		});
-	},
-	"exportProduk":function(callback){
+	}
+	,"exportProduk":function(callback){
 		var ipay = nano.db.use('ipay_produk');
 		var produks;
 		async.series([
@@ -386,8 +424,7 @@ var couchdb = {
 				var nama = produk.nama;
 				var harga = produk.harga_beli;
 				var nominal = produk.nominal;
-				var postpaid = true;
-				if(produk.prabayar!=0)postpaid = false;
+				var tipe = produk.tipe;
 				var result;
 				var start = Date.now();
 				var aktif = true;
@@ -429,7 +466,7 @@ var couchdb = {
 							}
 							// var newRow = '{id:'+id_produk+',nama:"'+nama+'",harga:'+harga+',nominal:'+nominal+',aktif:'+aktif+',kosong:'+kosong+',harga_beli:{'+harga_beli+'},harga_jual:{'+harga_jual+'}}';
 							
-							var row = {nama:nama,harga:harga,nominal:nominal,postpaid:postpaid,aktif:aktif,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
+							var row = {nama:nama,harga:harga,nominal:nominal,tipe:tipe,aktif:aktif,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
 							//console.log(newRow);
 
 							ipay.insert(row,id_produk,function(err,body){
@@ -462,8 +499,8 @@ var couchdb = {
 				}
 			});
 		});
-	},
-	"exportSingleProduk":function(id_produk,callback){
+	}
+	,"exportSingleProduk":function(id_produk,callback){
 		var ipay = nano.db.use('ipay_produk');
 		var produk;
 		var row;
@@ -492,9 +529,8 @@ var couchdb = {
 				var nama = produk.nama;
 				var harga = produk.harga_beli;
 				var nominal = produk.nominal;
-				var postpaid = true;
-				if(produk.prabayar!=0)postpaid = false;
 				var result;
+				var tipe = produk.tipe;
 				var start = Date.now();
 				var aktif = true;
 				if(produk.aktif!=1) aktif = false;
@@ -519,7 +555,6 @@ var couchdb = {
 							var supplier={};
 							var memlen = memberList.length;
 							var suplen = supplierList.length;
-							supplier["count"]=suplen;
 							var i;
 							for(i = 0;i<memlen;i++){
 								var member_id = memberList[i].member_id;
@@ -535,7 +570,7 @@ var couchdb = {
 							}
 							var newRow = '{id:'+id_produk+',nama:"'+nama+'",harga:'+harga+',nominal:'+nominal+',aktif:'+aktif+',kosong:'+kosong+',harga_beli:{'+harga_beli+'},harga_jual:{'+harga_jual+'}}';
 							
-							row = {nama:nama,harga:harga,nominal:nominal,postpaid:postpaid,aktif:aktif,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
+							row = {nama:nama,harga:harga,nominal:nominal,tipe:tipe,aktif:aktif,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
 							callback();
 						}
 					}
@@ -602,8 +637,7 @@ var couchdb = {
 					var nama = produk.nama;
 					var harga = produk.harga_beli;
 					var nominal = produk.nominal;
-					var postpaid = true;
-					if(produk.prabayar!=0)postpaid = false;
+					var tipe = produk.tipe;
 					var result;
 					var start = Date.now();
 					var aktif = true;
@@ -642,7 +676,7 @@ var couchdb = {
 									supplier[supplier_id]=harga_terkini;
 								}
 								
-								var row = {_id:id_produk,_rev:rev, nama:nama,harga:harga,nominal:nominal,aktif:aktif,postpaid:postpaid,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
+								var row = {_id:id_produk,_rev:rev, nama:nama,harga:harga,nominal:nominal,aktif:aktif,tipe:tipe,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
 
 								ipay.insert(row,function(err,body){
 									if(err){
@@ -703,8 +737,7 @@ var couchdb = {
 				var nama = produk.nama;
 				var harga = produk.harga_beli;
 				var nominal = produk.nominal;
-				var postpaid = true;
-				if(produk.prabayar!=0)postpaid = false;
+				var tipe = produk.tipe;
 				var result;
 				var start = Date.now();
 				var aktif = true;
@@ -742,7 +775,7 @@ var couchdb = {
 								var harga_terkini = supplierList[i].harga_terkini;
 								supplier[supplier_id]=harga_terkini;
 							}
-							row = {_id:id_produk,_rev:rev, nama:nama,harga:harga,nominal:nominal,aktif:aktif,postpaid:postpaid,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
+							row = {_id:id_produk,_rev:rev, nama:nama,harga:harga,nominal:nominal,aktif:aktif,tipe:tipe,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
 							callback();
 						}
 					}
@@ -781,67 +814,80 @@ var couchdb = {
 			}
 		});
 	}
-	// ,"exportSupplier":function(callback){
-	// 	var supplier = {};
-	// 	var ipay_sup = nano.db.use('ipay_supplier');
-	// 	var bod = [];
-	// 	var sql = "SELECT DISTINCT id_produk FROM supplier_produk";
-	// 	connection.query(sql,function(err,rows){
-	// 		if(err){
-	// 			console.log(err);
-	// 			res.json({"exported":false,"message":err});
-	// 		}else{
-	// 			if(rows.length==0){
-	// 				console.log('no produk data');
-	// 				res.json({"exported":false,"message":"tidak ada data produk"});
-	// 			}else{
-	// 				async.each(rows,function(row,callback){
-	// 					var id_produk = row.id_produk;
-	// 					var this_supplier = {};
-	// 					var get_supplier = "SELECT id_supplier,harga_terkini,is_ready FROM supplier_produk WHERE id_produk = '"+id_produk+"'";
-	// 					connection.query(get_supplier,function(err,result){
-	// 						if(err){
-	// 							console.log(err);
-	// 							res.json({"exported":false,"message":err});
-	// 						}else{
-	// 							if(result.length==0){
-	// 								console.log('no produk data');
-	// 								res.json({"exported":false,"message":"tidak ada data produk"});
-	// 							}else{
-	// 								var i;
-	// 								for(i=0;i<result.length;i++){
-	// 									var supplier_prop = {};
-	// 									supplier_prop["id"]=result[i].id_supplier;
-	// 									supplier_prop["is_ready"]=result[i].is_ready;
-	// 									supplier_prop["harga_terkini"]=result[i].harga_terkini;
-	// 									supplier[result[i].id_supplier] = supplier_prop;
-	// 								}
-	// 								ipay_sup.insert({supplier:supplier},id_produk,function(err,body){
-	// 									if(err){
-	// 										console.log(err);
-	// 										res.json({"exported":false,"message":"no data"});
-	// 									} 
-	// 									console.log
-	// 									bod.push(body);
-	// 									callback();
-	// 								});
-									
-	// 							}
-	// 						}
-	// 					});
-	// 				},
-	// 				function(err){
-	// 					if(err){
-	// 						console.log(err);
-	// 						callback(err);
-	// 					}else{
-	// 						callback(null,bod);
-	// 					}
-	// 				});
-	// 			}
-	// 		}
-	// 	});
-	// }
+	,"exportSupplier":function(callback){
+		var sql = 'SELECT * FROM supplier';
+		var gateways = {};
+		var bod = [];
+		getData(sql,function(err,suppliers){
+			if(err){
+				console.log(req.url,err);
+				res.json({"error":true,"message":err});
+			}else{
+				async.each(suppliers,function(supplier,callback){
+					var id_supplier = supplier.id_supplier;
+					var sql = "SELECT * FROM supplier_gateway where id_supplier="+connection.escape(id_supplier);
+					getData(sql,function(err,gateway){
+						if(err){callback(err);}
+						var id = gateway.idsupplier_gateway;
+						var method = gateway.metode;
+						var address = gateway.address;
+						var format = gateway.format_kirim;
+						gateways[id]={'metode':method,'address':address,'format':format};
+						var supplier_db = nano.db.use('ipay_supplier');
+						delete supplier.id;
+						supplier_db.insert({supplier,gw:gateways},id_supplier,function(err,body){
+							if(err){callback(err);}
+							bod.push(body);
+							callback();
+						});
+					});
+				}
+				,function(err){
+					if(err){
+						callback(err);
+					}else{
+						callback(null,bod);
+					}
+				});
+			}
+		});
+	}
+	,"exportNewSupplier":function(id_supplier,callback){
+		var sql = 'SELECT * FROM supplier WHERE id_supplier="'+id_supplier+'"';
+		var gateways = {};
+		var bod = [];
+		//console.log(sql);
+		getData(sql,function(err,supplier){
+			if(err){
+				//console.log(err);
+				callback(err);
+			}else{
+				var sql = "SELECT * FROM supplier_gateway where id_supplier='"+id_supplier+"'";
+				getData(sql,function(err,gateway){
+					if(err){
+						callback(err);
+					}else{
+						var id = gateway.idsupplier_gateway;
+						var method = gateway.metode;
+						var address = gateway.address;
+						var format = gateway.format_kirim;
+						gateways[id]={'metode':method,'address':address,'format':format};
+						var supplier_db = nano.db.use('ipay_supplier');
+						//delete supplier.id;
+						supplier_db.insert({supplier,gw:gateways},id_supplier,function(err,body){
+							if(err){
+								callback(err);
+							}else{
+								bod.push(body);
+								callback(null,bod);
+							}
+						});
+					}
+				});
+			}
+			
+		});
+	}
 	,"getProduk":function(id_produk,callback){
 		var produk = nano.db.use('ipay_produk');
 		produk.get(id_produk,function(err,hasil){

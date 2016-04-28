@@ -1,0 +1,49 @@
+#dashboard-cont{height:auto;margin:0%!important; padding:0%!important;}
+#mid-cont{margin-top:1%;}
+#mid-graph{height:13vw;border:0;margin-top:0.5%;}
+#mid-graph{	transition: all 0.2s ease-in-out!important;
+	-moz-transition: all 0.2s ease-in-out!important;
+	-webkit-transition: all 0.2s ease-in-out!important;
+	-o-transition: all 0.2s ease-in-out!important;}
+#mid-graph:hover{-webkit-transform:scale(1.05);
+transform:scale(1.05);}
+#quickmenu{position:relative;list-style: none; margin: 0;padding: 0!important;margin-top:3%;}
+#quickmenu li{display:inline-table;width:5vw;}
+.quickmenuul {    -webkit-margin-before: 0!important;
+    -webkit-margin-after: 0!important;
+    -webkit-margin-start: 0!important;
+    -webkit-margin-end: 0!important;
+    -webkit-padding-start: 0!important;}
+.quickmenuul li a:hover , a:focus, a:active {text-decoration:none;color:var(--or2);}
+	.quickmenuul li a {padding:1%;color:var(--or1);font-size:1vw;}
+	.quickmenuul li p{
+	opacity: 0;
+	font-weight:bold;
+	margin:0!important;
+	padding:0!important;
+	
+	transition: all 0.2s ease-in-out!important;
+	-moz-transition: all 0.2s ease-in-out!important;
+	-webkit-transition: all 0.2s ease-in-out!important;
+	-o-transition: all 0.2s ease-in-out!important;
+}
+	.quickmenuul li img{
+	width:40%;
+	transition: all 0.2s ease-in-out!important;
+	-moz-transition: all 0.2s ease-in-out!important;
+	-webkit-transition: all 0.2s ease-in-out!important;
+	-o-transition: all 0.2s ease-in-out!important;
+}
+
+.quickmenuul li a {
+	transform: translate(-50%, -50%);
+	transition: all 0.2s ease-in-out!important;
+	-moz-transition: all 0.2s ease-in-out!important;
+	-webkit-transition: all 0.2s ease-in-out!important;
+	-o-transition: all 0.2s ease-in-out!important;
+}
+.quickmenuul li a:hover > p{
+opacity: 1;	padding-top: 0.5vw!important;
+}
+.charttext{font-size:1vw;padding:0!important;margin:0!important;color:black;font-weight:bolder;}
+#innersummarybox{margin-top:10%;}#innersummarybox img{width:20%;} #innertitle{color:black;font-weight:bold;margin-top:1vw;} .summaryinnertext{color:var(--gr4);font-weight:bold;font-size:0.8vw;}

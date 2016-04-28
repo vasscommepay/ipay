@@ -11,6 +11,13 @@ class produkController extends Controller {
 	private $params;
 
 	//
+	public function assignSup(){
+		//Session::forget('supplier_produk');
+		$params = Request::all();
+		Session::put('supplier_produk',$params);
+		echo json_encode($params);
+	}
+
 	public function kategori(){
 		$session = Session::get('session');
 		$uplink = Session::get('uplink_id');
@@ -19,6 +26,7 @@ class produkController extends Controller {
 		$this->url = 'produk/getKategori';
 		$this->sendPostRequest();
 	}
+
 	public function subKategori(){
 		$id_kategori = Request::input('idsubkat');
 		$session = Session::get('session');
@@ -43,6 +51,18 @@ class produkController extends Controller {
 		$this->sendPostRequest();
 	}
 
+	public function submitHargaAgen(){
+		//Session::forget('harga_agen');
+		$harga = Request::all();
+		Session::put('harga_agen',$harga);
+		echo json_encode($harga);
+	}
+	public function submitHargaWilayah(){
+		//Session::forget('harga_wilayah');
+		$harga = Request::all();
+		Session::put('harga_wilayah',$harga);
+		echo json_encode($harga);
+	}
 	public function addProduk(){
 		$this->url = 'produk/addProduk';
 		$session = Session::get('session');
@@ -52,9 +72,32 @@ class produkController extends Controller {
 		$kategori_produk = Request::input('kategori_produk');
 		$nominal = Request::input('nominal_produk');
 		$tipe = Request::input('tipe_produk');
-		$this->params = array('session'=>$session,'idproduk'=>$id,'namaproduk'=>$nama,'harga_beli'=>$harga_beli,'kategori_produk'=>$kategori_produk,'nominal'=>$nominal,'tipe'=>$tipe);
-		//echo json_encode($this->params);
-		$this->sendPostRequest();
+		$harga_wilayah = Session::get('harga_wilayah');
+		$params = array('session'=>$session,'idproduk'=>$id,'namaproduk'=>$nama,'harga_beli'=>$harga_beli,'kategori_produk'=>$kategori_produk,'nominal'=>$nominal,'tipe'=>$tipe);
+		$this->params = $params;
+		if(Session::has('supplier_produk')){
+			$supplier = Session::get('supplier_produk');
+			$params = array_merge($params,$supplier);
+		}
+		if(Session::has('harga_agen')){
+			$harga_agen = Session::get('harga_agen');
+			$params = array_merge($params,$harga_agen);
+		}
+		if(Session::has('harga_wilayah')){
+			$harga_wilayah = Session::get('harga_wilayah');
+			$params = array_merge($params,$harga_wilayah);
+		}
+		$this->params = $params;
+		echo json_encode($this->params);
+		//$result = $this->sendPostRequest();
+		// $res = json_decode($result);
+		// if(count($res)!=0){
+		// 	if(!$res->error){
+		// 		Session::forget('harga_agen');
+		// 		Session::forget('harga_wilayah');
+		// 		Session::forget('supplier_produk');
+		// 	}
+		// }
 	}
 
 	public function updateProduk(){
@@ -79,23 +122,34 @@ class produkController extends Controller {
 		$this->url = 'produk/getSupplier';
 		$this->sendPostRequest();
 	}
-	// public function produk(){
-	// 	$session = Session::get('session');
-	// 	$uplink = Session::get('uplink_id');
-	// 	$id_produk = Request::input('idproduk');
-	// 	$form3 = array('session'=>$session,'uplink'=>$uplink, 'product_id'=>$id_produk);
-	// 	$this->params = $form3;
-	// 	$this->url = 'produk/getProduk';
-	// 	$this->sendPostRequest();
-	// }
-	// public function form(){
-	// 	$session = Session::get('session');
-	// 	$id_kategori = Request::input('id_kategori');
-	// 	$form4 = array('session'=>$session, 'input_name'=>$id_kategori, 'input_type'=>$inputtype, 'input_label'=>$inputlabel);
-	// 	$this->params = $form4;
-	// 	$this->url = 'produk/getForm';
-	// 	$this->sendPostRequest();
-	// }
+	public function addKontakSup(){
+		$kontak = Request::all();
+		Session::put('sup_kontak',$kontak);
+		echo 'kontak berhasil ditambahkan';
+	}
+	public function addAddressSup(){
+		$address = Request::all();
+		Session::put('sup_address',$address);
+		echo 'alamat berhasil ditambahkan';
+	}
+	public function addSupplier(){
+		$session = array('session'=>Session::get('session'));
+		$data = Request::all();
+		$address = Session::get('sup_address');
+		$kontak = Session::get('sup_kontak');
+		$prop = array('address'=>$address,'kontak'=>$kontak);
+		$params = array_merge($data,$prop,$session);
+		$this->params = $params;
+		$this->url = 'produk/addSupplier';
+		$this->sendPostRequest();
+		//echo json_encode($params);
+	}
+	public function allKategori(){
+		$session = Session::get('session');
+		$this->params = array('session'=>$session,'all'=>true);
+		$this->url = 'produk/getKategori';
+		$this->sendPostRequest();
+	}
 
 	private function sendPostRequest(){
 		$url = $this->url;
@@ -103,5 +157,6 @@ class produkController extends Controller {
 		$sender = new PostSender($url,$params);
 		$result = $sender->sendRequest();
 		echo $result;
+		return $result;
 	}
 }

@@ -6,6 +6,7 @@ var router 		= express.Router();
 var bodyParser 	= require('body-parser');
 var connection  = require('./db');
 var app = express();
+var couchdb = require('./couchdbfunction');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -21,7 +22,7 @@ function randomString(length) {
 }
 
 router.post("/view-get-users",function(req,res,next) {
-var viewGetUsers = {sql : 'SELECT * from users'};
+	var viewGetUsers = {sql : 'SELECT * from users'};
 	connection.query(viewGetUsers, function(err, rows, fields) {
 		if (err){
 		   	console.log(err);
@@ -33,7 +34,7 @@ var viewGetUsers = {sql : 'SELECT * from users'};
 });
 
 router.post("/cek-username",function(req,res,next) {
-var cekUsername = {sql : 'SELECT * from users WHERE username="'+req.body.username+'"'};
+	var cekUsername = {sql : 'SELECT * from users WHERE username="'+req.body.username+'"'};
 	connection.query(cekUsername, function(err, rows, fields) {
 		if (err){
 			console.log(err);
@@ -51,47 +52,58 @@ var cekUsername = {sql : 'SELECT * from users WHERE username="'+req.body.usernam
 });
 
 router.post("/add-new-users",function(req,res,next) {
-var password = req.body.password;
-var hash = crypto.createHash('md5').update(password).digest("hex");
-var member_id;	
+	var password = req.body.password;
+	var hash = crypto.createHash('md5').update(password).digest("hex");
+	var member_id;	
 	async.series([
 		function(callback){
         	var getIdMember ='SELECT id_member from member where reg_num="'+req.body.reg_num+'"';
         	connection.query(getIdMember,function(err,rows){
         		if (err){
-				   console.log(err);
 				   callback(err);
 				}else{
-					if (rows[0]==null){
-						console.log('Message : User Belum Terdaftar');
-						err= "User belum terdaftar";
-						callback(err);
-					} else {
+					if (rows[0]!=null){
 						member_id = rows[0].id_member;
 						callback();
+					} else {
+						err= "User belum terdaftar";
+						callback(err);
 					}
 				}
         	});
         }
-	],
-        function (err){
-        	if(err){
-        		console.log(err);
-        		res.json({"error":true,"message":err});
-        	}
+        ,function(callback){
         	console.log(member_id);
         	var addNewUsers = {sql : 'INSERT INTO users (username,password,email,member_id)VALUES("'+req.body.username+'","'+hash+'","'+req.body.email+'","'+member_id+'")'};
         	connection.query(addNewUsers, function(err, result) {
 				if (err){
-					console.log(err);
-					res.json({"error" : true , "Message" : err});
-					console.log('Message : User Tidak Berhasil Didaftarkan');
+					//console.log(err);
+					callback(err);
 				}else{
-					res.json({"error" : false , "Message" : "Success"});
-					console.log('Message : User Berhasil Didaftarkan');
+					callback();
 				}
 			});
-        });
+        }
+        ,function(callback){
+        	couchdb.exportSingleUser(req.body.username,function(err,result){
+        		if(err){
+        			callback(err);
+        		}else{
+        			callback();
+        		}
+        	});
+        }
+	]
+	,function (err){
+    	if(err){
+    		console.log(err);
+    		res.json({"error":true,"message":err});
+    	}else{
+    		console.log('Message : User Berhasil Didaftarkan');
+    		res.json({"error" : false , "Message" : "Success"});
+    	}
+    	
+    });
 });
 
 router.put("/ubah-password",function(req,res,next) {

@@ -1,0 +1,225 @@
+<script>
+	function cekRespon(){
+		$.ajax({
+			url:'cekRespon',
+			type:'post',
+			success:function(result){
+				//alert(result);
+				var res = JSON.parse(result);
+				if(!res.error){
+					if(res.total_rows!=0){
+						var body = res.rows;
+						//alert(body[0].id);
+						for(var i = 0;i<res.total_rows;i++){
+							var id = body[i].id;
+
+							var stat = $('#stat'+id).text();
+							//alert(id,stat);
+							var val = $('#val'+id).val();
+							var status = body[i].value.status_biller;
+							if(stat!=null && val === id){
+								$('#stat'+id).text(status);
+
+								if(status=='gagal'){
+									$('#row'+id).css('background-color','red');
+									$('#row'+id).css('color','white');
+								}else if(status=='sukses'){
+									$('#stat'+id).css('color','green');
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+	function startChecking(){
+		var count = 0;
+		// setInterval(function(){
+		// 	count++;
+		// 	cekRespon()},10000);
+	}
+	$(document).ready(function() {
+		startChecking();
+		$('.startdate').datepicker();
+		$('.enddate').datepicker();
+		//var table = $('.table1').DataTable();
+		var table = $("#member-data").DataTable({scrollX:true, "order": [[ 3, "desc" ]]});
+		new $.fn.dataTable.Buttons( table, {
+			buttons: [
+			'excel', 'pdf','print'
+			],
+			select:true
+		} );
+
+		table.buttons().container()
+		.appendTo( $('.col-sm-6:eq(1)', table.table(".table1").container() ) );
+		
+		$.ajax({
+			type:'post',
+			url:'getDaftarTransaksi',
+			success:function(result){
+				//alert(result);
+				var datas = JSON.parse(result);
+				if(!datas.error){
+					var i =0;
+					var res = datas.rows;
+					var transaksi = res.rows;
+					//alert(transaksi);
+					$.each(transaksi,function(key,val){
+						i++
+						var data = val.value;
+
+						var time = new Date(data.timestamp);
+						var tanggal = time.toDateString();
+						var jam = time.toLocaleTimeString(); 
+						var total_biaya = setComma(data.total);
+						var rownode = table.row.add([
+							i,
+							tanggal,
+							jam,
+							data._id,
+							data.orderid,
+							data.id_produk,
+							data.order_qty,
+							total_biaya,
+							data.tujuan,
+							"<span id='stat"+data._id+"'>"+data.status_biller+"</span>"
+							]).draw().node();
+
+						if(data.status_biller=='gagal' || data.status_biller==false){
+							$(rownode).css('background-color','red');
+							$(rownode).css('color','white');
+						}
+					          // $("#table-body").append("<tr><td>"+i+"</td>"+"<td>"+val.created_at+"</td>"+"<td>"+val.id_transaksi+"</td>"+"<td>"+val.id_order+"</td>"+"<td>"+val.id_produk+"</td>"+"<td>"+val.quantities+"</td>"+"<td>"+val.total_biaya+"</td>"+"<td>"+val.tujuan+"</td>"+"<td><span id='stat"+val.id_transaksi+"'>"+val.status+"</span></td></tr>");
+					      });
+				}
+       //alert(result);
+       
+   }
+});
+	} );
+
+</script>
+<div id="dashboard-cont" class="col-md-12 col-xs-12 row-centered">
+	<h1 class="col-md-6 col-sm-6 col-xs-6">DASHBOARD</h1>
+	<div id="quickmenu" class="col-md-6 col-xs-6 col-sm-6">
+		<i class="g1 col-md-4 col-sm-4 col-xs-4">QUICKMENU</i>
+		<ul class="quickmenuul col-md-8 col-sm-8 col-xs-8">
+			<li><a href="#" class="f1w navbutton"><img src="images/dashboardicon2.png" /><p>DASHBOARD</p></a></li>
+			<li><a href="#" class="f1w navbutton"><img src="images/depositicon.png" /><p>DEPOSIT</p></a></li>
+			<li><a href="#" class="f1w navbutton"><img src="images/outleticon.png" /><p>OUTLET</p></a></li>
+			<li><a href="#" class="f1w navbutton"><img src="images/usericon.png" /><p>USER</p></a></li>
+			<li><a id="laporan" href="#" class="f1w navbutton"><img src="images/reporticon.png" /><p>LAPORAN</p></a></li>
+		</ul>
+	</div>
+
+	<div id="datecont" class="col-centered or1bg sharpshadow">
+		<form method="POST" action="<?php echo base_url();?>panelcontrol/filterTagihan">
+			<div id='datecont' class='date-time col-md-12 col-sm-12 col-xs-12 col-centered'>
+				<div class='col-md-4 col-xs-3 row-centered nopad'>From : <input id='startdate' name="start" class="startdate"></div>
+				<div class='col-md-3 col-xs-3 row-centered nopad'>To : <input id='enddate' name="end" class="enddate" width="2vw"></div>
+				<div class='col-md-4 col-xs-4 row-centered'>Filter : 
+					<select name="filtering">
+						<option value="">Opsi Filter</option>
+						<option value="1">Terbayar</option>
+						<option value="2">Belum Terbayar</option>
+						<option value="3">View All</option>
+					</select>
+				</div>
+				<div class='col-md-1 col-xs-1 row-centered g1'>
+					<button type='submit' name='filter' id='filter' class='roundbutton wbg g1'><i class='glyphicon glyphicon-filter'></i></button> 
+				</div>
+			</div>
+
+		</form>
+	</div>
+
+	<div id="maintable" class="col-md-12 col-xs-12 col-sm-12">
+		<table id="member-data" class="display table table1 table-striped table-bordered" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th width="5%">#</th>
+					<th width="15%">Tanggal</th>
+					<th width="12%">Jam</th>
+					<th width="8%">Id-Tr</th>
+					<th width="10%">Id Order</th>
+					<th width="10%">Produk</th>
+					<th width="5%">Qty</th>
+					<th width="10%">Biaya</th>
+					<th width="15%">Tujuan</th>
+					<th width="10%">Status</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+
+	<div id="mid-cont" class="col-md-12 col-xs-12 col-sm-12">
+		<hr class="or1bg col-md-11 col-centered">
+		<div id="mid-graph" class="col-md-3 col-xs-6 col-sm-3 g2g">
+			<div id="innersummarybox" class="col-md-12">
+				<div class="col-md-12 col-sm-12 col-xs-12 ">
+					<img src="images/outleticon.png" />
+				</div>
+				<div id="innertitle" class="col-md-12 fsmall ">Total Transaksi</div>
+				<div class="row summaryinnertext">
+					<div class="col-md-12 col-sm-12 col-xs-12 ">
+						Tagihan Terbayar Bulan ini : Rp.5.000.000,000</div></div>
+						<div class="row summaryinnertext">
+							<div class="col-md-12 col-sm-12 col-xs-12">
+								Tagihan Belum Terbayar Bulan : Rp.5.000.000,000</div>
+							</div>
+						</div>
+
+					</div>
+					<div id="mid-graph" class="col-md-3 col-xs-6 col-sm-3 g2g">
+
+						<div id="innersummarybox" class="col-md-12">
+							<div class="col-md-12 col-sm-12 col-xs-12 ">
+								<img src="images/outleticon.png" />
+							</div>
+							<div id="innertitle" class="col-md-12 fsmall ">Total Transaksi</div>
+							<div class="row summaryinnertext">
+								<div class="col-md-12 col-sm-12 col-xs-12 ">
+									Tagihan Terbayar Bulan ini : Rp.5.000.000,000</div></div>
+									<div class="row summaryinnertext">
+										<div class="col-md-12 col-sm-12 col-xs-12">
+											Tagihan Belum Terbayar Bulan : Rp.5.000.000,000</div>
+										</div>
+									</div>
+
+								</div>
+								<div id="mid-graph" class="col-md-3 col-xs-6 col-sm-3 g2g">
+
+									<div id="innersummarybox" class="col-md-12">
+										<div class="col-md-12 col-sm-12 col-xs-12 ">
+											<img src="images/depositicon.png" />
+										</div>
+										<div id="innertitle" class="col-md-12 fsmall ">Total Transaksi</div>
+										<div class="row summaryinnertext">
+											<div class="col-md-12 col-sm-12 col-xs-12 ">
+												Tagihan Terbayar Bulan ini : Rp.5.000.000,000</div></div>
+												<div class="row summaryinnertext">
+													<div class="col-md-12 col-sm-12 col-xs-12">
+														Tagihan Belum Terbayar Bulan : Rp.5.000.000,000</div>
+													</div>
+												</div>
+
+											</div>
+											<div id="mid-graph" class="col-md-3 col-xs-6 col-sm-3 g2g">
+												<div id="innersummarybox" class="col-md-12">
+													<div class="col-md-12 col-sm-12 col-xs-12 ">
+														<img src="images/usericon.png" />
+													</div>
+													<div id="innertitle" class="col-md-12 fsmall ">Total Transaksi</div>
+													<div class="row summaryinnertext">
+														<div class="col-md-12 col-sm-12 col-xs-12 ">
+															Tagihan Terbayar Bulan ini : Rp.5.000.000,000</div></div>
+															<div class="row summaryinnertext">
+																<div class="col-md-12 col-sm-12 col-xs-12">
+																	Tagihan Belum Terbayar Bulan : Rp.5.000.000,000</div>
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>

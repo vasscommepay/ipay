@@ -62,6 +62,13 @@ class TransactionController extends BaseController {
 		Session::put('daftar_produk',$cart);
 	}
 
+	public function cekRespon(){
+		$session = Session::get('session');
+		$member = Session::get('member_id');
+		$this->url = 'transaction/getRespon';
+		$this->params = array('session'=>$session,'id_member'=>$member);
+		$this->sendPostRequest();
+	}
 	public function checkOutCart(){
 		$session = Session::get('session');
 		$username = Session::get('username');

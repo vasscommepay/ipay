@@ -36,6 +36,16 @@ Route::group(['middleware' => 'web'], function () {
 	Route::post('updateProduk','produkController@updateProduk');
 	Route::post('getMutasi','TransactionController@getMutasi');
 	Route::post('getSupplier','produkController@getSupplier');
+	Route::post('addSupplier','produkController@addSupplier');
+	Route::post('assignSup','produkController@assignSup');
+	Route::post('submit-kontak-supplier','produkController@addKontakSup');
+	Route::post('submit-address-supplier','produkController@addAddressSup');
+	Route::post('cekRespon','TransactionController@cekRespon');
+	Route::post('loadDownlink','memberController@loadDownlink');
+	Route::post('loadWilayah','memberController@loadWilayah');
+	Route::post('submit-harga-agen','produkController@submitHargaAgen');
+	Route::post('submit-harga-wilayah','produkController@submitHargaWilayah');
+	Route::post('get-all-kategori','produkController@allKategori');
 });
 Route::get('get_prov','AddressController@getProvinsi');
 Route::get('get_wil','AddressController@getWilayah');

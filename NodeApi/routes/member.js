@@ -280,6 +280,21 @@ router.post("/newMember",function(req, res, next) {
 				
 });
 
+router.post("/get-wilayah",function(req,res){
+	var sql = "SELECT * FROM wilayah";
+	connection.query(sql,function(err,rows){
+		if(err){
+			res.json({'error':true,'message':err});
+		}else{
+			if(rows.length!=0){
+				res.json(rows);
+			}else{
+				res.json({'error':true,'message':'empty row'});
+			}
+		}
+	});
+});
+
 router.put("/perbarui",function(req,res,next) {
 	var perbarui = { sql : 'update member set identity_number="'+req.body.identity_number+'", updated_at="'+req.body.updated_at+'", npwp="'+req.body.npwp+'", total_komisi="'+req.body.total_komisi+'", total_saldo="'+req.body.total_saldo+'" where (id_member="'+req.body.id_member+'")' };
 	connection.query(perbarui, function(err, rows, fields) {
