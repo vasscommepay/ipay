@@ -1,0 +1,171 @@
+<head>
+    <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
+</head>
+<div id="slidecont" class="col-md-12 col-xs-12">
+<script type="text/javascript">
+	var member_table = $("#member-data").DataTable({
+			"scrollX":true
+		});
+	$(document).ready(function(){
+		$.ajax({
+			url:"getDownlink",
+			type:"get",
+			success:function(result){
+				var data = JSON.parse(result);
+				var i = 0;
+				$.each(data,function(key,val){
+					i++;
+					var time = new Date(val.created_at);
+					var daftar = time.toDateString();
+					var total_komisi = setComma(val.total_komisi);
+					var total_saldo = setComma(val.total_saldo);
+					member_table.row.add([
+						i,
+						val.id_member,
+						val.nama.toUpperCase(),
+						val.reg_num,
+						val.level_member,
+						total_komisi,
+						total_saldo,
+						daftar,
+						"<a onclick='memberOption("+val.id_member+")'>Detail</a>",
+						"<a onclick='tambahSaldo("+val.id_member+")'>Tambah Saldo</a>"
+						]).draw(false);
+				});
+			}
+		});
+	});
+</script>
+
+<div class="page-header">Daftar Member</div>
+<div class="row" id="data-filter-area">
+	
+</div>
+<div class="row" id="data-table-area">
+	<table id="member-data" style="width: 100%" class="compact stripe hover">
+		<thead class="afiliasi">
+			<tr>
+				<th width="5%">#</th>
+				<th width="5%">Id</th>
+				<th width="15%">Nama</th>
+				<th width="15%">No.Registrasi</th>
+				<th width="5%">Level</th>
+				<th width="10%" align="right">Total Komisi</th>
+				<th width="15%" align="right">Total Saldo</th>
+				<th width="15%">Tgl Daftar</th>
+				<th width="5%">Opsi</th>
+				<th width="10%"></th>
+			</tr>
+		</thead>
+	</table>
+</div>
+
+<div id="modal-tambah-saldo" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">Tambah Saldo</h4>
+			</div>
+			<div class="modal-body">
+				<form id="form-tambah-saldo">
+					<input name="id_member" type="hidden" id="id_member"></input>
+					<div class="form-group">
+						<label>Jumlah Saldo</label>
+						<input class="form-control" type="number" name="jumlah"></input>	
+					</div>
+					<div class="form-group">
+						<label>Tipe Pembayaran</label>
+						<select id="tipe-pembayaran" name="jalur" class="form-control">
+							<option value="cash">Cash</option>
+							<option value="transfer">Transfer Bank</option>
+							<option value="card">Kartu Kredit</option>
+						</select>
+					</div>
+					<div id="rekening" class="form-group" style="display: none">
+						<label>Rekening</label>
+						<input name="rekening" type="text" class="form-control" value="cash"></input>
+					</div>
+					<div class="form-group">
+						<label>Nama Pembayar</label>
+						<input type="text" name="nama_pembayar" class="form-control"></input>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary" onclick="sendSaldo()">Tambahkan</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+	function tambahSaldo(id_member){
+		$("#modal-tambah-saldo").modal('show');
+		$("#id_member").val(id_member);
+	}
+
+	function sendSaldo(){
+		var data = $('#form-tambah-saldo').serialize();
+		$.ajax({
+			url:'tambahSaldo',
+			data: data,
+			type:'post',
+			success: function(res){
+				//alert(res);
+				var result = JSON.parse(res);
+				if(!result.error){
+					bootbox.dialog({
+		              message: "Saldo telah ditambahkan",
+		              title: "Tambah saldo member",
+		              buttons: {
+		                success: {
+		                  label: "Ok!",
+		                  className: "btn btn-success",
+		                },
+		              }
+		            });
+		            reloadTable();
+		            $('#modal-tambah-saldo').modal('hide');
+				}
+			}
+		})
+	}
+
+	function reloadTable(){
+	member_table.rows().remove().draw();
+    $.ajax({
+		url:"getDownlink",
+		type:"get",
+		success:function(result){
+			member_table.rows().remove().draw();
+			var data = JSON.parse(result);
+			var i = 0;
+			$.each(data,function(key,val){
+				i++;
+				var time = new Date(val.created_at);
+				var daftar = time.toDateString();
+				var total_komisi = setComma(val.total_komisi);
+				var total_saldo = setComma(val.total_saldo);
+				member_table.row.add([
+					i,
+					val.id_member,
+					val.nama.toUpperCase(),
+					val.reg_num,
+					val.level_member,
+					total_komisi,
+					total_saldo,
+					daftar,
+					"<a onclick='memberOption("+val.id_member+")'>Detail</a>",
+					"<a onclick='tambahSaldo("+val.id_member+")'>Tambah Saldo</a>"
+					]).draw(false);
+			});
+		}
+	});
+  }
+
+</script>
+</div>
+<script type="text/javascript">
+   
+</script>

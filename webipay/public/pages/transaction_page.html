@@ -1,0 +1,492 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+  <meta name="csrf-token" content="<?php echo csrf_token(); ?>">
+</head>
+<link href="css/transaction.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+$(document).ready(function(){
+  $.ajaxSetup({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
+
+      $(".cartmodal").click(function(){
+        $("#carts").modal();
+      });
+      $('#chckout').click(function(){
+        $('#midform1').load('pages/checkout.html');
+      });
+      $('#tambahsaldo').click(function(){
+        $('#formsaldo').show()
+        $('#defsurface').hide()
+        //$('#kategori_list').hide()
+      });
+
+  //scroll samping kategori 
+  var updateRightLeftButtonskategori = function() {
+    //if (306 > (parseInt($('#categorymenu ul').css('marginLeft')) * -1)) {
+    if ((($('#categorymenu ul').width() * $('#categorymenu ul').length) + 500) < (parseInt($('#categorymenu ul').css('marginLeft')) * -1)) {
+        $('.left-button1').hide();
+    } else {
+        $('.left-button1').show();
+    }
+    if ((($('#categorymenu ul').width() * $('#categorymenu ul').length) - 500) < (parseInt($('#categorymenu ul').css('marginLeft')) * -1)) {
+        $('.right-button1').hide();
+    } else {
+        $('.right-button1').show();
+    }
+  };
+  updateRightLeftButtonskategori();
+  $('.right-button1').click(function() {
+      updateRightLeftButtonskategori();
+      if ($(this).is(':visible'))
+      $('#categorymenu ul').animate({
+          marginLeft: "-=306px"
+      }, "fast", updateRightLeftButtonskategori);
+  });
+  $('.left-button1').click(function() {
+      updateRightLeftButtonskategori();
+      if ($(this).is(':visible'))
+      $('#categorymenu ul').animate({
+          marginLeft: "+=306px"
+      }, "fast", updateRightLeftButtonskategori);
+  });
+     
+  //scroll samping subkategori
+  var updateRightLeftButtons = function() {
+      if (306 > (parseInt($('#category_list ul').css('marginLeft')) * -1)) {
+          $('.left-button').hide();
+      } else {
+          $('.left-button').show();
+      }
+      if ((($('#category_list ul').width() * $('#category_list ul').length) - 500) < (parseInt($('#category_list ul').css('marginLeft')) * -1)) {
+          $('.right-button').hide();
+      } else {
+          $('.right-button').show();
+      }
+  };
+  updateRightLeftButtons();
+  $('.right-button').click(function() {
+      updateRightLeftButtons();
+      if ($(this).is(':visible'))
+      $('#category_list ul').animate({
+          marginLeft: "-=306px"
+      }, "fast", updateRightLeftButtons);
+  });
+  $('.left-button').click(function() {
+      updateRightLeftButtons();
+      if ($(this).is(':visible'))
+      $('#category_list ul').animate({
+          marginLeft: "+=306px"
+      }, "fast", updateRightLeftButtons);
+  });
+
+
+var clicked=true;
+$("#minimenu").on('click', function(){
+    if(clicked) {
+        clicked=false;
+        $(".hiddenmenu").css({"left":0});
+    }
+    else {
+        clicked=true;
+        $(".hiddenmenu").css({"left": "-110vw"});
+    }
+});
+$("#closebutton").on('click', function(){
+    if(clicked) {
+        clicked=false;
+        $(".hiddenmenu").css({"left":"-110vw"});
+    }
+    else {
+        clicked=true;
+        $(".hiddenmenu").css({"left": 0});
+    }
+});
+
+  $.ajax({
+    url:'kategori',
+    type: 'POST',
+    success: function(res){
+      var kategori = JSON.parse(res);
+      $.each(kategori, function(key, val){
+        var idkat = val.id_kategori;
+        var namakat = val.nama_kategori;
+        $("#allCategory").append('<a href="#generalcat"><div id="category" class="bullet greymenu tile slideTextRight" onclick="tampilSubKat(&#39'+idkat+'&#39)"><div><p>'+idkat+'</p></div><div><p><img src="images/'+namakat+'.png" /></p></div></div></a>');
+      });
+    }
+  });
+
+  $(".ipay").hide()
+  $(".ipaystore").hide()
+  $(".afiliasi").hide()
+  $(".contact").hide()
+  $(".ipay").hide()
+  $(".blog").hide()
+  $(".quicktrans").hide()
+  $(".daftar_trans").hide()
+  $("#shopping_cart").show()
+  $("#footer").hide()
+  $("#slide2").hide()
+  $("#slide3").hide()
+  $("#slide1footer").hide()
+  $("#tambahsaldo").show()
+});
+   
+</script>
+</head>
+<body>
+<div style="display: none" id="slide1top" class="col-md-12 col-sm col-xs-12 shd wbg">
+
+<div id="minimenu" class="col-xs-1 pull-right visible-xs"><i class="glyphicon glyphicon-option-vertical"></i></div>
+<div class="hiddenmenu col-xs-12 visible-xs softtrs softshd">
+<div id="closebutton"><i class="glyphicon glyphicon-remove-circle"></i></div>
+<h2 class="row-centered">MAIN MENU</h2>
+<div id="minimainmenu" class="col-xs-12 row-centered">
+ <ul class="navbar-nav">
+              <li class="col-centered active"><a href="#" class="ipay trs">ABOUT<span class="sr-only">(current)</span></a></li>
+              <li class="col-centered"><a href="#" class="ipaystore trs">IPAYSTORE</a></li>
+        <li class="col-centered"><a href="#" class="afiliasi trs">AFILIASI</a></li>
+              <li class="col-centered"><a href="#slide3" class="trs">CONTACT</a></li>
+              <li class="col-centered"><a href="#" class="trs">BLOG</a></li>
+            </ul>
+</div>
+<div id="hiddennav" class="col-xs-12 row-centered hidbg">
+<h4 class="row-centered">Navigation</h4>
+<div id="mininav" class="col-xs-12 row-centered">
+ <ul class="navbar-nav">
+              <li class="active"><a href="#slide1" class="trs">HOMEPAGE<span class="sr-only">(current)</span></a></li>
+              <li><a href="#slide2" class="trs">LAYANAN IPAY </a></li>
+              <li><a href="#slide3" class="trs">CONTACT</a></li>
+            </ul>
+</div>
+<ul id="maintile" class="tiles col-md-12 col-xs-12">
+<div class="row">
+<li class="col-xs-12"><div class="tile tile-trans rotate3d rotate3dY metro-tile ">
+<div class="faces">
+<div class="front tile-gray"><p class="tile-parmed">Transaksi<br />Sekarang</p></div>
+<div class="back tile-green iconpic centering"><img src="images/cashiericon.png" /></div>
+</div></div></li>
+</div>
+<div class="row">
+<li class="col-xs-6"><div class="tile tile-trans rotate3d rotate3dY metro-tile ">
+<div class="faces">
+<div class="front tile-darkore iconpic centering"><img src="images/regicon.png" /></div>
+<a href="#" class="signupmodal"><div class="back tile-orange"><p class="tile-parmed">Daftar Member</p></div></a>
+</div></div></li>
+<li class="col-xs-6"><div class="tile tile-trans rotate3d rotate3dY metro-tile ">
+<div class="faces">
+<div class="front tile-blue iconpic centering"><img src="images/logicon.png" /></div>
+<a href="#" class="loginmodal"><div class="back tile-deepblue"><p class="tile-parmed">Login</p></div></a>
+</div></div></li>
+</div>
+</ul>
+
+</div>
+<div id="minisocmed" class="col-xs-5 row-centered">
+  <ul class="nav navbar-nav">
+    <li><a href="#company"><img src="images/facebookicon.png" class="trs"></a></li>
+    <li><a href="#works"><img src="images/twittericon.png" class="trs"></a></li>
+    <li><a href="#clients"><img src="images/youtubeicon.png" class="trs"></a></li>
+    <li><a href="#team"><img src="images/gplusicon.png" class="trs"></a></li>
+    <li><a href="#joinus"><img src="images/linkedin.png" class="trs"></a></li>
+  </ul>
+</div>
+<div id="menucopyright" class="col-xs-12 row-centered" style="margin-top:0;">&copy; iPay Copyright 2016</div>
+</div>
+
+</div>
+<div id="isiproduk">
+  <div id="kategori_list" class="col-md-12 col-sm-12 col-xs-12 row-centered">
+    <div id="transaction_category" class="col-md-12 col-xs-12 trs row-centered">
+    <h2 class="pull-left">CATEGORY</h2>
+      <div id="categorymenu" class="col-md-7 col-sm-7 col-xs-7 scrollcat col-centered">
+        <ul id="allCategory">
+          
+        </ul> 
+      </div>
+      <a class="left-button1"><i class="glyphicon glyphicon-chevron-left"></i></a>
+      <a class="right-button1"><i class="glyphicon glyphicon-chevron-right"></i></a>
+    </div>
+  </div>
+
+  <div id="product_list" class="col-md-12 col-sm-12 col-xs-12 row-centered">
+    <div id="generalcat" class="col-md-12 col-xs-12 trs row-centered">
+    <h2 class="pull-left">PRODUCTS</h2>
+      <div id="category_list"  class="col-7 col-sm-7 col-xs-7 scrollcat col-centered">
+        <ul id="allSubCategory">
+          
+        </ul> 
+      </div>
+      <a class="left-button"><i class="glyphicon glyphicon-chevron-left"></i></a>
+      <a class="right-button"><i class="glyphicon glyphicon-chevron-right"></i></a>
+      <a href="#" class="close-button"><i class="glyphicon glyphicon-remove"></i></a>
+    </div>
+  </div>
+
+  <div id="atasmid" style="display: none"><br><br><br></div>
+  <div id="cart1" class="col-md-12 col-md-12 col-xs-12 row-centered">
+
+  <div id="midform1" style="display: none"  class="col-md-7 col-sm-7 col-xs-7 col-centered">
+  </div>
+
+  <div id="midform" class="col-md-7 col-sm-7 col-xs-7 col-centered">
+  <div id="defsurface" class="col-md-12 col-xs-12 col-centered">
+  <div class="row-centered"><i class="glyphicon glyphicon-th"></i></div>
+  <div class="row-centered"><p class="col-md-5 col-sm-5 col-xs-5 col-centered">Pilih Kategori dan Produk untuk memulai pembayaran</p></div>
+  </div>
+  <div id="aform" class="col-md-12 col-xs-12 col-centered">
+  <h2>PEMBAYARAN -NAMA PRODUK-</h2>
+  <form id="formproduk" class="form-horizontal"  method="post" action="">
+      <div id="inputisi">
+        
+      </div>
+      <button type="button" class="col-md-5 btn btn-default" onclick="checkout()"><i class=""></i>Check Out</button>
+      <button type="button" class="col-md-5 btn btn-default" onclick="addcart()"><i class=""></i>Add to Cart</button>
+  </form>
+
+  </div>
+
+
+   <div style="display: none" id="formsaldo" class="col-md-12 col-xs-12 col-centered">
+  <h2>TRANSAKSI SALDO</h2>
+  <form id="formsaldo" class="form-horizontal"  method="post" action="">
+      <div id="inputsaldo">
+        <div class="form-group">
+          <label class="col-md-5 control-label">Nominal Saldo</label>
+          <input type="number" required="" class="col-md-7" name="nominalsaldo" />
+        </div>
+        <!--<div class="form-group">
+          <label class="col-md-5 control-label">Tipe Pembayaran</label>
+          <select id="tipe-pembayaran" name="jalur" class="col-md-7">
+              <option value="cash">Cash</option>
+              <option value="transfer">Transfer Bank</option>
+              <option value="card">Kartu Kredit</option>
+            </select>
+        </div>
+        <div id="rekening" class="form-group" style="display: none">
+          <label class="col-md-5 control-label">Rekening</label>
+          <input type="text" required="" class="col-md-7" name="rekening" />
+        </div>
+        <div class="form-group">
+          <label class="col-md-5 control-label">Nama Pembayar</label>
+          <input type="text" required="" class="col-md-7" name="nama_pembayar" />
+        </div>-->
+
+      </div>
+      <button type="button" class="col-md-5 btn btn-default" onclick="buySaldo()" ><i class=""></i>Beli Saldo</button>
+      <button type="button" class="col-md-5 btn btn-default"><i class=""></i>Cancel</button>
+  </form>
+
+  </div>
+
+  </div>
+  </div>
+
+</div>
+
+ <!-- MODAL CART -->
+<div class="modal fade" id="carts" role="dialog">
+  <div class="modal-dialog"> 
+        
+        <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <img class="carticon2" src="images/carticon2.png" /><span class="cartmodalheadtext">List Pembayaran</span>
+      </div>
+
+      <div id="stepwrappmain" class="col-md-12">
+      </div>
+
+      <div class="modal-footer">
+        <p><a id="chckout" class="close" data-dismiss="modal" href="#" onclick="ceklist()"><img src="images/finishbutton.png"/>Checkout</a></p>
+        <!--<p><a id="chckout" class="close" data-dismiss="modal" href="#" onclick="checkOutCart()"><img src="images/finishbutton.png"/>Checkout</a></p>-->
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+<script type="text/javascript">
+    function tampilSubKat(id_kategori){
+        $.ajax({
+            url:'subKategori',
+            type: 'POST',
+            data: {'idsubkat': id_kategori},
+            success: function(res){
+                var subkategori = JSON.parse(res);
+                $("#allSubCategory").html("");
+                $.each(subkategori, function(key, val){
+                    var idsub = val.id_kategori;
+                    var namasub = val.nama_kategori;
+                    var subkat = val.id_super_kategori;
+                    $("#allSubCategory").append('<li><a href="#aform"><div id="category" class="bullet whitemenu tile slideTextRight" onclick="isiform(&#39'+idsub+'&#39)"><div><p>'+namasub+'</p></div><div><p><img src="assets/images/'+namasub+'.png" /></p></div></div></a></li>');
+                });
+            }
+        });
+    }
+    function tampilNominal(id_kategori){
+        $.post('produk',{'id_kategori': id_kategori},function(success){
+            var list_produk = JSON.parse(success);
+            $("#produk_list").html("");
+            $.each(list_produk,function(key,val){
+                var idpro = val.id;
+                var nominal = setComma(val.nominal);
+                $("#select-field").append('<option value="'+idpro+'">'+nominal+'</option>');
+            });
+        });
+    }
+    function isiform(id_kategori){
+      $.ajax({
+        url:'form',
+        type: 'POST',
+        data: {"id_kategori": id_kategori},
+        success: function(res){
+          //alert(res);
+          var aform = JSON.parse(res);
+          $("#inputisi").html("");
+          $("#formsaldo").hide()
+          $.each(aform, function(key, val){
+            // var idkategori = val.id_kategori;
+            var inputname = val.input_name;
+            var inputtype = val.input_type;
+            var inputlabel = val.input_label;
+
+            var input = '<input type="'+inputtype+'" name="'+inputname+'" class="col-md-7">';
+            if (inputtype == "select") {
+              input = '<select class="col-md-7" id="select-field" name="'+inputname+'">';
+              tampilNominal(id_kategori);
+              //tampilSubKat(id_kategori);
+            };
+            //$("#aform").append('<h2>PEMBAYARAN -'+namasub+'-</h2>');
+            $("#inputisi").append('<div class="form-group"><label class="col-md-5 control-label">'+inputlabel+'</label>'+input+'</div>');
+          });
+          $("input[name='tujuan']").keyup(function() {
+            $("input[name='tujuan']").val(this.value.match(/[0-9]*/));
+          });
+        }
+    });
+  }
+//cekout langsung tanpa addcart
+function checkout(){
+  var data = $("#formproduk").serialize();
+  $.ajax({
+    url:'quickCheckout',
+    type:'post',
+    data:data,
+    success:function(result){
+      alert(result);
+      var res = JSON.parse(result);
+      if(res.error){
+        alert("error");
+      }else{
+        alert("Sukses!");
+        //$('#midform').load('pages/transaction_page.html');
+        $('#midform1').load('pages/checkout.html');
+        /*$("#cartmodal").click(function(){
+            $("#carts").modal();
+          });*/
+      }   
+    }
+  });
+}
+//transaksi langsung
+function checkOutCart(){
+    $.ajax({
+        url:'checkOutCart',
+        type:'post',
+        success:function(result){
+            alert(result);
+            var res = JSON.parse(result);
+            if(res.error){
+                alert(res.message);
+            }else{
+            alert("checkout transaksi")
+            $('#cart-count').html(0);
+            alert(res.status);
+            $('#midformwiz').hide()
+            //$('#finish').show()
+            }
+        }
+    });
+}
+//transaksi masuk ke dalam step list sebelum transaksi langsung
+function ceklist(){
+  //$('#carts').modal('show');
+  $('#cekout').html("");
+  $.ajax({
+    url:'getCart',
+    //url:'listCart',
+    type:'get',
+    success:function(result){
+      //alert(result);
+      var cart = JSON.parse(result);
+      $.each(cart,function(key,val){
+        var produk = val.id_produk;
+        var tujuan = val.tujuan;
+        var qty = val.qty;
+        var harga = val.harga_beli;
+        $('#invgroup1').append('<span class="detlogo col-md-1">'+qty+'</span><span class="dettext col-md-6 col-centered">Produk '+produk+' Tujuan: '+tujuan+'</span><span class="detprice col-md-4 col-centered">Rp. '+harga+'</span><span><button class="btn btn-link" onclick="remove_prod('+key+')"><i class="glyphicon glyphicon-remove-circle"></i></button></span>');
+      });
+    }
+  });
+}
+function remove_prod(id){
+  $.ajax({
+    url:'removeFromCart',
+    data:{'item':id},
+    type:'post',
+    success:function(res){
+      //$('#invgroup'+id).remove();
+      var cart_count = $('#cart-count').html();
+      $('#cart-count').html(cart_count-1);
+    }
+  });
+}
+function setComma(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+//add to cart atas
+function addcart(){
+  var data = $("#formproduk").serialize();
+  $.ajax({
+    url:"addToCart",
+    data:data,
+    type:'post',
+    success:function(result){
+      bootbox.dialog({
+        message: "Produk telah ditambahkan",
+        title: "Tambah keranjang belanja",
+        buttons: {
+          success: {
+          label: "Ok!",
+          className: "btn btn-success",
+          },
+        }
+      });
+      var cart_count = $('#cart-count').html();
+      $('#cart-count').html(+cart_count + 1);
+      $("input").val("");
+    }
+  });
+}
+function buySaldo(){
+  var data = $('#formsaldo').serialize();
+  $.ajax({
+    url:'beliSaldo',
+    type:'post',
+    data: data,
+    success: function(res){
+      alert(res);
+      var result = JSON.parse(res);
+      if(result.error){
+        alert("error");
+      }else{
+        alert("Sukses!");
+        $('#midform1').load('pages/checkout.html');
+      }
+    }
+  });
+}
+</script>

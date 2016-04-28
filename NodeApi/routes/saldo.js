@@ -36,7 +36,6 @@ router.use(function(req, res, next) {
 	}
 });
 
-
 router.post("/tampil-get",function(req, res, next) {
 var tampilGet = { sql : 'SELECT * from mutasi_saldo_member' }
 

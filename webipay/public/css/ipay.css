@@ -1,0 +1,9 @@
+#ipay_container{height:100vh;padding-left:0!important;padding-right:0!important;background-color: rgb(248, 160, 60);}
+#ipay_logo{margin-top:6%;}#ipay_logo img{width:100%;}
+#bottom_nav{position:absolute;bottom:0;background-color:rgba(158,77,3,0.8);}
+#bottom_nav ul li{float:left;font-size:1.3vw;padding:1%;padding-left:5%;}
+#bottom_nav ul li a{color:var(--or2);text-shadow:1px;}#bottom_nav ul li a:hover{text-decoration:none;color:white;margin-left:2vw;}
+#main_container{height:100%;max-height:100vh;overflow:hidden;background-color: rgb(248, 160, 60);}
+
+/* IPAY CONTENT */
+#slidecont{background-color: rgba(248, 160, 60, 0.42);height:80vh;margin-top:5%;}
