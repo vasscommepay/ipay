@@ -263,7 +263,8 @@ padding:0!important;
     box-shadow:none;
 }
 #formlogin .form-group{padding-top:5%;}
-#loginbutton{margin:1%;}
+#loginbutton{margin:1%;background-color:var(--g1);}
+#loginbutton:hover{background-color:var(--g2);}
 .regbtn{margin:1%;background-color:var(--or1)!important;}.regbtn:hover{background-color:var(--or2)!important;}
 #button-cont{position:relative;}
 

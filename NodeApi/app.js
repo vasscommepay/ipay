@@ -19,6 +19,7 @@
  var produk      = require('./routes/produk');
  var address     = require('./routes/address');
  var saldo       = require('./routes/saldo');
+ var respond    = require('./routes/respond');
  var transaction = require('./routes/transaction');
  var nonagen     = require('./routes/nonagen');
  var wilayah     = require('./routes/wilayah');
@@ -36,19 +37,20 @@ var member_db = nano.db.use('ipay_member');
 
 
 // view engine setup
-app.set('port', process.env.PORT || 5000, '127.0.0.1');
+app.set('port', process.env.PORT || 81, '127.0.0.1');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
+app.use('/respond',respond);
 app.use('/address',address);
 app.use('/login',login);
 app.use('/member', member);
@@ -130,7 +132,7 @@ function cekRespon(){
   }
   ,function(callback){
       count++;
-      //console.log('waiting respon ',count);
+      //console.log('cek for new transaction %s times',count);
       transaction_db.view('transaction','new_trans',function(err,body){
             if(err){
             callback(err);
@@ -145,6 +147,7 @@ function cekRespon(){
                       var id = row.id;
                       id_transaksi = id;
                       var value = row.value;
+                      var id_member = value.id_member;
                       var status_biller = value.status_biller;
                       var jumlah_coba = value.tries;
                       if(status_biller=='sukses'){
@@ -152,19 +155,24 @@ function cekRespon(){
                         var id_koor = value.id_koor;
                         var qty = value.order_qty;
                         var id_produk = value.id_produk;
-                        setKomisi(id_produk,qty,id_korwil,id_koor,id,function(err,result){
+                        couchdb.setNotif(id_member,null,'transaction','transaksi direspon','new',{id_transaksi:id_transaksi,status:'sukses'},function(err,row){});
+                        
+                        setKomisi(id_produk,qty,id_korwil,id_koor,id,function(err,komisi_korwil,komisi_koor){
                           if(err){
                             callback(err);
-                        }else{
-                            console.log("transaction %s success in %S ",id,Date.now());
-                            callback();
-                        }
-                    });
+                          }else{
+                              couchdb.setNotif(id_koor,null,'komisi','new_komisi','new','Transaksi: '+id_transaksi+' menghasilkan komisi: '+komisi_koor,function(err,row){});
+                              couchdb.setNotif(id_korwil,null,'komisi','new_respond','new','Transaksi: '+id_transaksi+' menghasilkan komisi: '+komisi_koor,function(err,row){});
+                              console.log("transaction %s success in %S ",id,Date.now());
+                              callback();
+                          }
+                      });
                     }else if(status_biller=='gagal'){
                         createRefund(id,function(err,result){
                           if(err){
                             callback(err);
                         }else{
+                            couchdb.setNotif(id_member,null,'transaction','transaksi direspon','new',{id_transaksi:id_transaksi,status:'gagal'},function(err,row){});
                             console.log("transaction %s refunded in %s sec",id,Date.now());
                             callback();
                         }
@@ -203,6 +211,7 @@ function setResponded(doc_id,callback){
       callback(err);
   }else{
       console.log(doc_id,'responded');
+
       callback(null,true);
   }
 });
@@ -228,7 +237,7 @@ function setKomisi(id_produk,qty,id_korwil,id_koor,id_tran,callback){
           setResponded(id_tran,function(err,res){
 
           });
-          callback(null,result);
+          callback(null,komisi_korwil,komisi_koor);
       }
   });
   }

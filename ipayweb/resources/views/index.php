@@ -13,7 +13,7 @@
   <link href="css/datepicker.css" rel="stylesheet" type="text/css">
   <link href="css/sprites.less" rel="stylesheet" type="text/css">
   <link href="css/global.css" rel="stylesheet" type="text/css">
-  <script type="text/javascript" src="js/bootbox.min.js"></script>
+  <script src="js/dropzone.js"></script>
   <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
   <script type="text/javascript" src="bootstrap-3.3.5-dist/js/bootstrap.js"></script>
   <script type="text/javascript" src="js/datatables.min.js"></script>
@@ -25,16 +25,44 @@
   <script type="text/javascript" src="js/vfs_fonts.js"></script>
   <script type="text/javascript" src="js/jszip.min.js"></script>
   <script type="text/javascript" src="js/async.js"></script>
+  <script type="text/javascript" src="js/bootbox.min.js"></script>
   <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
   <script type="text/javascript">
-   $(document).ready(function(){
-
-    $('body').addClass('loaded');
-    $("#logout").click(function(){
-      $("#logoutmodal").modal();
-    });
-  });
-   $.ajaxSetup({
+    <?PHP
+      Session::forget('harga_agen');
+      Session::forget('harga_wilayah');
+      $level = Session::get('level');
+      if($level!=0){
+        echo 'function hidAdm(){$("#admin").html("");}';
+        echo 'function gantiTombol(){}';
+      }else{
+        echo 'function hidAdm(){}';
+        echo 'function gantiTombol(){$("#btn-tambah-saldo").html("Terapkan Saldo");}';
+      }
+      
+    ?>
+    function showNotifBar(){
+      $('#notif-bar').fadeIn(200);
+      //$('#notif-bar').fadeOut(10000);
+    }
+    function getNotif(data,callback){
+      $.ajax({
+        url:'get-notif',
+        type:'post',
+        data:data,
+        success:function(result){
+          //alert(result);
+          var res=JSON.parse(result);
+          if(!res.error){
+            
+            var notif_count = res.length;
+            
+            callback(res);
+          }
+        }
+      })
+    }
+    $.ajaxSetup({
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
@@ -46,9 +74,69 @@
     }
     return size;
   };
-
-  $(document).ready(function(){
-
+  function hideNotif(){
+    $('#notif-bar').fadeOut(1000);
+  }
+  function checkNotif(){
+    getNotif({status:'new'},function(rows){
+      var notif_count = rows.length;
+      var last_notif = $('#notif-count').html();
+      $('.notif-count').html(notif_count);
+      if(notif_count!=0){
+        showNotifBar();
+        getNotif({status:'posted'},function(rows){
+          var count = rows.length;
+          $('#notif-count').html(count);
+        });
+        getResponTrans(rows);
+        setTimeout(hideNotif,5000);
+      }
+    });
+  }
+  function getResponTrans(rows){
+    $.each(rows,function(key,val){
+      var act = val.activity;
+      if(act=='transaction'){
+        var id = val.message.id_transaksi;
+        var status = val.message.status;
+        var bgcolor;
+        var color = 'white';
+        if(status=='sukses'){
+          bgcolor = 'green';
+        }else{
+          bgcolor = 'red';
+        }
+        $('#row'+id).attr('style','background-color:'+bgcolor+';color:'+color);
+        $('#stat'+id).html('<b>'+status+'</b>');
+      }
+    });
+  }
+   $(document).ready(function(){
+    setInterval(checkNotif,7000);
+    getNotif({status:'posted'},function(rows){
+      var count = rows.length;
+      $('#notif-count').html(count);
+    });
+    $('body').addClass('loaded');
+    $("#logout").click(function(){
+      $("#logoutmodal").modal();
+    });
+    $('#notif-bar').hover(function(){
+      $(this).show();
+      setTimeout(hideNotif,5000);
+    });
+    <?PHP 
+    if(Session::has('lastpage')&&Session::get('level')!=3){
+        echo 'var lastPage = "'.Session::get('lastpage').'";';
+        //$harga = Session::get('harga_agen');
+        //echo 'alert('.json_encode($harga).');';
+      }else{
+        echo 'var lastPage = "dashboard";';
+        //echo 'alert('.Session::get('harga_agen').');';
+      }
+    ?>
+   
+    setTimeout(hideNotif,5000);
     $.ajax({
       url:'getCart',
       type:'get',
@@ -69,7 +157,7 @@
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
       });
-      $("#mainmenu").load("pages/dashboard.html"); 
+      $("#mainmenu").load("pages/"+lastPage+".html"); 
 
       var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
       $("head").append(cssLink); 
@@ -88,9 +176,9 @@
       //     $("#carts").modal();
       //   });
 
-      $("#lynclk").click(function(){
+      $("#reportclk").click(function(){
         clearInterval();
-        $('#mainmenu').load('pages/layanankami.html');
+        $('#mainmenu').load('pages/report.html');
         $('#switcher').remove();
         var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/green.css'>");
         $("head").append(cssLink); 
@@ -101,14 +189,6 @@
         $('#mainmenu').load('pages/cektrans.html');
         $('#switcher').remove();
         var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/black.css'>");
-        $("head").append(cssLink); 
-         //alert("Thanks for visiting!");
-       });
-      $("#pdnclk").click(function(){
-        clearInterval();
-        $('#mainmenu').load('pages/panduanfaq.html');
-        $('#switcher').remove();
-        var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/blue.css'>");
         $("head").append(cssLink); 
          //alert("Thanks for visiting!");
        });
@@ -144,9 +224,9 @@
         $("head").append(cssLink); 
          //alert("Thanks for visiting!");
        });
-      $("#brtclk").click(function(){
+      $("#suppclk").click(function(){
         clearInterval();
-        $('#mainmenu').load('pages/berita.html');
+        $('#mainmenu').load('pages/supplier.html');
         $('#switcher').remove();
         var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/grey.css'>");
         $("head").append(cssLink); 
@@ -155,6 +235,20 @@
       $("#transnow").click(function(){
         clearInterval();
         $('#mainmenu').load('pages/quicktrans.php');
+        $('#switcher').remove();
+        var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
+        $("head").append(cssLink); 
+      });
+      $("#saldo-btn").click(function(){
+        clearInterval();
+        $('#mainmenu').load('pages/saldo_member.html');
+        $('#switcher').remove();
+        var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
+        $("head").append(cssLink); 
+      });
+      $("#user-account").click(function(){
+        clearInterval();
+        $('#mainmenu').load('pages/account.html');
         $('#switcher').remove();
         var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/default.css'>");
         $("head").append(cssLink); 
@@ -201,6 +295,14 @@ $.ajaxSetup({
 </head>
 
 <body class="loaded gr1bg">
+  <div id="notif-bar" class="notif-bar">
+    <a href="" onclick="showNotif()" class="notif-link">
+      <i class="glyphicon glyphicon-bell"></i> 
+      <b class="notif-count">0</b> New notifications
+    </a>
+    |
+    <a href="#" onclick="closeNotifBar()"><i class="glyphicon glyphicon-remove close-box"></i></a>
+  </div>
   <div id="loader-wrapper" class="row row-centered">
     <div id="loader"><img src="images/loadicon.gif" /></div>
   </div>
@@ -243,10 +345,13 @@ $.ajaxSetup({
       <div id="smallicons" class="col-md-12 col-sm-12 col-xs-12">
         <ul class="smalliconsul">
           <li>
-            <p>Selamat Datang <a href="#"><i class="glyphicon glyphicon-user"></i><?php echo Session::get('username'); ?> - <?php echo Session::get('nama'); ?></a></p>
+            <p><a href="#" id="user-account"><i class="glyphicon glyphicon-user"></i><?php echo Session::get('username'); ?> - <?php echo Session::get('nama'); ?></a></p>
           </li>
           <li>
-            <p>|<a href="#"><i class="glyphicon glyphicon-usd"></i><?php echo Session::get('saldo'); ?></a></p>
+            <p>|<a href="#" id="notif-btn"><i class="glyphicon glyphicon-bell"></i><span id="notif-count">0</span> New Notificaitons</a></p>
+          </li>
+          <li>
+            <p>|<a href="#" id="saldo-btn"><i class="glyphicon glyphicon-usd"></i><span id="saldo-member"><?php echo Session::get('saldo'); ?></span></a></p>
           </li>
           <li>
             <p>|<a id="logout" href="#" data-toggle="modal"><i class="glyphicon glyphicon-off"></i>Logout</a></p>
@@ -262,8 +367,7 @@ $.ajaxSetup({
             <div class="col-md-6 col-sm-6"><img src="images/cashiericon.png" /></div>
             <div class="col-md-6 col-sm-6">Transaksi Sekarang</div></a>
           </div>
-          <div class="col-md-1 col-sm-1"></div>
-          <div class="trans_now col-md-3 col-sm-3 col-xs-12"><a href="#" class="transnow trs" id="cktclk">
+          <div class="find_now col-md-3 col-sm-3 col-xs-12"><a href="#" class="transnow trs" id="cktclk">
             <div class="col-md-6 col-sm-6"><img src="images/searchbigicon.png" /></div>
             <div class="col-md-6 col-sm-6">Cek Transaksi</div></a>
           </div>
@@ -275,18 +379,17 @@ $.ajaxSetup({
             <ul class="mainnavul row-centered or1bg">
               <li><a id="hmclk" href="#" class="f1w navbutton row-centered"><img src="images/dashboardicon.png" /><p>Home</p></a></li>
               
-              <li><a id="lynclk" href="#" class="f1w navbutton"><img src="images/layananbigicon.png" /><p>Report</p></a></li>
+              <li><a id="reportclk" href="#" class="f1w navbutton"><img src="images/reportbigicon.png" /><p>Report</p></a></li>
               <?PHP if(Session::get('level')==0){ ?>
-              <li><a id="prdclk" href="#" class="f1w navbutton"><img src="images/product.png" /><p>Produk</p></a></li>
               <li><a id="katclk" href="#" class="f1w navbutton"><img src="images/Categorize-100.png" /><p>Kategori Produk</p></a></li>
-              <li><a id="brtclk" href="#" class="f1w navbutton"><img src="images/supplier.png" /><p>Supplier</p></a></li>
-              <li><a id="laporan" href="#" class="f1w navbutton"><img src="images/customerbigicon.png" /><p>Non Agen</p></a></li>
+              <li><a id="suppclk" href="#" class="f1w navbutton"><img src="images/supplier.png" /><p>Supplier</p></a></li>
+              <li><a id="nonclk" href="#" class="f1w navbutton"><img src="images/customerbigicon.png" /><p>Non Agen</p></a></li>
               <?PHP }else{ ?>
-              <li><a id="prdclk" href="#" class="f1w navbutton"><img src="images/product.png" /><p>Produk</p></a></li>
-              <li><a id="laporan" href="#" class="f1w navbutton"><img src="images/customerbigicon.png" /><p>Non Agen</p></a></li>
+              
+              <li><a id="nonclk" href="#" class="f1w navbutton"><img src="images/customerbigicon.png" /><p>Non Agen</p></a></li>
               <?PHP } ?>
               <?PHP if(Session::get('level')<3){ ?>
-              
+              <li><a id="prdclk" href="#" class="f1w navbutton"><img src="images/product.png" /><p>Produk</p></a></li>
               <li><a id="aflclk" href="#" class="f1w navbutton"><img src="images/afiliasicon.png" /><p>Afiliasi</p></a></li><?PHP } ?>
             </ul>
           </div>
@@ -305,21 +408,16 @@ END OF MAIN PAGE
 <!-- Modal -->
 <div class="modal fade" id="logoutmodal" role="dialog">
   <div class="modal-dialog">
-
     <!-- Modal content-->
     <div class="modal-content">
-      <div class="modal-header" style="padding:20px 50px;">
+      <div class="modal-header row-centered">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4><i class="glyphicon glyphicon-off"></i></h4><br />        
+        <h1><i class="glyphicon glyphicon-off"></i></h1>
+        <h3>Apakah anda yakin ingin keluar?</h3>  		
       </div>
-      <div class="modal-body" style="padding:20px 50px;">
-        <h3>Apakah anda yakin ingin keluar?</h3>  
-        <div class="col-md-12 row-centered">
-         <div class="col-md-6 row-centered medbuttong2az"><a href="logout"><i class="glyphicon glyphicon-ok"></i></a></div>
-         <div class="col-md-6 row-centered medbuttonr2az"><a href="" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i></a></div>
-       </div>
-     </div>
-     <div class="modal-footer">
+      <div class="modal-body">
+         <div class="col-md-6 row-centered"><a href="logout" class="yes"><i class="glyphicon glyphicon-ok"></i></a></div>
+         <div class="col-md-6 row-centered no"><a href="" class="no" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i></a></div>
      </div>
    </div></div></div>
 

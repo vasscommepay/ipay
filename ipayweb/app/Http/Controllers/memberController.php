@@ -9,7 +9,33 @@ class memberController extends Controller {
 
     private $url;
 	private $params;
+	public function getSaldo(){
+		$session = Session::get('session');
+		$id_member = Session::get('member_id');
+		$this->url = 'transaction/getSaldo';
+		$this->params = array('session'=>$session,'id_member'=>$id_member);
+		$this->sendPostRequest();
+	}
+	public function getNotif(){
+		$session = Session::get('session');
+		$id_member = Session::get('member_id');
+		$status = Request::input('status');
+		
+		$this->params = array('session'=>$session,'id_member'=>$id_member,'status'=>$status);
+		if(Request::has('knowed')){
+			$this->params = array('session'=>$session,'id_member'=>$id_member,'status'=>$status,'knowed'=>true);
+		}
+		$this->url = 'member/getNotif';
+		$this->sendPostRequest();
+	}
 
+	public function getHistoriSaldo(){
+		$session = Session::get('session');
+		$id_member = Session::get('member_id');
+		$this->url = 'transaction/get-catatan-pembayaran';
+		$this->params = array('session'=>$session,'id_member'=>$id_member);
+		$this->sendPostRequest();
+	}
 	public function addMember(){
 		$session = Session::get('session');
 		$mnama = Request::input('nama');
@@ -60,11 +86,17 @@ class memberController extends Controller {
 		}
 	}
 	public function getDownlink(){
-		$this->url = 'member/get-downlink';
 		$session = Session::get('session');
 		$level = Session::get('level');
 		$member_id = Session::get('member_id');
-		$this->params = array('session'=>$session,"level"=>$level,"member_id"=>$member_id);
+		$this->params = array('session'=>$session,"level"=>$level,"id_member"=>$member_id);
+		$this->url = 'member/get-downlink';
+		if(Request::has('id_produk')){
+			$produk = Request::get('id_produk');
+			$this->params = array('session'=>$session,"level"=>$level,"id_member"=>$member_id,"id_produk"=>$produk);
+			$this->url = 'produk/getHargaDownlink';
+		}
+		//echo json_encode($this->params);
 		$this->sendPostRequest();
 	}
 
@@ -76,8 +108,25 @@ class memberController extends Controller {
 			echo 'noaccess';
 		}else{
 			$this->params = array('session'=>$session);
+			if(Request::has('id_produk')){
+				$produk = Request::get('id_produk');
+				$this->params = array('session'=>$session,"id_produk"=>$produk);
+				$this->url = 'produk/getHargaWilayah';
+			}
 			$this->sendPostRequest();
 		}
+	}
+
+	public function requestTambahSaldo(){
+		$data = Request::all();
+		$session = Session::get('session');
+		$id_member = Session::get('member_id');
+		$uplink = Session::get('uplink_id');
+		$params = array('session'=>$session,'id_member'=>$id_member,'uplink'=>$uplink);
+		$this->params = array_merge($params,$data);
+		//echo json_encode($this->params);
+		$this->url = 'saldo/addRequestSaldo';
+		$this->sendPostRequest();
 	}
 
 	public function tambahSaldo(){

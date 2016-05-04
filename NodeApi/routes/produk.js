@@ -5,46 +5,30 @@ var connection = require('./db');
 var async      = require('async');
 var nano   = require('./nano');
 var app = express();
+var logger        = require('morgan');
 var couchdb = require('./couchdbfunction');
 var cek_session = require('./session');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(logger('dev'));
 var sessionStat = false;
 
-/*router.use(function(req, res, next) {//Untuk cek apakah ada session
-    console.log(req.method, req.url);
-    var session = req.body.session;
+router.use(function(req, res, next) {//Untuk cek apakah ada session
+	console.log(req.method, req.url);
+	var session = req.body.session;
 	if(session!=null){
-		cek_session(session,function(err,exists,time){
+		cek_session(session,function(err,exists,timeout,username){
 			if(err){
-				console.log(err);
 				res.json({"error":true,"message":err});
 			}else{
 				if(exists){
+					req.username = username;
+					console.log('username: ',username);
 					next();
-				}else{
-					res.json({"error":true,"message":time})
-				}
-			}
-		});
-	}else{
-		res.json({"status":"error","message":"Tidak Ada Session"});
-	}
-});*/
-
-router.use(function(req, res, next) {
-    console.log(req.method, req.url);
-    var session = req.body.session;
-	if(session!=null){
-		connection.query('Select exists(Select * from users where session = "'+session+'") as result',function(err, rows, fields){
-			if(err){
-				console.log(err);
-				res.json({"status":"error","message":err});
-			}else{
-				if(rows[0].result===0){
-					res.json({"status":"error","message":"Session tidak terdaftar"});
-				}else{
-					next();
+				}else if(timeout){
+					req.username = username;
+					console.log('username: ',username);
+					res.json({"error":true,"timeout":true});
 				}
 			}
 		});
@@ -52,6 +36,27 @@ router.use(function(req, res, next) {
 		res.json({"status":"error","message":"Tidak Ada Session"});
 	}
 });
+
+// router.use(function(req, res, next) {
+//     console.log(req.method, req.url);
+//     var session = req.body.session;
+// 	if(session!=null){
+// 		connection.query('Select exists(Select * from users where session = "'+session+'") as result',function(err, rows, fields){
+// 			if(err){
+// 				console.log(err);
+// 				res.json({"status":"error","message":err});
+// 			}else{
+// 				if(rows[0].result===0){
+// 					res.json({"status":"error","message":"Session tidak terdaftar"});
+// 				}else{
+// 					next();
+// 				}
+// 			}
+// 		});
+// 	}else{
+// 		res.json({"status":"error","message":"Tidak Ada Session"});
+// 	}
+// });
 
 router.post('/getForm',function(req,res){
 	var id_kategori = req.body.id_kategori;
@@ -162,16 +167,16 @@ router.post("/addKategori",function(req,res){
 	}
 	console.log(sql);
 	async.series([
-		// function(callback){
-		// 	connection.query(sql,function(err,result){
-		// 		if(err){
-		// 			callback(err);
-		// 		}else{
-		// 			callback();
-		// 		}
-		// 	});
-		// }
-		// ,
+		function(callback){
+			connection.query(sql,function(err,result){
+				if(err){
+					callback(err);
+				}else{
+					callback();
+				}
+			});
+		}
+		,
 		function(callback){
 			//addFrom kategori
 			if(!isEmpty(req.body.form)&&req.body.super_kategori!=''){
@@ -198,8 +203,19 @@ router.post("/addKategori",function(req,res){
 				callback();
 			}
 		}
+		,
+		function(callback){
+			couchdb.exportSingleForm(req.body.id_kategori,function(err,body){
+				if(err){
+					callback(err);
+				}else{
+					callback();
+				}
+			});
+		}
 	]
-	,function(err){
+	,
+	function(err){
 		if(err){
 			console.log(err);
 			res.json({"error":true,"message":err});
@@ -367,6 +383,50 @@ router.post("/updateProduk",function(req,res) {
 	});
 
 });
+
+router.post("/getHargaDownlink",function(req,res){
+	var id_member = connection.escape(req.body.id_member);
+	var id_produk = connection.escape(req.body.id_produk);
+	var level = req.body.level;
+	var subquery;
+	if(level==1){
+		subquery = "(SELECT id_member FROM member_koordinator WHERE id_korwil = "+id_member+")";
+	}else if(level == 2){
+		subquery = "(SELECT id_member FROM member_agen WHERE id_koordinator = "+id_member+")";
+	}else{
+		subquery = "(SELECT id_member FROM member_korwil)";
+	}
+	var query = "SELECT id_member, nama, harga_beli FROM produk_member LEFT join member ON id_member = member_id WHERE member_id IN"+subquery+" AND product_id="+id_produk;
+	console.log(query);
+	connection.query(query,function(err,rows){
+		if(err){
+			console.log('error in %s, message %s',req.url,err);
+			res.json({'error':true,'message':err});
+		}else if(rows.length==0){
+			console.log('error in %s, message %s',req.url,'nodata');
+			res.json({'error':true,'message':'not found'});
+		}else{
+			res.json(rows);
+		}
+	});
+});
+
+router.post("/getHargaWilayah",function(req,res){
+	var id_produk = connection.escape(req.body.id_produk);
+	var query = "SELECT id_wilayah, nama, AVG(harga_jual) as avg_jual FROM produk_member LEFT JOIN member_korwil ON member_id = id_member LEFT JOIN wilayah ON wilayah.id = id_wilayah WHERE product_id = "+id_produk+" GROUP BY member_korwil.id_wilayah";
+	connection.query(query,function(err,rows){
+		if(err){
+			console.log('error in %s, message %s',req.url,err);
+			res.json({'error':true,'message':err});
+		}else if(rows.length==0){
+			console.log('error in %s, message %s',req.url,nodata);
+			res.json({'error':true,'message':'not found'});
+		}else{
+			res.json(rows);
+		}
+	});
+});
+
 router.post("/addProduk",function(req,res,next) {
 	var id = connection.escape(req.body.idproduk);
 	var nama = connection.escape(req.body.namaproduk);
@@ -401,29 +461,33 @@ router.post("/addProduk",function(req,res,next) {
 		}
 		
 		,function(callback){
-			var sql = "INSERT INTO supplier_produk(id_supplier,id_produk,harga_terkini) VALUES";
-			var count = 0;
-			for(var id_sup in supplier){
-				count++;
-				//var idsup = connection.escape(id_sup);
-				var harga = supplier[id_sup];
-				sql = sql+'('+id_sup+','+id+','+harga+'),';
-			}
-			var len = sql.length;
-			sql = sql.substring(0,len-1);
-			console.log(sql);
-			connection.query(sql,function(err,result){
-				if(err){
-					callback(err);
-				}else{
-					callback();
+			if(supplier!=null){
+				var sql = "INSERT INTO supplier_produk(id_supplier,id_produk,harga_terkini) VALUES";
+				var count = 0;
+				for(var id_sup in supplier){
+					count++;
+					//var idsup = connection.escape(id_sup);
+					var harga = supplier[id_sup];
+					sql = sql+'('+id_sup+','+id+','+harga+'),';
 				}
-			});
+				var len = sql.length;
+				sql = sql.substring(0,len-1);
+				console.log(sql);
+				connection.query(sql,function(err,result){
+					if(err){
+						callback(err);
+					}else{
+						callback();
+					}
+				});
+			}else{
+				callback();
+			}
 		}
 		,
 		function(callback){
 			//Update harga beli tiap wilayah;
-			if(!isEmpty(req.body.harga_wilayah)){
+			if(req.body.harga_wilayah!=null){
 				var wilayah = req.body.harga_wilayah;
 				updateHargaWilayah(wilayah,id,function(err,result){
 					if(err){
@@ -439,7 +503,7 @@ router.post("/addProduk",function(req,res,next) {
 		,
 		function(callback){
 			//update harga beli tiap downlink
-			if(!isEmpty(req.body.harga_downlink)){
+			if(req.body.harga_downlink!=null){
 				var downlink = req.body.harga_downlink;
 				updateHargaDownlink(downlink,id,function(err,result){
 					if(err){
@@ -482,13 +546,44 @@ function isEmpty(obj) {
 
     return true && JSON.stringify(obj) === JSON.stringify({});
 }
+
+router.post('/updateHargaDownlink',function(req,res){
+	var downlinks = req.body.harga_downlink;
+	var id_produk = req.body.id_produk;
+	updateHargaDownlink(downlinks,id_produk,function(err,result){
+		if(err){
+			console.log(err);
+		   	res.json({"error":true,"message":err});
+		}else{
+			//var affectedRows = result.affectedRows;
+			res.json({"error":false,"message":"sukses merubah harga downlink"});
+		}
+	});
+});
+
+router.post('/updateHargaWilayah',function(req,res){
+	var wilayah = req.body.wilayah;
+	var id_produk = req.body.id_produk;
+	updateHargaWilayah(wilayah,id_produk,function(err,result){
+		if(err){
+			console.log(err);
+		   	res.json({"error":true,"message":err});
+		}else{
+			//var affectedRows = result.affectedRows;
+			res.json({"error":false,"message":"sukses merubah harga downlink"});
+		}
+	});
+});
+
+
 function updateHargaDownlink(downlinks,id_produk,callback){
 	var sql='';
 	for(var id in downlinks){
 		var harga = downlinks[id];
 		var member_id = connection.escape(id);
+		var produk = connection.escape(id_produk);
 		if(harga!=''){
-			var this_sql = 'UPDATE produk_member SET harga_jual = '+harga+' WHERE product_id = '+id_produk+' AND member_id='+member_id+';';
+			var this_sql = 'UPDATE produk_member SET harga_beli = '+harga+' WHERE product_id = '+produk+' AND member_id='+member_id+';';
 			sql = sql+this_sql;
 		}
 	}
@@ -559,6 +654,13 @@ router.post('/delProduk',function(req,res){
 
 router.post('/getSupplier',function(req,res){
 	var sql_query = "SELECT DISTINCT supplier.id_supplier as id_sup, supplier.*,address.jalan,kecamatan.Nama as kec,kabupaten.Nama as kab,provinsi.Nama as prov,(SELECT value FROM supplier_contact WHERE id_channel = 'em' AND id_supplier = id_sup ) as email,(SELECT value FROM supplier_contact WHERE id_channel = 'hp' AND id_supplier = id_sup ) as hp FROM supplier LEFT JOIN address ON alamat_supplier = id_address LEFT JOIN kecamatan ON IDKecamatan = id_kecamatan LEFT JOIN kabupaten ON kabupaten.IDKabupaten = id_kota LEFT JOIN provinsi ON provinsi.IDProvinsi = id_provinsi LEFT JOIN supplier_contact ON supplier.id_supplier = supplier_contact.id_supplier";
+	if(req.body.id_produk!=null){
+
+		var prod = connection.escape(req.body.id_produk);
+		console.log(prod);
+		sql_query = "SELECT * FROM supplier_produk WHERE id_produk ="+prod;
+	}
+	//console.log(sql_query);
 	getData(sql_query,function(err,rows){
 		if(err){
 			console.log(res.url,err);

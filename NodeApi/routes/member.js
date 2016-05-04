@@ -5,9 +5,12 @@ var router 		= express.Router();
 var bodyParser 	= require('body-parser');
 var connection  = require('./db');
 var mailer      = require('express-mailer');
+var couchdb = require('./couchdbfunction');
 var nodemailer = require('nodemailer');
 var nano   = require('./nano');
 var app = express();
+var cek_session = require('./session');
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -23,19 +26,22 @@ app.post('/', function (req, res, next) {
 
 
 
-router.use(function(req, res, next) {
-    console.log(req.method, req.url);
-    var session = req.body.session;
+router.use(function(req, res, next) {//Untuk cek apakah ada session
+	//console.log(req.method, req.url);
+	var session = req.body.session;
 	if(session!=null){
-		connection.query('Select exists(Select * from users where session = "'+session+'") as result',function(err, rows, fields){
+		cek_session(session,function(err,exists,timeout,username){
 			if(err){
-				console.log(err);
-				res.json({"status":"error","message":err});
+				res.json({"error":true,"message":err});
 			}else{
-				if(rows[0].result===0){
-					res.json({"status":"error","message":"Session tidak terdaftar"});
-				}else{
+				if(exists){
+					req.username = username;
+					//console.log('username: ',username);
 					next();
+				}else if(timeout){
+					req.username = username;
+					//console.log('username: ',username);
+					res.json({"error":true,"timeout":true});
 				}
 			}
 		});
@@ -44,6 +50,21 @@ router.use(function(req, res, next) {
 	}
 });
 
+router.post('/get-komisi',function(req,res){
+	var id_member = connection.escape(req.body.id_member);
+	var query = "SELECT total_komisi FROM member WHERE id_member="+id_member;
+	connection.query(query,function(err,rows){
+		if(err){
+			console.log(err);
+			res.json({'error':true,'message':err});
+		}else if(rows.length==0){
+			console.log('not found');
+			res.json({'error':true,'message':'not found'});
+		}else{
+			res.json(rows);
+		}
+	});
+});
 
 router.post("/tampil-get",function(req, res, next) {
 	var tampilGet = { sql : 'SELECT * from member' }
@@ -61,7 +82,7 @@ router.post("/tampil-get",function(req, res, next) {
 
 router.post('/get-downlink',function(req,res){
 	var level = req.body.level;
-	var memberid = req.body.member_id;
+	var memberid = req.body.id_member;
 	var sql;
 	if(level==1){
 		sql = "SELECT * FROM member WHERE id_member IN (SELECT id_member FROM member_koordinator WHERE id_korwil = "+memberid+")";
@@ -70,6 +91,7 @@ router.post('/get-downlink',function(req,res){
 	}else {
 		sql = "SELECT * FROM member WHERE level_member = 1";
 	}
+	console.log(level,sql);
 	connection.query(sql,function(err,rows){
 		if(err){
 			console.log(err);
@@ -108,7 +130,67 @@ router.post("/tampil-post",function(req, res, next) {
 		}
 	});
 });
-
+router.post("/getNotif",function(req,res){
+	var id_member = req.body.id_member;
+	var status = req.body.status;
+	var knowed = req.body.knowed;
+	var this_body;
+	var rows;
+	var results =[];
+	var respond;
+	async.series([
+		function(callback){
+			//console.log('get notif');
+			couchdb.getNotif(status,id_member,function(err,body){
+				if(err){
+					callback(err);
+				}else{
+					this_body = body;
+					rows = body.rows;
+					callback();
+				}
+			});
+		}
+		,
+		function(callback){
+			async.each(rows,function(row,callback){
+				var value = row.value;
+				var id = row.id;
+				var member = value.from;
+				var member_db = nano.db.use('ipay_member');
+				member_db.get(member,function(err,body){
+					if(err){
+						callback(err);
+					}else{
+						value['from']=body.nama;
+						results.push(value);
+						couchdb.updateDb('ipay',id,{'status':'posted'},function(err,body){
+							if(err){
+								callback(err);
+							}else{
+								console.log(id,'updated');
+								callback();
+							}
+						});
+					}
+				});
+			}
+			,
+			callback);
+		}
+	]
+	,function(err){
+		if(err){
+			console.log(err);
+			respond = {'error':true,'msg':err};
+		}else{
+			respond = results;
+		}
+		res.json(respond);
+		//couchdb.activityLog(req.username,req.url,respond,res.statusCode,function(err,body){});
+	});
+	
+});
 
 router.post("/newMember",function(req, res, next) {
 	var start = Date.now();
@@ -127,6 +209,7 @@ router.post("/newMember",function(req, res, next) {
 		console.log("newlevel="+newMemberLevel);
 	}
 	var nama = req.body.nama;
+	var email;
 	async.series([
         //Load user to get userId first
         function(callback){
@@ -186,7 +269,7 @@ router.post("/newMember",function(req, res, next) {
         
         function(callback){
         	var telp = req.body.telp;
-        	var email = req.body.email;
+        	email = req.body.email;
     		var telp_sql = 'INSERT INTO member_contact(channel_id,channel_value,id_member,name)VALUES("ph","'+telp+'","'+newMemberId+'","defaultph")';
     		var email_sql = 'INSERT INTO member_contact(channel_id,channel_value,id_member,name)VALUES("em","'+email+'","'+newMemberId+'","defaultem")';
     		connection.query(telp_sql, function(err, result) {
@@ -237,11 +320,11 @@ router.post("/newMember",function(req, res, next) {
         	});
         },
         function(callback){
-        	var komisi = 500;
+        	var komisi = 0;
         	if(req.body.komisi!=null){
         		komisi = connection.escape(req.body.komisi);
         	}
-        	var sql = 'INSERT INTO produk_member (product_id,member_id,harga_beli,harga_jual,keuntungan) SELECT product_id,'+newMemberId+',harga_jual,(harga_jual+'+komisi+'),keuntungan FROM produk_member WHERE member_id ='+id_atasan;
+        	var sql = 'INSERT INTO produk_member (product_id,member_id,harga_beli,harga_jual,keuntungan) SELECT product_id,'+newMemberId+',harga_beli,(harga_beli+'+komisi+'),keuntungan FROM produk_member WHERE member_id ='+id_atasan;
         	connection.query(sql,function(err,result){
         		if (err){
 				   console.log(err);
@@ -253,6 +336,18 @@ router.post("/newMember",function(req, res, next) {
         	});
  
         }
+        ,function(callback){
+        	var role;
+        	if(level_member==1){
+        		role = "Korwil";
+        	}else if(level_member==2){
+        		role="Sales / Koordinator Agen";
+        	}else{
+        		role="Agen";
+        	}
+        	var message = "Selamat anada telah terdaftar sebagai "+role+" iPay.<br>";
+        	sendEmail(email,"Registrasi Ipay");
+        }
     ], function(err) {
     	if (err) return next(err);
     	var final_sql = "SELECT * FROM member WHERE id_member ="+newMemberId;
@@ -263,9 +358,8 @@ router.post("/newMember",function(req, res, next) {
 			}else{
 				var end = Date.now();
 				var regNum = rows[0].reg_num;
-				var createdAt = rows[0].created_at;
-				sendEmail('gallan.widyanto@gmail.com','iPay Registration','<h2>Selamat anda telah terdaftar pada sistem iPay<h2><br><p> Gunakan nomor registrasi untuk membuat user baru.</p><br><h2>Nomor Registrasi:'+regNum+'</h2>');
-				updateProduk(function(err){
+				var createdAt = rows[0].created_at;	
+				couchdb.updateProduk(function(err){
 					if(err){
 						console.log(err);
 						res.json({"inserted":true,"nama":nama,"reg_num":regNum,"createdAt":createdAt,"execuionTime":end-start,"dbupdated":false});
@@ -341,17 +435,23 @@ function createRegNumber(length){
 	return result+date;
 }
 
-function sendEmail(to,subject,message){
+function sendEmail(to,subject,message,callback){
 	var transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
-            user: 'bfibrianto@gmail.com', // Your email id
-            pass: '' // Your password
-        }
+        host: '192.168.13.20',
+	    port: '587',
+	    secure:false,
+	    requereTLS:true, // use SSL
+	    tls: {
+	        rejectUnauthorized: false
+	    },
+	    auth: {
+	        user: 'regsender@ipay.id',
+	        pass: 'TLqd894D6a'
+	    }
     });
 
 	var mailOptions = {
-	    from: 'bfibrianto@gmail.com', // sender address
+	    from: 'regsender@ipay.id', // sender address
 	    to: to, // list of receivers
 	    subject: subject, // Subject line
 	    //text: text //, // plaintext body
@@ -360,8 +460,10 @@ function sendEmail(to,subject,message){
 	transporter.sendMail(mailOptions, function(error, info){
 	    if(error){
 	        console.log(error);
+	        callback(error);
 	    }else{
 	        console.log('Message sent: ' + info.response);
+	        callback(null,info);
 	    };
 	});
 }

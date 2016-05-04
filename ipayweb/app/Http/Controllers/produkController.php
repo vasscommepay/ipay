@@ -61,8 +61,20 @@ class produkController extends Controller {
 		//Session::forget('harga_wilayah');
 		$harga = Request::all();
 		Session::put('harga_wilayah',$harga);
-		echo json_encode($harga);
+		echo json_encode(array('error'=>false));
 	}
+
+	public function updateHargaDownlink(){
+		$harga_agen=array();
+		$harga_agen = Session::get('harga_agen');
+		$produk = Request::input('id_produk');
+		$params = array('session'=>Session::get('session'),'id_produk'=>$produk);
+		$this->params = array_merge($params,$harga_agen);
+		$this->url = 'produk/updateHargaDownlink';
+		//echo json_encode($this->params);
+		$this->sendPostRequest();
+	}
+
 	public function addProduk(){
 		$this->url = 'produk/addProduk';
 		$session = Session::get('session');
@@ -88,16 +100,16 @@ class produkController extends Controller {
 			$params = array_merge($params,$harga_wilayah);
 		}
 		$this->params = $params;
-		echo json_encode($this->params);
-		//$result = $this->sendPostRequest();
-		// $res = json_decode($result);
-		// if(count($res)!=0){
-		// 	if(!$res->error){
-		// 		Session::forget('harga_agen');
-		// 		Session::forget('harga_wilayah');
-		// 		Session::forget('supplier_produk');
-		// 	}
-		// }
+		//echo json_encode($this->params);
+		$result = $this->sendPostRequest();
+		$res = json_decode($result);
+		if(count($res)!=0){
+			if(!$res->error){
+				Session::forget('harga_agen');
+				Session::forget('harga_wilayah');
+				Session::forget('supplier_produk');
+			}
+		}
 	}
 
 	public function updateProduk(){
@@ -108,17 +120,42 @@ class produkController extends Controller {
 		$this->url = 'produk/updateProduk';
 		$this->sendPostRequest();
 	}
+
+	public function uploadKategoriImage(){
+		$images = Request::hasFile('image');
+		//$image =  strtolower(pathinfo(basename($_FILES["kategori-img"]["name"]), PATHINFO_EXTENSION));
+		echo json_encode($images);
+		// $mime = $image->getMimeType();
+		// $size = $image->getClientSize();
+		// if($mime!='jpg' && $mime!='png' && $mime!='JPEG' && $mime!='PNG'){
+		// 	echo 'File harus berformat jpg, png, JPEG, atau PNG';
+		// }else if($size>10000){
+		// 	echo 'File tidak boleh lebih besar dari 10MB '.$size;
+		// }else{
+		// 	$image->move('images/kategori','img1');
+		// }
+		// $image->move('images/kategori','img1');
+	}
+
 	public function addKategori(){
-		$session = array('session'=>Session::get('session'));
-		$params = array_merge(Request::all(),$session);
-		//echo json_encode($params);
-		$this->params = $params;
-		$this->url = 'produk/addKategori';
-		$this->sendPostRequest();
+		if(Session::get('level')==0){
+			$session = array('session'=>Session::get('session'));
+			$params = array_merge(Request::all(),$session);
+			//echo json_encode($params);
+			$this->params = $params;
+			$this->url = 'produk/addKategori';
+			$this->sendPostRequest();
+		}else{
+			echo 'noaccess';
+		}
 	}
 
 	public function getSupplier(){
 		$this->params = array('session'=>Session::get('session'));
+		if(Request::has('id_produk')){
+			$id_produk = Request::get('id_produk');
+			$this->params = array('session'=>Session::get('session'),'id_produk'=>$id_produk);
+		}
 		$this->url = 'produk/getSupplier';
 		$this->sendPostRequest();
 	}
@@ -133,20 +170,24 @@ class produkController extends Controller {
 		echo 'alamat berhasil ditambahkan';
 	}
 	public function addSupplier(){
-		$session = array('session'=>Session::get('session'));
-		$data = Request::all();
-		$address = Session::get('sup_address');
-		$kontak = Session::get('sup_kontak');
-		$prop = array('address'=>$address,'kontak'=>$kontak);
-		$params = array_merge($data,$prop,$session);
-		$this->params = $params;
-		$this->url = 'produk/addSupplier';
-		$this->sendPostRequest();
+		if(Session::get('level')==0){
+			$session = array('session'=>Session::get('session'));
+			$data = Request::all();
+			$address = Session::get('sup_address');
+			$kontak = Session::get('sup_kontak');
+			$prop = array('address'=>$address,'kontak'=>$kontak);
+			$params = array_merge($data,$prop,$session);
+			$this->params = $params;
+			$this->url = 'produk/addSupplier';
+			$this->sendPostRequest();
+		}else{
+			echo 'noaccess';
+		}
 		//echo json_encode($params);
 	}
 	public function allKategori(){
 		$session = Session::get('session');
-		$this->params = array('session'=>$session,'all'=>true);
+		$this->params = array('session'=>$session,'is_all'=>true);
 		$this->url = 'produk/getKategori';
 		$this->sendPostRequest();
 	}
@@ -156,6 +197,7 @@ class produkController extends Controller {
 		$params = $this->params;
 		$sender = new PostSender($url,$params);
 		$result = $sender->sendRequest();
+		Session::put('lastpage','aturproduk');
 		echo $result;
 		return $result;
 	}

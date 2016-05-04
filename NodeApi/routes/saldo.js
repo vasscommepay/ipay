@@ -6,6 +6,8 @@ var connection  = require('./db');
 var couchdb = require('./couchdbfunction');
 var nano = require('./nano');
 var app = express();
+var cek_session = require('./session');
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -15,19 +17,22 @@ app.post('/', function (req, res, next) {
  	var jenis_mutasi		= connection.escape(req.body.jenis_mutasi);
 });
 
-router.use(function(req, res, next) {
-    console.log(req.method, req.url);
-    var session = req.body.session;
+router.use(function(req, res, next) {//Untuk cek apakah ada session
+	console.log(req.method, req.url);
+	var session = req.body.session;
 	if(session!=null){
-		connection.query('Select exists(Select * from users where session = "'+session+'") as result',function(err, rows, fields){
+		cek_session(session,function(err,exists,timeout,username){
 			if(err){
-				console.log(err);
-				res.json({"status":"error","message":err});
+				res.json({"error":true,"message":err});
 			}else{
-				if(rows[0].result===0){
-					res.json({"status":"error","message":"Session tidak terdaftar"});
-				}else{
+				if(exists){
+					req.username = username;
+					console.log('username: ',username);
 					next();
+				}else if(timeout){
+					req.username = username;
+					console.log('username: ',username);
+					res.json({"error":true,"timeout":true});
 				}
 			}
 		});
@@ -50,18 +55,89 @@ var tampilGet = { sql : 'SELECT * from mutasi_saldo_member' }
 	});
 });
 
+router.post("/get_new_request",function(req,res){
+	var id_pembayaran = req.body.id_pembayaran;
+	var respond;
+	var sql_query = 'SELECT * FROM pembayaran_saldo WHERE id_pembayaran='+id_pembayaran;
+	connection.query(sql_query,function(err,rows){
+		if(err){
+			console.log(err);
+			respond = {"status":"error","message":err};
+		}else{
+			respond = rows;
+		}
+		res.json(respond);
+		couchdb.activityLog(req.username,req.url,respond,res.statusCode,function(err,body){});
+	});
+});
+
+router.post("/addRequestSaldo",function(req,res){
+	var member_id = req.body.id_member;
+	var uplink = req.body.uplink;
+	var jumlah_transaksi = req.body.jumlah;
+	//var username = connection.escape(req.body.username);
+	var nama_pembayar = connection.escape(req.body.nama_rekening);
+	var rekening = connection.escape(req.body.rekening_asal);
+	var tujuan = connection.escape(req.body.rekening_tujuan);
+	var nama_rekening = nama_pembayar;
+	var kode_order = createKodeOrder(4);
+	var jalur_pembayar = connection.escape(req.body.metode_pembayaran);
+	var id_pembayaran;
+	var sql = "INSERT INTO pembayaran_saldo(nama_pembayar,jalur_pembayaran,jumlah_pembayaran, rekening_pembayar, rekening_tujuan,id_member,nama_rekening_pembayar,kode_order) VALUES(?,?,?,?,?,?,?,?)";
+	async.series([
+		function(callback){
+			connection.query(sql,[nama_pembayar,jalur_pembayar,jumlah_transaksi,rekening,tujuan,member_id,nama_rekening,kode_order],function(err,result){
+				if(err){
+					callback(err);
+				}else{
+					id_pembayaran = result.insertId;
+					callback();
+				}
+			});
+		}
+		,
+		function (callback){
+			couchdb.setNotif(uplink,member_id,'request_saldo','tambah saldo baru','new',{'id_pembayaran':id_pembayaran},function(err,body){
+				if(err){
+					callback(err);
+				}else{
+					callback();
+				}
+			});
+		}
+	]
+	,function(err){
+		var respond;
+		if(err){
+			console.log(err);
+			respond ={'error':true,'message':err};
+		}else{
+			respond = {'error':false,'kode_order':kode_order};
+		}
+		res.json(respond);
+		couchdb.activityLog(req.username,req.url,respond,res.statusCode,function(err,body){});
+	});
+	
+});
+
 router.post("/tambah-saldo", function(req,res){
 	var member_id = req.body.id_member;
 	var uplink = req.body.uplink;
 	var jumlah_transaksi = req.body.jumlah;
 	var username = connection.escape(req.body.username);
-	var nama_pembayar = req.body.nama_pembayar;
+	var nama_pembayar = connection.escape(req.body.nama_pembayar);
 	var rekening = req.body.rekening;
 	var jalur_pembayar = req.body.jalur;
+	var saldo_akhir_mem;
+	var saldo_akhir_up;
 	var status=true;
 	var id_mutasi;
+	var id_pembayaran = req.body.id_pembayaran;
 	var id_transaksi;
 	var kode_order = createKodeOrder(4);
+	if(req.body.kode_order!=null){
+		kode_order = req.body.kode_order;
+	}
 	//console.log("SQL: "+sql);
 	async.series([
 		function(callback){
@@ -104,18 +180,39 @@ router.post("/tambah-saldo", function(req,res){
 			});
 		}
 		,function(callback){
-			var sql = "Call tambah_saldo('"+kode_order+"',"+id_transaksi+","+member_id+","+jumlah_transaksi+",'tambah',"+uplink+",'"+nama_pembayar+"','"+rekening+"','"+jalur_pembayar+"')";
+
+			var sql = "Call tambah_saldo('"+kode_order+"',"+id_transaksi+","+member_id+","+jumlah_transaksi+",'tambah',"+uplink+","+nama_pembayar+",'"+rekening+"','"+jalur_pembayar+"')";
+			if(id_pembayaran!=null){
+				
+				sql = "Call tambah_saldo('"+id_pembayaran+",'"+kode_order+"',"+id_transaksi+","+member_id+","+jumlah_transaksi+",'tambah',"+uplink+"')";
+			}
 			console.log(sql);	
 			connection.query(sql,function(err,result){
 				if(err){
 					callback(err);
 				}else{
 					//console.log("res: %j",result[0][0].saldo_akhir_mem);
-					var saldo_akhir_mem = result[0][0].saldo_akhir_mem;
-					var saldo_akhir_up = result[0][0].saldo_akhir_up;
-					couchdb.updateDb('ipay_member',member_id,{'saldo':saldo_akhir_mem},function(err,body){});
-					couchdb.updateDb('ipay_member',uplink,{'saldo':saldo_akhir_up},function(err,body){});
+					saldo_akhir_mem = result[0][0].saldo_akhir_mem;
+					saldo_akhir_up = result[0][0].saldo_akhir_up;
 					id_mutasi = result[0].id_mutasi;
+					callback();
+				}
+			});
+		}
+		,function(callback){
+			couchdb.updateDb('ipay_member',member_id,{'saldo':saldo_akhir_mem},function(err,body){
+				if(err){
+					callback(err);
+				}else{
+					callback();
+				}
+			});
+		}
+		,function(callback){
+			couchdb.updateDb('ipay_member',uplink,{'saldo':saldo_akhir_up},function(err,body){
+				if(err){
+					callback(err);
+				}else{
 					callback();
 				}
 			});
@@ -150,6 +247,7 @@ function cekSaldo(id_member,callback){
 		}
 	});
 }
+
 
 function createKodeOrder(length){
 	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";

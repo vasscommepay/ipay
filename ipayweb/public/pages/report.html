@@ -1,0 +1,110 @@
+<script type="text/javascript">
+	$(document).ready(function(){
+ var table = $('#tabel-mutasi').DataTable();
+ 
+new $.fn.dataTable.Buttons( table, {
+    buttons: [
+        'excel', 'pdf','print'
+    ],
+	select:true
+} );
+
+table.buttons().container()
+    .appendTo( $('.col-sm-6:eq(1)', table.table(".table1").container() ) );
+
+
+		$.ajax({
+			url:'getMutasi',
+			type:'post',
+			success:function(result){
+				//alert(result);
+				var i =0;
+				var res = JSON.parse(result);
+				if(!res.error){
+					$.each(res,function(key,val){
+					var saldo_awal = val.saldo_awal;
+					if(val.saldo_awal!=null){
+						saldo_awal = setComma(val.saldo_awal);
+					}
+					var saldo_akhir = val.saldo_akhir;
+					if(val.saldo_akhir!=null){
+						saldo_akhir = setComma(val.saldo_akhir);
+					}
+					var transaksi = val.jumlah_transaksi;
+					if(val.saldo_akhir!=null){
+						transaksi = setComma(val.jumlah_transaksi);
+					}
+					if(val.DBCR==='DB'){
+						transaksi = '-'+transaksi;
+					}
+					var date = new Date(val.timestamp);
+					var jam = date.toLocaleTimeString();
+					var tanggal = date.toLocaleDateString();
+					table.row.add([
+						val.id,
+						val.id_member,
+						saldo_awal,
+						transaksi,
+						saldo_akhir,
+						val.id_transaksi,
+						val.jenis_mutasi,
+						val.DBCR,
+						val.kode_order,
+						tanggal,
+						jam
+					]).draw(false);
+				});
+				}
+			}
+		})
+	});
+</script>
+<div id="basemain" class="col-md-12 col-xs-12 col-sm-12 row-centered">
+<div id="maintitle" class="col-md-12 col-xs-12 col-sm-12 g4 fbig">
+<h1 class="col-md-6 col-sm-6 col-xs-6">LAPORAN MUTASI</h1></div>
+
+<div id="datecont" class="col-centered or1bg sharpshadow">
+<form method="POST" action="<?php echo base_url();?>panelcontrol/filterTagihan">
+<div id='datecont' class='date-time col-md-12 col-sm-12 col-xs-12 col-centered'>
+<div class='col-md-4 col-xs-3 row-centered nopad'>From : <input id='startdate' name="start" class="startdate"></div>
+<div class='col-md-3 col-xs-3 row-centered nopad'>To : <input id='enddate' name="end" class="enddate" width="2vw"></div>
+<div class='col-md-4 col-xs-4 row-centered'>Filter : 
+<select name="filtering">
+<option value="">Opsi Filter</option>
+<option value="1">Terbayar</option>
+<option value="2">Belum Terbayar</option>
+<option value="3">View All</option>
+</select>
+</div>
+<div class='col-md-1 col-xs-1 row-centered g1'>
+<button type='submit' name='filter' id='filter' class='roundbutton wbg g1'><i class='glyphicon glyphicon-filter'></i></button> 
+</div>
+</div>
+
+</form>
+</div>
+
+<div id="maintable" class="col-md-12 col-xs-12 col-sm-12">
+<table id="tabel-mutasi" class="display table table1 table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+					<td width="5%">Id</td>
+					<td width="5%">Member</td>
+					<td width="10%">S Awal</td>
+					<td width="10%">Transaksi</td>
+					<td width="10%">S Akhir</td>
+					<td width="5%">Tr</td>
+					<td width="10%">Jenis</td>
+					<td width="5%">DBCR</td>
+					<td width="10%">Order</td>
+					<td width="10%">Tanggal</td>
+					<td width="15%">Jam</td>
+				</tr>
+        </thead>
+        <tbody>
+           
+        </tbody>
+    </table>
+</div>
+
+</div>

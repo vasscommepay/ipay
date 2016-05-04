@@ -86,9 +86,12 @@
 							data.tujuan,
 							"<span id='stat"+data._id+"'>"+data.status_biller+"</span>"
 							]).draw().node();
-
+						$(rownode).attr('id','row'+data._id);
 						if(data.status_biller=='gagal' || data.status_biller==false){
 							$(rownode).css('background-color','red');
+							$(rownode).css('color','white');
+						}else if(data.status_biller=='sukses'){
+							$(rownode).css('background-color','green');
 							$(rownode).css('color','white');
 						}
 					          // $("#table-body").append("<tr><td>"+i+"</td>"+"<td>"+val.created_at+"</td>"+"<td>"+val.id_transaksi+"</td>"+"<td>"+val.id_order+"</td>"+"<td>"+val.id_produk+"</td>"+"<td>"+val.quantities+"</td>"+"<td>"+val.total_biaya+"</td>"+"<td>"+val.tujuan+"</td>"+"<td><span id='stat"+val.id_transaksi+"'>"+val.status+"</span></td></tr>");

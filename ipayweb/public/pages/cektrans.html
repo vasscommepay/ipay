@@ -1,72 +1,70 @@
+<div id="basemain" class="col-md-12 col-xs-12 col-sm-12 row-centered" style="height: 100%">
+	<div id="maintitle" class="col-md-12 col-xs-12 col-sm-12 g4 fbig"><h1>Cek Transaksi</h1></div>
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="form-group">
+					<label><h3>Nomor Invoice</h3></label>
+					<input type="text" name="inv_num" class="form-control" placeholder="Nomor invoice" style="border-bottom: 1px solid #CCCCCC;">
+					<div class="helper">Masukkan nomor invoice yang ada terima</div>
+				</div>
+				<div class="form-group">
+					<button class="btn btn-warning" type="button" onclick="cekTrans()" style="width:200px">Cek Sekarang</button>
+				</div>
+			</div>
 
-<div id="cektrans" class="row row-centered bg4">
-	<div id="cektranswrapp" class="col-md-12 dashboard">
+		</div>
+	</div>
+	<div class="col-md-6" id="detail-order">
+		<div class="form-group" align="center">
+			<label>Nomor Invoice</label>
+			<h3 id="inv-num"></h3>
+		</div>
+		<div class="form-group" align="center">
+			<label>Tanggal Order</label>
+			<h3 id="tgl-order"></h3>
+		</div>
+		<table class="table table-striped" id="list-trans">
+			
+		</table>
+		<table class="table table-striped" id="total-trans">
+			
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+	function cekTrans() {
+		var inv = $('input[name=inv_num]').val();
+		$.ajax({
+			url:'cekOrder',
+			data:{'id_order':inv},
+			type:'post',
+			success:function(result){
+				alert(result);
+				$('#list-trans').html('');
+				$('#total-trans').html('');
+				var res = JSON.parse(result);
+				if(!res.error){
+					$('#inv-num').html(inv);
+					$('#tgl-order').html(res.timestamp)
+					var total = setComma(res.total);
+					var timestamp = res.timestamp;
+					var trans = res.trans;
+					var i = 0;
+					$.each(trans,function(key,val){
+						i++;
+						var prod = '<td>'+val.id_produk+'</td>';
+						var tipe = '<td>'+val.tipe+'</td>';
+						var tujuan = '<td>'+val.tujuan+'</td>';
+						var harga = '<td>'+val.total+'</td>';
+						var status = '<td>'+val.status_biller+'</td>';
+						$('#list-trans').append('<tr><td>'+i+'</td>'+prod+tipe+tujuan+harga+status+'</tr>');
+					});
+					$('#total-trans').append('<tr><td>Total</td><td>Rp '+total+'</tr>')
+				}
+			}
+		})
+		// body...
+	}
 
-		<div id="mid" class="col-md-12">
-
-			<div id="cektransleftcont" class="col-md-6 col-sm-6 col-xs-12">
-				<div id="logoes" class="col-md-12 col-xs-12"><img src="images/searchbigicon.png" /><span class="textlayanan">CEK TRANSAKSI</span></div>
-				<div id="cektransform" class="col-md-12 col-sm-12 col-xs-12">
-					<form class="form-horizontal">
-						<div class="form-group col-md-12">
-							<label class="control-label">No. Invoice</label>
-							<input type="text"/></div>
-							<div class="form-group col-md-12">
-								<label class="control-label">Tanggal Transaksi</label>
-								<input type="date" /></div>
-								<div class="form-group">
-									<button type="submit" class="col-md-12 btn btn-default"><i class="glyphicon glyphicon-search"></i>Search</button></div>
-								</form>
-							</div>
-						</div>
-						<div id="cektransrightcont" class="col-md-6 col-sm-6 col-xs-12">
-							<div class="container-fluid">
-								<div id="cektransrightwrapp" class="row">
-									<div id="headtrans" class="col-md-12 col-xs-12">
-										<p class="minilogo col-md-6 col-xs-6"><img  class="pull-left" src="images/ipaycolored.png" /></p><p class="datetext pull-right col-md-6">Tanggal :20/11/2015</p>	
-										<p class="pull-right h4 col-md-6 col-xs-12">TRANSAKSI PEMBAYARAN</p>	
-									</div>
-									<div id="invtext" class="col-md-12 col-xs-12">No. Invoice</div>
-									<div id="invnumber" class="col-md-12 col-xs-12">564168174684118574614</div>
-									<div id="invtext" class="botbord col-md-12 col-xs-12">Daftar Pembayaran</div>
-									<div id="invcontainer" class="col-md-12 col-xs-12">
-										<div id="invgroup" class="col-md-12 col-xs-12">
-											<span class="detlogo col-md-2 col-xs-2 row-centered"><img src="images/garudaicon.png" /></span><span class="dettext col-md-6 col-xs-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-xs-4 col-centered">Rp. 20.000,00</span>
-										</div>
-										<div id="invgroup" class="col-md-12 col-xs-12">
-											<span class="detlogo col-md-2 col-xs-2 row-centered"><img src="images/bpjsicon.png" /></span><span class="dettext col-md-6 col-xs-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-xs-4 col-centered">Rp. 20.000,00</span>
-										</div>
-										<div id="invgroup" class="col-md-12 col-xs-12">
-											<span class="detlogo col-md-2 col-xs-2 row-centered"><img src="images/gameicon.png" /></span><span class="dettext col-md-6 col-xs-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-xs-4 col-centered">Rp. 20.000,00</span>
-										</div>
-										<div id="invgroup" class="col-md-12 col-xs-12">
-											<span class="detlogo col-md-2 col-xs-2 row-centered"><img src="images/plnicon.png" /></span><span class="dettext col-md-6 col-xs-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-xs-4 col-centered">Rp. 20.000,00</span>
-										</div>
-										<div id="invgroup" class="col-md-12 col-xs-12">
-											<span class="detlogo col-md-2 col-xs-2 row-centered"><img src="images/bpjsicon.png" /></span><span class="dettext col-md-6 col-xs-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-xs-4 col-centered">Rp. 20.000,00</span>
-										</div>
-										<div id="invgroup" class="col-md-12 col-xs-12">
-											<span class="detlogo col-md-2 col-xs-2 row-centered"><img src="images/gameicon.png" /></span><span class="dettext col-md-6 col-xs-6 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span><span class="detprice col-md-4 col-xs-4 col-centered">Rp. 20.000,00</span>
-										</div>
-									</div>
-									<div id="invtext" class="botbord col-md-12 col-xs-12"></div>
-									<div id="invgroup" class="col-md-12 col-xs-12">
-										<span class="col-md-2 col-xs-2 checking"><a href="#"><img src="images/pdficon.png" /></a></span>
-										<span class="col-md-2 col-xs-2 checking"><a href="#"><img src="images/printicon.png" /></a></span>
-										<span class="col-md-4 col-xs-4 col-centered">Total Pembayaran</span>
-										<span class="totbay col-md-4 col-xs-4 col-centered">Rp. 80.000,00</span>
-									</div>
-									<div id="invgroup" class="col-md-12 col-xs-12">
-										<span class="col-md-4 col-xs-4"></span><span class="col-md-4 col-xs-4 col-centered ">Status</span><span class="totbay col-md-4 col-xs-4 col-centered">Lunas</span>
-									</div>
-									<div id="invfoot" class="col-md-12 col-xs-12 pull-bottom">
-										<span class="col-md-4 col-xs-4 pull-right">Ipay Copyright 2015</span>
-
-									</div>
-								</div>
-
-							</div>
-
-
-						</div>
-					</div>
+</script>

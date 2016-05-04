@@ -1,10 +1,11 @@
 #shopping_cart div{padding-left:0;padding-right:0;}#shopping_cart img{width:70%;}#shopping_cart p{width:auto;font-size:4vh;text-align:center;font-weight:bold;color:var(--or2);}
 #shopping_cart a :hover{color:var(--or1);}#shopping_cart a :hover >img{-webkit-filter:brightness(150%);filter:brightness(150%);}
 #trans_buttons{margin-top:-4%;margin-bottom:-1%;right:-2vw;float:right}
-.trans_now{background-color:var(--or1);padding-left:0;padding-right:0;}.trans_now img{width:50%;float:left;}.trans_now a{color:white;font-size:1vw;}.trans_now a:hover{background-color:var(--or3);color:var(--gr2);text-decoration:none;}.trans_now div{padding-left:0;padding-right:0;}
+.trans_now{background-color:var(--or1);padding-left:0;padding-right:0;}.trans_now img{width:50%;float:left;}.trans_now a{color:white;font-size:1vw;}.trans_now a:hover{background-color:var(--or3);color:var(--or4);text-decoration:none;}.trans_now div{padding-left:0;padding-right:0;}
+.find_now{margin-left:0.5vw;background-color:var(--or4);padding-left:0;padding-right:0;}.find_now img{width:50%;float:left;}.find_now a{color:white;font-size:1vw;}.find_now a:hover{background-color:var(--or3);color:var(--or1);text-decoration:none;}.find_now div{padding-left:0;padding-right:0;}
 /* CATEGORY */
-#transaction_category{background-color:var(--gr3);top:8%;padding-top:1%;padding-bottom:1%; z-index:5;}
-#transaction_category ul{margin-left:20%;}#transaction_category #category{margin-right:3%;}
+#transaction_category{background-color:var(--gr3);top:8%;padding-top:1%;z-index:5;}
+#transaction_category #general{margin-right:3%;}
 #transaction_category .tile div{position:absolute;}
 #transaction_category h2{position:absolute;font-family:karla;color:white;margin-left:5%;font-size:2vw;}
 #product_list h2{position:absolute;font-family:karla;color:white;margin-left:5.5%;top:18%;font-size:2vw;}
@@ -16,9 +17,22 @@
 	overflow-y:hidden;
 	width:50%;
 }
+#kat_category_list{
+	overflow-x:scroll;
+	overflow-y:hidden;
+	width:50%;
+}
+#category_list{margin-left:-7%;padding-left:0;}
+#category_list ul{width:100%;height:14vh;padding-top:1%;padding-left:0;display:table;}
+#category_list li {display:table-cell;}
+#category_list a {display:block;}
 
-#category_list{margin-left:-7%;}#category_list ul{width:170%;height:14vh;padding-top:1%;padding-bottom:5%;}
-#generalcat, #healthcat, #membercat, #insurecat, #pincat, #creditcat {
+#kat_category_list{margin-left:-7%;padding-left:0;}
+#kat_category_list ul{width:100%;height:14vh;padding-top:1%;padding-left:0;display:table;}
+#kat_category_list li {display:table-cell;}
+#kat_category_list a {display:block;}
+
+#subkategori {
 	position: absolute;
 	z-index: 0;
 	text-align: center;
@@ -30,8 +44,7 @@
 	bottom:0;
 	opacity:0;
 }
-#generalcat:target {top:7vh;opacity: 1;z-index: 4;}#healthcat:target {top:7vh;opacity: 1;z-index: 4;}#membercat:target {top:7vh;opacity: 1;z-index: 4;}#insurecat:target {top:7vh;opacity: 1;z-index: 4;}
-#pincat:target {top:7vh;opacity: 1;z-index: 4;}#creditcat:target {top:7vh;opacity: 1;z-index: 4;}
+#subkategori:target {top:0;opacity: 1;z-index: 4;}
 
  .scrollcat::-webkit-scrollbar {
  display:block!important;
@@ -44,31 +57,36 @@
  background-color:#8B8B8C;
 }
 .right-button{color:white;position:absolute;font-size:4vh;right:25%;top:40%;} .left-button{color:white;position:absolute;font-size:4vh;left:18%;top:40%;}.close-button{color:var(--gr2);position:absolute;font-size:4vh;right:1%;top:40%;}
-.right-button :hover, .left-button :hover .close-button :hover {color:var(--gr2);}.right-button :active, .left-button :active, .close-button :hover {color:var(--gr3);}
+.right-button :hover, .left-button :hover .close-button :hover {color:var(--gr2);}.right-button :active, .left-button :active, .close-button :active {color:var(--gr3);}
+
+.kat-right-button{color:white;position:absolute;font-size:4vh;right:25%;top:40%;} .kat-left-button{color:white;position:absolute;font-size:4vh;left:18%;top:40%;}.close-button{color:var(--gr2);position:absolute;font-size:4vh;right:1%;top:40%;}
+.kat-right-button :hover, .kat-left-button :hover {color:var(--gr2);}.kat-right-button :active, .kat-left-button :active {color:var(--gr3);}
+
 
 /* MIDDLE FORM */
 #midform {
 	position:relative;
 	background-color: white;
-	margin-top:5%;
+	margin-top:2%;
 	height: 60vh;
 	border:1px solid #8B8B8C;
 	border-radius: 2%;
 	box-shadow: 0.5em 0.5em #8B8B8C;
 	z-index:1;
+	margin-bottom:2%;
 }
 #defsurface{z-index:2;position: absolute;
 	width: 90%;
 	height:60vh;
 	opacity: 1;
 	padding:15%;}
-#defsurface i{font-size:8vw;color:var(--gr2);}	#defsurface p{margin-top:2%;font-size:2.5vh;color:var(--gr3);font-family:stellar;text-align:center;}
+#defsurface i{font-size:8vw;color:var(--gr2);}	#defsurface p{margin-top:2%;font-size:2.5vh;color:var(--gr3);font-family:Karla;text-align:center;}
 
 /* TAMBAH FORM NAME SETIAP JENIS PRODUK BERBEDA */	
 
 #aform, #bform, #cform {
 	position: absolute;
-	height:50vh;
+	height:58vh;
 	width: 90%;
 	opacity: 0;
 	z-index: 0;
@@ -84,10 +102,17 @@
 #aform input, #bform input, #cform input{height:5vh;line-height:1vh;}
 #aform button, #bform button, #cform button{background-color:var(--or2);outline:0;border:0;color:var(--or4);height:5vh;}
 #aform button:hover{background-color:var(--or3);}#bform button:hover{background-color:var(--or3);}#cform button:hover{background-color:var(--or3);}
+.chckout{bottom:0;background-color:var(--or4)!important;color:white!important;}.chckout:hover{background-color:var(--or1)!important;}
+#aform .form-horizontal .form-group {
+    margin-right:0!important;
+    margin-left:0!important;
+}
+
 #aform:target {
 	opacity: 1;
-	z-index: 2;
+	z-index: 3;
 }
+#aform:target + #defsurface{opacity:0;}
 #bform:target {
 	opacity: 1;
 	z-index: 2;
@@ -95,6 +120,100 @@
 #cform:target {
 	opacity: 1;
 	z-index: 2;
+}
+#general {
+    padding: 0;
+    margin-left: 1em;
+    font-size: 12px;
+    color: white;
+    line-height: 1.5em;
+}
+
+.bullet img {
+		width: 100%!important
+}
+
+.bullet img:hover {
+	-webkit-filter: brightness(1.2);
+}
+.greymenu {
+	background-color: #A1A1A1!important;
+	color: white!important;
+}
+.greymenu img {
+	-webkit-filter: saturate(2%) brightness(150%)!important;
+	filter: saturate(2%) brightness(150%)!important;
+}
+.greymenu img:hover {
+	-webkit-filter: saturate(2%) brightness(150%)!important;
+	filter: saturate(2%) brightness(150%)!important;
+}
+.whitemenu {
+	background-color: white!important;
+	color: black!important;
+}
+.whitemenu img {
+	width: 100%!important;
+}
+.slideTextRight div:first-child {
+  left: -100%
+}
+
+.slideTextRight:hover div {
+  -webkit-transform: translateX(100%);
+  -ms-transform: translateX(100%);
+  -o-transform: translateX(100%);
+  transform: translateX(100%)
+}
+.bullet {
+	width: 5.8vw!important;
+	height: 5.8vw!important;
+	border-radius: 50%;
+	background-color: white;
+	text-align: center;
+	margin: auto 0;
+	font-size: 0.8vw!important;
+	font-weight: bold;
+}
+.tile {
+  float: left;
+  margin-top:0.5vw;
+  padding-left: 0!important;
+  padding-right: 0!important;
+  color: white;
+  font-size: 1.3em;
+  text-align: center;
+  height: 18vh;
+  width:100%;
+  font-weight: 300;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  background-color: #fff;
+  color: #333;
+}
+.tile div {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  display: table;
+  padding: 0;
+  -webkit-transition: all .3s ease;
+  -o-transition: all .3s ease;
+  transition: all .3s ease
+}
+.tile img{
+	padding:0 1em;
+	}
+
+.tile div p {
+  display: table-cell;
+  vertical-align: middle
 }
 
 /* CART MODAL */	
@@ -119,3 +238,4 @@
 		#chckout img{
 			width:30%;
 			}
+			

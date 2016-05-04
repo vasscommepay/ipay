@@ -33,6 +33,7 @@ class LoginC extends Controller
                 Session::put('saldo',$res->saldo);
                 Session::put('komisi',$res->komisi);
                 Session::put('member_id',$member_id);
+                Session::put('id_member',$member_id);
                 Session::put('nama',$res->nama);
                 Session::put('uplink_id',$uplink);
                 return redirect('/');

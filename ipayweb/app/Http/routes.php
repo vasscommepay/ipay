@@ -46,7 +46,19 @@ Route::group(['middleware' => 'web'], function () {
 	Route::post('submit-harga-agen','produkController@submitHargaAgen');
 	Route::post('submit-harga-wilayah','produkController@submitHargaWilayah');
 	Route::post('get-all-kategori','produkController@allKategori');
+	Route::post('cekHarga','TransactionController@cekHarga');
+	Route::post('update-harga-downlink','produkController@updateHargaDownlink');
+	Route::post('cekOrder','TransactionController@cekOrder');
+	Route::get('get-saldo','memberController@getSaldo');
+	Route::get('get-histori-saldo','memberController@getHistoriSaldo');
+	Route::post('req-tambah-saldo','memberController@requestTambahSaldo');
+	Route::post('get-notif','memberController@getNotif');
+	// Route::get('produk-page',function(){
+	// 	return view('produk');
+	// });
 });
+
+Route::post('upload-foto-kategori','produkController@uploadKategoriImage');
 Route::get('get_prov','AddressController@getProvinsi');
 Route::get('get_wil','AddressController@getWilayah');
 Route::post('get_kec','AddressController@getKecamatan');

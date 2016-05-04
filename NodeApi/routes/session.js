@@ -3,7 +3,7 @@ var nano   = require('./nano');
 var usersdb = nano.db.use('ipay_users');
 var couchdb = require('./couchdbfunction');
 var session = function cekSession(session,callback) {
-	console.log('cek session: '+session);
+	//console.log('cek session: '+session);
 	usersdb.view('user','cekSession',{keys:[session]},function(err,body){
 		if(err){
 			console.log(err);
@@ -11,7 +11,7 @@ var session = function cekSession(session,callback) {
 		}else{
 			var result = body.rows;
 			if(result.length==0){
-				console.log("session notfound");
+				//console.log("session notfound");
 				err = 'session not found';
 				callback(err);
 			}else{
@@ -25,17 +25,14 @@ var session = function cekSession(session,callback) {
 				var now = Date.now();
 				//console.log(now-last_log);
 				if(now-last_log > 3600000){
-					console.log("session timeout");
-					callback(null,false,true);
+					console.log("session timeout for username %s",username);
+					callback(null,false,true,username);
 				}else{
-					console.log("session true for username: "+username);
+					//console.log("session true for username: "+username);
 					couchdb.updateDb('ipay_users',username,{'updated_at':Date.now()},function(err,body){
-						if(err){
-							callback(err);
-						}else{
-							callback(null,true);
-						}
+						
 					});
+					callback(null,true,false,username);
 				}
 			}
 		}

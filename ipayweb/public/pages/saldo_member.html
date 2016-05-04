@@ -1,0 +1,206 @@
+<script type="text/javascript">
+	function getSaldo(callback){
+		$.ajax({
+			url:'get-saldo',
+			type:'get',
+			success:function(result){
+				//alert(result);
+				var res = JSON.parse(result);
+				if(!res.error){
+					var saldo = setComma(res.saldo);
+					var komisi = setComma(res.komisi);
+					callback(null,saldo,komisi);
+				}else{
+					callback(res.message);
+				}
+			}
+		})
+	}
+	function getHistoriSaldo(){
+		$.ajax({
+			url:'get-histori-saldo',
+			type:'get',
+			success:function(result){
+				//alert(result);
+				var val = JSON.parse(result);
+				if(!val.error){
+					$.each(val,function(key,res){
+						var timestamp = new Date(res.timestamp);
+						var datetime = '<td>'+timestamp.toDateString()+'</td>';
+						var pembayar = '<td>'+res.nama_pembayar+'</td>';
+						var jumlah = '<td> Rp '+setComma(res.jumlah_pembayaran)+'</td>';
+						var status = '<td>'+res.status+'</td>';
+
+						$('#list-komisi').append('<tr>'+datetime+pembayar+jumlah+status+'</tr>');
+					});
+				}
+			}
+		});
+	}
+	$(document).ready(function(){
+		//gantiTombol();
+		getHistoriSaldo();
+		$('#form-tambah-saldo').hide();
+		getSaldo(function(err,saldo,komisi){
+			if(!err){
+				//alert(saldo);
+				$('#total-saldo-member').html('Rp '+saldo+',-');
+			}
+		});
+
+		$('.bank-trf').hide();
+		$('.komisi').hide();
+		$('.cash').hide(); 
+	});
+</script>
+<div id="basemain" class="col-md-12 col-xs-12 col-sm-12 row-centered" style="height: 100%">
+	<div id="maintitle" class="col-md-12 col-xs-12 col-sm-12 g4 fbig"><h1>Saldo Member</h1></div>
+	<div class="col-md-12">
+		<div class="panel panel-default center-panel">
+			<div class="panel-body">
+				<div class="form-group">
+					<label><h3>Jumlah Saldo</h3></label>
+					<div class="helper">Jumlah Saldo Anda Saat Ini</div>
+					<h2 id="total-saldo-member"></h2>
+				</div>
+				<div class="form-group btn-tambah">
+					<button class="btn btn-warning" type="button" id="btn-tambah-saldo" onclick="tambahSaldo()" style="width:200px">Tambah Saldo</button>
+				</div>
+				<form id="form-tambah-saldo">
+					<div class="form-group" align="center">
+						<label>Jumlah Saldo</label>
+						<input required="" name="jumlah" type="number" class="form-control" placeholder="Jumlah Saldo">
+					</div>
+					<div class="form-group">
+						<label>Metode Pembayaran</label>
+						<select name="metode_pembayaran" class="form-control">
+							<option value="0">Pilih Metode Pembayaran</option>
+							<option value="transfer_bank">Transfer Bank</option>
+							<option value="komisi">Pencairan Komisi</option>
+							<option value="cash">Cash</option>
+						</select>
+					</div>
+					<div class="form-group metode-tambah bank-trf">
+						<label>Tujuan Transfer</label>
+						<select name="rekening_tujuan" class="form-control">
+							<option value="0">Pilih Rekening</option>
+							<option value="bni">BCA</option>
+							<option value="bca">BNI</option>
+							<option value="bri">BRI</option>
+							<option value="mandiri">Mandiri</option>
+						</select>
+					</div>
+					<div class="form-group metode-tambah bank-trf">
+						<label>Rekning Asal</label>
+						<select name="rekening_asal" class="form-control">
+							<option value="0">Pilih Rekening</option>
+							<option value="bni">BCA</option>
+							<option value="bca">BNI</option>
+							<option value="bri">BRI</option>
+							<option value="mandiri">Mandiri</option>
+							<option value="bersama">ATM Bersama</option>
+						</select>
+					</div>
+					<div class="form-group metode-tambah bank-trf">
+						<label>Nama Pemiliki Rekening</label>
+						<input required="" name="nama_rekening" type="text" class="form-control" placeholder="Nama pemilik rekekning">
+					</div>
+					
+					<div class="form-group metode-tambah cash">
+						<p>Untuk pembayaran secara tunai, silahkan datangi sales atau loket ipay terdekat</p>
+						
+					</div>
+					<div class="form-group metode-tambah cash">
+						<label>Alamat Sales: <span id="alamat-sales"></span></label><br>
+						<label>Kontak Sales: </label><br>
+						<div id="kontak-sales"></div> 
+					</div>
+					<div class="form-group metode-tambah komisi">
+						<label>Ubah Komisi</label>
+						<label id="status-komisi"></label>
+						<p id="keterangan-status-komisi"></p>
+					</div>
+					<div class="form-group">
+						<button class="btn btn-info" type="button" onclick="submitRequestSaldo()" style="width:200px"> Tambah Saldo</button>
+					</div>
+					<div class="form-group">
+						<button class="btn btn-warning" type="button" onclick="batalTambah()" style="width:200px">Batal</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12" id="detail-order">
+		<div class="panel panel-warning center-panel">
+			<div class="panel-body">
+				<table class="table table-striped" id="list-komisi">
+					
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$('select[name=metode_pembayaran]').change(function(){
+		var metode = $(this).val();
+		$('.metode-tambah').fadeOut(100);
+		//alert(metode);
+		if(metode=='transfer_bank'){
+			$('.bank-trf').fadeIn(200);
+		}else if(metode=='komisi'){
+			cekKomisi();
+			$('.komisi').fadeIn(200);
+		}else if(metode=='cash'){
+			$('.cash').fadeIn(200);
+		}else{}
+		
+	});
+	function cekKomisi(){
+
+	}
+	function bankTrf(){
+
+	}
+	function tambahSaldo() {
+		// body...
+		$('#detail-order').hide();
+		if($('#btn-tambah-saldo').html()=='Terapkan Saldo'){
+			$('#form-tambah-saldo').html('<div class="form-group" align="center"><label>Jumlah Saldo</label><input name="jumlah_saldo" type="number" class="form-control" placeholder="Jumlah Saldo"></div><div class="form-group">]<button class="btn btn-info" type="button" onclick="submitSetSaldo()" style="width:200px"> Terapkan Saldo</button></div><div class="form-group"><button class="btn btn-warning" type="button" onclick="batalTambah()" style="width:200px">Batal</button></div>');
+		}
+		$('.btn-tambah').fadeOut(1);
+		$('#form-tambah-saldo').fadeIn(500);
+	}
+	function batalTambah(){
+		$('#form-tambah-saldo').hide();
+		$('.btn-tambah').fadeIn(500);
+
+		$('#detail-order').show();
+	}
+	function submitRequestSaldo(){
+		var data = $('#form-tambah-saldo').serialize();
+		$.ajax({
+			url:'req-tambah-saldo',
+			type:'post',
+			data:data,
+			success:function(result){
+				alert(result);
+				var res = JSON.parse(result);
+				if(!res.error){
+
+					bootbox.dialog({
+						message: "Request berhasil dikirim dengan kode order: <b>"+res.kode_order+"</b>",
+		              title: "Berhasil",
+		              buttons: {
+		                success: {
+		                  label: "Ok",
+		                  className: "btn btn-success",
+		                },
+		              }
+					})
+				}
+			}
+		})
+
+	}
+
+</script>

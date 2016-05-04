@@ -89,6 +89,24 @@ class TransactionController extends BaseController {
 		echo json_encode(Session::get('daftar_produk'));
 	}
 
+	public function cekHarga(){
+		$session = Session::get('session');
+		$id_member = Session::get('member_id');
+		$id_produk = Request::get('produk');
+		$tujuan = Request::get('tujuan');
+		$this->params = array('session'=>$session,'id_member'=>$id_member,'id_produk'=>$id_produk,'tujuan'=>$tujuan);
+		$this->url = 'transaction/cekHarga';
+		$this->sendPostRequest();
+	}
+
+	public function cekOrder(){
+		$session = Session::get('session');
+		$id_order = Request::input('id_order');
+		$this->params = array('session'=>$session,'id_order'=>$id_order);
+		$this->url = 'transaction/cekOrder';
+		$this->sendPostRequest();
+	}
+
 	private function sendPostRequest(){
 		$url = $this->url;
 		$params = $this->params;

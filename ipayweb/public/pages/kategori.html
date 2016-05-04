@@ -1,10 +1,36 @@
 <script type="text/javascript">
 var table= $('#daftar-kategori').DataTable();
   function reloadTable(){
-    
+    table.clear();
+    $.ajax({
+      url:'get-all-kategori',
+      type:'post',
+      success: function(result){
+        //alert(result);
+        var res = JSON.parse(result);
+        
+        var i = 0;
+        $.each(res,function(key,val){
+          i++;
+          var super_kategori = "-";
+          if(val.id_super_kategori!=null){
+            super_kategori = val.id_super_kategori;
+          }
+          table.row.add([
+            i,
+            val.id_kategori,
+            val.nama_kategori,
+            super_kategori,
+            val.jml_produk,
+            "<div class='btn-group'><button class='btn btn-warning' type='button' onclick='editKategori("+key+")'><i class='glyphicon glyphicon-edit'></i></button><button class='btn btn-danger' type='button' onclick='delProduk("+key+")'><i class='glyphicon glyphicon-trash'></i></button></div>"
+            ]).draw(false);
+        });
+      }
+    });
   }
 
   $(document).ready(function(){
+    reloadTable();
 
     $('.startdate').datepicker();
     $('.enddate').datepicker();
@@ -17,25 +43,7 @@ var table= $('#daftar-kategori').DataTable();
     } );
 
     table.buttons().container().appendTo( $('.col-sm-6:eq(1)', table.table(".table1").container() ) );
-    $.ajax({
-      url:'allKategori',
-      type:'post',
-      success: function(result){
-        var res = JSON.parse(result);
-        var i = 0;
-        $.each(res,function(key,val){
-          i++;
-          table.row.add([
-            i,
-            val.id_kategori
-            val.nama_kategori,
-            val.id_super_kategori,
-            val.jml_produk,
-            "<div class='btn-group'><button class='btn btn-warning' type='button' onclick='editKategori("+key+")'><i class='glyphicon glyphicon-edit'></i></button><button class='btn btn-danger' type='button' onclick='delProduk("+key+")'><i class='glyphicon glyphicon-trash'></i></button></div>"
-            ]).draw(false);
-        });
-      }
-    });
+
     $.ajax({
       type:'post',
       url:'kategori',
@@ -119,7 +127,8 @@ var table= $('#daftar-kategori').DataTable();
 	          <div class="col-md-6">
 	            <input class="form-control" name="nama_kategori">
 	          </div>
-	        </div>
+	        </div><br><br>
+          
         </div>
      
         <br>
@@ -166,7 +175,21 @@ var table= $('#daftar-kategori').DataTable();
         </div>
         </div>
         <br>
-        
+        <div class="row col-md-6" style="display: none">
+          <div class="col-md-6" align="center">
+            <div class="thumbnail">
+              <img src="images/category-image.png">
+              <div class="caption">
+                <form id="image-kategori" enctype="multipart/form-data">
+                  <input class="form-control" name="image" type="file" onchange="upload()">
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <i>* Image hanya digunakan pada web</i>
+          </div>
+        </div>
          <br>
         <div class="row">
           <div class="col-md-6">
@@ -353,6 +376,20 @@ var table= $('#daftar-kategori').DataTable();
       $('.subkat-field').hide();
     }
   });
+  function upload(){
+    var data = new FormData($("#image-kategori")[0]);
+    //data = 'hai'
+    $.ajax({
+      url:'upload-foto-kategori',
+      type:'post',
+      data:new FormData($("#image-kategori")[0]),
+      processData:false,
+      contentType: false,
+      success:function(result){
+        alert(result);
+      }
+    })
+  }
 
   function showSuper(){
     $('#superCategory').show();

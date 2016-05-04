@@ -1,6 +1,7 @@
 var local_address = 'http://localhost:5984';
 var cloud_address = 'https://couchdb-8d8a45.smileupps.com';
-var nano   = require('nano')(cloud_address)
+var atas_address = 'http://10.0.0.4:5984';
+var nano   = require('nano')(atas_address)
 , username = 'admin'
 	  , userpass = '8c18747889e9'
 	  , callback = console.log // this would normally be some callback

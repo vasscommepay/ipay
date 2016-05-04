@@ -48,6 +48,9 @@ table.buttons().container()
 <div id="basemain" class="col-md-12 col-xs-12 col-sm-12 row-centered">
 <div id="maintitle" class="col-md-12 col-xs-12 col-sm-12 g4 fbig">
 <h1 class="col-md-6 col-sm-6 col-xs-6">DAFTAR MEMBER</h1>
+<div class="add_now col-md-2 col-sm-2 col-xs-2 pull-right"><a href="#" id="add-new-member" class="trs">
+<div class="col-md-3 col-sm-3 col-xs-3"><img src="images/addicon.png" /></div>
+<div class="col-md-9 col-sm-9 col-xs-9 ">Add New Member</div></a></div>
 </div>
 <div id="datecont" class="col-centered or1bg sharpshadow">
 <form method="POST" action="<?php echo base_url();?>panelcontrol/filterTagihan">
@@ -133,6 +136,13 @@ table.buttons().container()
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <script type="text/javascript">
+	$('#add-new-member').click(function(){
+		clearInterval();
+        $('#mainmenu').load('pages/register.html');
+        $('#switcher').remove();
+        var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/blue.css'>");
+        $("head").append(cssLink); 
+	})
 	function tambahSaldo(id_member){
 		$("#modal-tambah-saldo").modal('show');
 		$("#id_member").val(id_member);

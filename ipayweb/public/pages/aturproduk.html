@@ -30,6 +30,8 @@
               harga = setComma(val.harga_beli);
             }
 
+            var button = '<div class="btn-group"><button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></button><ul class="dropdown-menu"><li><a href="#" onclick="editProduk('+key+')"><i class="glyphicon glyphicon-tag"></i> Produk</a></li><li><a href="#" onclick="editSupp(&#39;'+val.id+'&#39;)"><i class="glyphicon glyphicon-shopping-cart"></i> Supplier Produk</a></li><li><a href="#" onclick="editDownlink(&#39;'+val.id+'&#39;)"><i class="glyphicon glyphicon-user"></i> Produk Downlink</a></li><li class="" style="background-color:red"><a href="#" onclick="delProduk('+val.id+')" style="color:white"><i class="glyphicon glyphicon-trash"></i> Delete</li></ul></div>';
+
             var rownode = table.row.add([
               i,
               val.id,
@@ -40,7 +42,8 @@
               val.kategori_produk,
               val.tipe,
               status,
-              "<div class='btn-group'><button class='btn btn-warning' type='button' onclick='editProduk("+key+")'><i class='glyphicon glyphicon-edit'></i></button><button class='btn btn-danger' type='button' onclick='delProduk("+key+")'><i class='glyphicon glyphicon-trash'></i></button></div>"
+              button
+              // "<div class='btn-group'><button class='btn btn-warning' type='button' onclick='editProduk("+key+")'><i class='glyphicon glyphicon-edit'></i></button><button class='btn btn-danger' type='button' onclick='delProduk("+key+")'><i class='glyphicon glyphicon-trash'></i></button></div>"
               ]).draw().node();
 
             if(status!='OK'){
@@ -56,7 +59,7 @@
   }
 
   $(document).ready(function(){
-
+    hidAdm();
     $('.startdate').datepicker();
     $('.enddate').datepicker();
 
@@ -79,6 +82,7 @@
         $.each(res,function(key,val){
           $('#kategori-produk').append('<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>');
           $('#super-category').append('<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>');
+          $('#e-kategori-produk').append('<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>');
         });
       }
     });
@@ -111,245 +115,264 @@
     </form>
   </div>
 
-
-  <div class="panel panel-default col-md-6" id="panel-add-produk">
-    <div class="panel-heading" id="add-produk-heading"><img src="images/addprod.png"/><a id="add-produk-btn" class="f1w navbutton" onclick="showAdd()">Tambah Produk</a></div>
-    <div class="panel-body vistrs" id="body-tambah-produk" style="display: none;">
-      <form id="form-add-produk">
-        <div class="row">
-          <div class="col-md-6">
-            Id Produk
-          </div>
-          <div class="col-md-6">
-            <input class="form-control" name="id_produk"></input>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            Nama Produk
-          </div>
-          <div class="col-md-6">
-            <input class="form-control" name="nama_produk"></input>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            Tipe Produk
-          </div>
-          <div class="col-md-6">
-            <select class="form-control" name="tipe_produk">
-              <option value="token">Token</option>
-              <option value="postpaid">Postpaid</option>
-              <option value="prepaid">Prepaid</option>
-            </select>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6" id="harga-beli">
-            Harga Beli
-          </div>
-          <div class="col-md-6">
-            <input class="form-control" name="harga_produk"></input>
-          </div>
-        </div>
-        <div class="row" id="nominal-produk">
-          <div class="col-md-6">
-            Nominal
-          </div>
-          <div class="col-md-6">
-            <input class="form-control" name="nominal_produk"></input>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            Kategori
-          </div>
-          <div class="col-md-6">
-            <select class="form-control" id="kategori-produk" onchange="tampilSubKat()">
-              <option id="default-kategori">Pilih Kategori</option>
-            </select>
-          </div>
-        </div>
-        <div class="row" id="subkategori-row" style="display: none">
-          <div class="col-md-6">
-            Subkategori
-          </div>
-          <div class="col-md-6">
-            <select class="form-control" name="kategori_produk" id="subkategori-produk">
-
-            </select>
-          </div>
-        </div>
-        <div class="row" id="edit-field" style="display: none">
-          <div class="row" id="subkategori-row">
+  <div id='admin'>
+    <div class="panel panel-default col-md-6" id="panel-add-produk">
+      <div class="panel-heading" id="add-produk-heading"><img src="images/addprod.png"/><a id="add-produk-btn" class="f1w navbutton" onclick="showAdd()">Tambah Produk</a></div>
+      <div class="panel-body vistrs" id="body-tambah-produk" style="display: none;">
+        <form id="form-add-produk">
+          <div class="row">
             <div class="col-md-6">
-              Status Aktif
+              Tipe Produk
             </div>
             <div class="col-md-6">
-              <select class="form-control" name="status_aktif" id="status-aktif">
-                <option value="1" id="aktif">Aktif</option>
-                <option value="0" id="nonaktif">Tidak Aktif</option>
+              <select class="form-control" name="tipe_produk">
+                <option value="token">Token</option>
+                <option value="postpaid">Postpaid</option>
+                <option value="prepaid">Prepaid</option>
               </select>
             </div>
           </div>
-          <div class="row" id="subkategori-row">
+          <div class="row">
             <div class="col-md-6">
-              Ketersediaan
+              Id Produk
             </div>
             <div class="col-md-6">
-              <select class="form-control" name="status_kosong" id="status-kosong">
-                <option value="0" id="tersedia">Tersedia</option>
-                <option value="1" id="kosong">Kosong</option>
+              <input class="form-control" name="id_produk">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              Nama Produk
+            </div>
+            <div class="col-md-6">
+              <input class="form-control" name="nama_produk">
+            </div>
+          </div>
+          <div class="row" id="nominal-produk">
+            <div class="col-md-6">
+              Nominal
+            </div>
+            <div class="col-md-6">
+              <select class="form-control" name="nominal_produk">
+                <option value="1000">1.000</option>
+                <option value="2000">2.000</option>
+                <option value="5000">5.000</option>
+                <option value="10000">10.000</option>
+                <option value="20000">20.000</option>
+                <option value="25000">25.000</option>
+                <option value="30000">30.000</option>
+                <option value="50000">50.000</option>
+                <option value="60000">60.000</option>
+                <option value="100000">100.000</option>
               </select>
             </div>
           </div>
-          <div class="row" id="subkategori-row">
+          <div class="row" id="fee" style="display: none">
             <div class="col-md-6">
-              Keterangan
+              Fee
             </div>
             <div class="col-md-6">
-              <textarea class="form-control" name="keterangan"></textarea>
+              <input class="form-control" name="harga_produk" >
             </div>
           </div>
-        </div>
-        <br>
-        <div class="row">
-          <div class="col-md-8" align="left">
-            <div id="add-btn" class="">
-              <button class="btn btn-info" type="button" onclick="addSup()"><span class="glyphicon glyphicon-wrench"></span> Supplier</button>
-              <button class="btn btn-success" type="button" onclick="setupAgen()"><span class="glyphicon glyphicon-wrench"></span> Agen</button>  
+          <div class="row">
+            <div class="col-md-6" id="harga-beli">
+              Harga Beli
+            </div>
+            <div class="col-md-6">
+              <input class="form-control" name="harga_produk" id="field-harga-beli">
             </div>
           </div>
-          <div id="edit-btn" style="display: none" class="btn-group">
-            <button class="btn btn-success" type="button" onclick="updateProduk()">Simpan</button>
-            <button class="btn btn-danger" type="button" onclick="cancelEdit()">Batal</button>
+          <div class="row">
+            <div class="col-md-6">
+              Kategori
+            </div>
+            <div class="col-md-6">
+              <select class="form-control" id="kategori-produk" onchange="tampilSubKat()">
+                <option id="default-kategori">Pilih Kategori</option>
+              </select>
+            </div>
           </div>
-          <div class="col-md-4" align="right">
-            <button class="btn btn-primary" type="button" onclick="addProduk()">Tambahkan</button>
+          <div class="row" id="subkategori-row" style="display: none">
+            <div class="col-md-6">
+              Subkategori
+            </div>
+            <div class="col-md-6">
+              <select class="form-control" name="kategori_produk" id="subkategori-produk">
 
+              </select>
+            </div>
           </div>
-        </div>
-      </form>
+          <div class="row" id="edit-field" style="display: none">
+            <div class="row" id="subkategori-row">
+              <div class="col-md-6">
+                Status Aktif
+              </div>
+              <div class="col-md-6">
+                <select class="form-control" name="status_aktif" id="status-aktif">
+                  <option value="1" id="aktif">Aktif</option>
+                  <option value="0" id="nonaktif">Tidak Aktif</option>
+                </select>
+              </div>
+            </div>
+            <div class="row" id="subkategori-row">
+              <div class="col-md-6">
+                Ketersediaan
+              </div>
+              <div class="col-md-6">
+                <select class="form-control" name="status_kosong" id="status-kosong">
+                  <option value="0" id="tersedia">Tersedia</option>
+                  <option value="1" id="kosong">Kosong</option>
+                </select>
+              </div>
+            </div>
+            <div class="row" id="subkategori-row">
+              <div class="col-md-6">
+                Keterangan
+              </div>
+              <div class="col-md-6">
+                <textarea class="form-control" name="keterangan"></textarea>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-md-8" align="left">
+              <div id="add-btn" class="">
+                <button class="btn btn-info" type="button" onclick="addSup()"><span class="glyphicon glyphicon-wrench"></span> Supplier</button>
+                <button class="btn btn-success" type="button" onclick="setupAgen()"><span class="glyphicon glyphicon-wrench"></span> Agen</button>  
+              </div>
+            </div>
+            <div id="edit-btn" style="display: none" class="btn-group">
+              <button class="btn btn-success" type="button" onclick="updateProduk()">Simpan</button>
+              <button class="btn btn-danger" type="button" onclick="cancelEdit()">Batal</button>
+            </div>
+            <div class="col-md-4" align="right">
+              <button class="btn btn-primary" type="button" onclick="addProduk()">Tambahkan</button>
+
+            </div>
+          </div>
+        </form>
+      </div>
+
     </div>
-
-  </div>
-  <div class="panel panel-default col-md-6" id="panel-add-kategori">
-    <div class="panel-heading"><img src="images/addcat.png" /><a id="add-kategori-btn" class="f1w navbutton" onclick="showAddKat()">Tambah Kategori</a></div>
-    <div class="panel-body vistrs" id="body-tambah-kategori" style="display: none;">
-      <form id="form-add-kategori">
-        <div class="row">
-          <div class="col-md-6">
-            <input  name="tipe-kategori" type="radio" value="kategori">Kategori
+    <div class="panel panel-default col-md-6" id="panel-add-kategori">
+      <div class="panel-heading"><img src="images/addcat.png" /><a id="add-kategori-btn" class="f1w navbutton" onclick="showAddKat()">Tambah Kategori</a></div>
+      <div class="panel-body vistrs" id="body-tambah-kategori" style="display: none;">
+        <form id="form-add-kategori">
+          <div class="row">
+            <div class="col-md-6">
+              <input  name="tipe-kategori" type="radio" value="kategori">Kategori
+            </div>
+            <div class="col-md-6">
+              <input  name="tipe-kategori" type="radio" value="subkategori">Subkategori
+            </div>
+          </div><br>
+          <div class="row subkat-field" style="display: none">
+            <div class="col-md-6">
+              Super Kategori
+            </div>
+            <div class="col-md-6">
+              <select id="super-category" class="form-control" name="super_kategori">
+                <option id="default-super-category" value="">Pilih super category</option>
+              </select>
+            </div>
           </div>
-          <div class="col-md-6">
-            <input  name="tipe-kategori" type="radio" value="subkategori">Subkategori
+          <div class="row">
+            <div class="col-md-6">
+              Id Kategori
+            </div>
+            <div class="col-md-6">
+              <input class="form-control" name="id_kategori">
+            </div>
           </div>
-        </div><br>
-        <div class="row subkat-field" style="display: none">
-          <div class="col-md-6">
-            Super Kategori
-          </div>
-          <div class="col-md-6">
-            <select id="super-category" class="form-control" name="super_kategori">
-              <option id="default-super-category" value="">Pilih super category</option>
-            </select>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            Id Kategori
-          </div>
-          <div class="col-md-6">
-            <input class="form-control" name="id_kategori">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            Nama Kategori
-          </div>
-          <div class="col-md-6">
-            <input class="form-control" name="nama_kategori"></input>
-          </div>
-        </div>
-        
-        <br>
-        <div class="row subkat-field" style="display: none">
-          <div class="col-md-6">
-            Pilih Formulir          
+          <div class="row">
+            <div class="col-md-6">
+              Nama Kategori
+            </div>
+            <div class="col-md-6">
+              <input class="form-control" name="nama_kategori">
+            </div>
           </div>
           
-        </div>
-        <br>
-        <table class="tabel subkat-field" style="width: 90%;margin-left: 10%; display: none">
-          <thead>
-            <tr>
-              <td><i class="glyphicon glyphicon-check"></i></th>
-              <td >Jenis Formulir</th>
-              <td >Label</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr id="pilih-produk">
-              <td ><input type="checkbox" id="ck-pilih-produk" name="produk"></td>
-              <td >Pilih Produk</td>
-              <td >
-              <input type="hidden" name="form[1][tipe]" class="inp-pilih-produk" disabled="" value="select">
-              <input type="hidden" name="form[1][nama]" class="inp-pilih-produk" disabled="" value="produk">
-              <input type="text" name="form[1][label]" class="form-control inp-pilih-produk" id="inp-pilih-produk" disabled=""></td>
-            </tr>
-            <tr id="pilih-produk">
-              <td><input type="checkbox" id="ck-tujuan-kirim" name="tujuan"></td>
-              <td>Tujuan Kirim</td>
-              <td>
-              <input type="hidden" name="form[2][tipe]" class="inp-tujuan" disabled="" value="text">
-              <input type="hidden" name="form[2][nama]" class="inp-tujuan" disabled="" value="tujuan">
-              <input type="text" name="form[2][label]" class="form-control inp-tujuan" id="inp-tujuan" disabled=""></td>
-            </tr>
-            <tr id="pilih-produk">
-              <td><input type="checkbox" id="ck-kuantitas" name="kuantitas"></td>
-              <td>Kuantitas</td>
-              <td>
-                <input type="hidden" name="form[3][tipe]" class="inp-kuantitas" disabled="" value="number">
-                <input type="hidden" name="form[3][nama]" class="inp-kuantitas" disabled="" value="quantity">
-                <input type="text" name="form[3][label]" class="form-control inp-kuantitas" id="inp-kuantitas" disabled="">
-              </td>
-            </tr>
-          </tbody>
-        </table>
-         <br>
-        <div class="row">
-          <div class="col-md-6">
+          <br>
+          <div class="row subkat-field" style="display: none">
+            <div class="col-md-6">
+              Pilih Formulir          
+            </div>
+            
           </div>
-          <div class="col-md-6" align="right">
-            <button id="addKategori-btn" class="btn btn-primary" onclick="addKategori()" type="button">Tambahkan</button>
+          <br>
+          <table class="tabel subkat-field" style="width: 90%;margin-left: 10%; display: none">
+            <thead>
+              <tr>
+                <td><i class="glyphicon glyphicon-check"></i></td>
+                <td >Jenis Formulir</td>
+                <td >Label</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="pilih-produk">
+                <td ><input type="checkbox" id="ck-pilih-produk" name="produk"></td>
+                <td >Pilih Produk</td>
+                <td >
+                <input type="hidden" name="form[1][tipe]" class="inp-pilih-produk" disabled="" value="select">
+                <input type="hidden" name="form[1][nama]" class="inp-pilih-produk" disabled="" value="produk">
+                <input type="text" name="form[1][label]" class="form-control inp-pilih-produk" id="inp-pilih-produk" disabled=""></td>
+              </tr>
+              <tr id="pilih-produk">
+                <td><input type="checkbox" id="ck-tujuan-kirim" name="tujuan"></td>
+                <td>Tujuan Kirim</td>
+                <td>
+                <input type="hidden" name="form[2][tipe]" class="inp-tujuan" disabled="" value="text">
+                <input type="hidden" name="form[2][nama]" class="inp-tujuan" disabled="" value="tujuan">
+                <input type="text" name="form[2][label]" class="form-control inp-tujuan" id="inp-tujuan" disabled=""></td>
+              </tr>
+              <tr id="pilih-produk">
+                <td><input type="checkbox" id="ck-kuantitas" name="kuantitas"></td>
+                <td>Kuantitas</td>
+                <td>
+                  <input type="hidden" name="form[3][tipe]" class="inp-kuantitas" disabled="" value="number">
+                  <input type="hidden" name="form[3][nama]" class="inp-kuantitas" disabled="" value="quantity">
+                  <input type="text" name="form[3][label]" class="form-control inp-kuantitas" id="inp-kuantitas" disabled="">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+           <br>
+          <div class="row">
+            <div class="col-md-6">
+            </div>
+            <div class="col-md-6" align="right">
+              <button id="addKategori-btn" class="btn btn-primary" onclick="addKategori()" type="button">Tambahkan</button>
+            </div>
           </div>
-        </div>
-      </form>
-    </div>  
+        </form>
+      </div>  
+    </div>
   </div>
-
 
 
   <div id="maintable" class="col-md-12 col-xs-12 col-sm-12">
-    <table id="daftar-produk" class="display table table1 table-striped table-bordered" cellspacing="0" width="100%">
-      <thead>
-        <tr>
-          <td width="5%">#</td>
-          <td width="10%">Id Produk</td>
-          <td width="15%">Nama</td>
-          <td width="10%">Harga</td>
-          <td width="10%">Nominal</td>
-          <td width="10%">Kategori</td>
-          <td width="10%">Subkategori</td>
-          <td width="5%">Tipe</td>
-          <td width="5%">Status</td>
-          <td width="10%">Opsi</td>
-        </tr>
-      </thead>
-      <tbody>
+      <table id="daftar-produk" class="display table table1 table-striped table-bordered" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <td width="5%">#</td>
+            <td width="10%">Id Produk</td>
+            <td width="15%">Nama</td>
+            <td width="10%">Harga</td>
+            <td width="10%">Nominal</td>
+            <td width="10%">Kategori</td>
+            <td width="10%">Subkategori</td>
+            <td width="5%">Tipe</td>
+            <td width="5%">Status</td>
+            <td width="10%">Opsi</td>
+          </tr>
+        </thead>
+        <tbody>
 
-      </tbody>
-    </table>
+        </tbody>
+      </table>
   </div>
 </div>
 <div id="modal-set-supplier" class="modal fade" tabindex="-1" role="dialog">
@@ -403,7 +426,8 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="submitSup()">Tambahkan</button>
+        <button type="button" class="btn btn-primary newharga-btn" onclick="submitSup()">Tambahkan</button>
+        <button type="button" class="btn btn-primary update-harga-btn" onclick="updateHargaSupp()" style="display: none">Tambahkan</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -472,7 +496,129 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
-        <button type="button" class="btn btn-primary" onclick="submitHarga()">Tambahkan</button>
+        <button type="button" id="new-harga-downlink" class="btn btn-primary newharga-btn" onclick="submitHarga()">Tambahkan</button>
+        <button type="button" id="update-harga-downlink" class="btn btn-primary update-harga-btn" onclick="updateHargaDownlink()" style="display: none">Tambahkan</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+<div id="modal-edit-produk" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Edit Produk</h4>
+      </div>
+      <div class="modal-body">
+        <div class="panel panel-default col-md-12" id="panel-add-produk">
+          <div class="panel-body vistrs" id="body-tambah-produk">
+            <form id="form-edit-produk">
+              <div class="row">
+                <div class="col-md-6">
+                  Id Produk
+                </div>
+                <div class="col-md-6">
+                  <input class="form-control" name="id_produk" id="e-id-produk">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  Nama Produk
+                </div>
+                <div class="col-md-6">
+                  <input class="form-control" name="nama_produk" id="e-nama-produk">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  Tipe Produk
+                </div>
+                <div class="col-md-6">
+                  <select class="form-control" name="tipe_produk" id="e-tipe-produk">
+                    <option value="token">Token</option>
+                    <option value="postpaid">Postpaid</option>
+                    <option value="prepaid">Prepaid</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6" id="harga-beli">
+                  Harga Beli
+                </div>
+                <div class="col-md-6">
+                  <input class="form-control" name="harga_produk" id="e-harga-produk">
+                </div>
+              </div>
+              <div class="row" id="nominal-produk">
+                <div class="col-md-6">
+                  Nominal
+                </div>
+                <div class="col-md-6">
+                  <input class="form-control" name="nominal_produk" id="e-nominal-produk">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  Kategori
+                </div>
+                <div class="col-md-6">
+                  <select class="form-control" id="e-kategori-produk" onchange="eTampilSubKat()">
+                    <option id="default-kategori">Pilih Kategori</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row" id="e-subkategori-row" style="display: none">
+                <div class="col-md-6">
+                  Subkategori
+                </div>
+                <div class="col-md-6">
+                  <select class="form-control" name="kategori_produk" id="e-subkategori-produk">
+
+                  </select>
+                </div>
+              </div>
+              <div class="row" id="e-edit-field" style="display: none" >
+                <div class="row">
+                  <div class="col-md-6">
+                    Status Aktif
+                  </div>
+                  <div class="col-md-6">
+                    <select class="form-control" name="status_aktif" id="e-status-aktif">
+                      <option value="1" id="e-aktif">Aktif</option>
+                      <option value="0" id="e-nonaktif">Tidak Aktif</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    Ketersediaan
+                  </div>
+                  <div class="col-md-6">
+                    <select class="form-control" name="status_kosong" id="e-status-kosong">
+                      <option value="0" id="e-tersedia">Tersedia</option>
+                      <option value="1" id="e-kosong">Kosong</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    Keterangan
+                  </div>
+                  <div class="col-md-6">
+                    <textarea class="form-control" name="keterangan"></textarea>
+                  </div>
+                </div>
+              </div>
+              <br>
+              
+            </form>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="updateProduk()">Simpan</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -509,13 +655,80 @@
   $('select[name=tipe_produk]').change(function(){
     var tipe = $('select[name=tipe_produk]').val();
     if(tipe=='prepaid' || tipe=='token'){
+      $('#fee').hide();
       $('#harga-beli').html('Harga Beli');
+      $('#field-harga-beli').attr('name','harga_produk');
       $('#nominal-produk').show();
     }else{
-      $('#harga-beli').html('Keuntungan');
+      $('#harga-beli').html('Biaya Admin');
+      $('#field-harga-beli').attr('name','nominal_produk');
+      $('#fee').show();
       $('#nominal-produk').hide();
     }
   });
+  function loadDownlinkEdit(id_produk){
+    $.ajax({
+      url:'loadDownlink',
+      data:{'id_produk':id_produk},
+      type:'post',
+      success:function(result){
+        //alert(result);
+        table_agen.clear();
+         var res = JSON.parse(result);
+        if(!res.error){
+         $.each(res,function(key,val){
+            var id = val.id_member;
+            var nama = val.nama;
+            var harga = val.harga_beli;
+            var input = '<input name="harga_downlink['+id+']" type="number" class="form-control" value="'+harga+'">';
+            table_agen.row.add([
+              id,
+              nama,
+              input
+              ]).draw(false);
+          });
+          $('#per-id').show();
+        }
+      }
+    });
+  }
+  function loadWilayahEdit(id_produk){
+    $.ajax({
+      url:'loadWilayah',
+      type:'post',
+      data:{'id_produk':id_produk},
+      success:function(result){
+        table_wilayah.clear();
+        if(result!='noaccess'){
+
+          var res = JSON.parse(result);
+          if(!res.error){
+            $.each(res,function(key,val){
+              var id = val.id_wilayah;
+              var nama = val.nama;
+              var harga = val.avg_jual
+              var input = '<input name="harga_wilayah['+id+']" type="number" class="form-control" value="'+harga+'">';
+              table_wilayah.row.add([
+                id,
+                nama,
+                input
+                ]).draw(false);
+            });
+            $('#per-wilayah').show();
+          }
+        }
+      }
+    });
+  }
+  function editDownlink(id_produk){
+    loadWilayahEdit(id_produk);
+    loadDownlinkEdit(id_produk);
+    $('#new-harga-downlink').hide();
+    $('#update-harga-downlink').attr('onclick','updateHargaDownlink("'+id_produk+'")');
+    $('#update-harga-downlink').show();
+    $('#modal-set-agen').modal();
+  }
+
   function submitHargaWilayah(callback){
      var data = table_wilayah.$('input').serialize();
      if(data!=null){
@@ -543,14 +756,35 @@
     }
   }
   function submitHarga(){
-    $('#modal-set-agen').mdoal('hide');
+    $('#modal-set-agen').modal('hide');
     submitHargaAgen(function(result){
       var agen_res = result;
       submitHargaWilayah(function(res){
         var wil_res = res;
-        alert(agen_res.concat(wil_res));
+        //alert(agen_res.concat(wil_res));
       });
     });
+  }
+  function updateHargaDownlink(id_produk){
+    //alert(id_produk);
+    submitHargaAgen(function(result){
+      var res = JSON.parse(result);
+      if(!res.error){
+        $.ajax({
+          url:'update-harga-downlink',
+          data:{'id_produk':id_produk},
+          type:'post',
+          success:function(result){
+            //alert(result);
+            var res = JSON.parse(result);
+            if(!res.error){
+              location.reload();
+            }
+          }
+        });
+      }
+    });
+    
   }
   function setupAgen(){
     loadDownlink();
@@ -588,34 +822,40 @@
         table_wilayah.clear();
         if(result!='noaccess'){
           var res = JSON.parse(result);
-          $.each(res,function(key,val){
-            var id = val.id;
-            var nama = val.nama;
-            var input = '<input name="harga_wilayah['+id+']" type="number" class="form-control">';
-            table_wilayah.row.add([
-              id,
-              nama,
-              input
-              ]).draw(false);
-          });
-          $('#per-wilayah').show();
+          if(!res.error){
+              $.each(res,function(key,val){
+                var id = val.id;
+                var nama = val.nama;
+                var input = '<input name="harga_wilayah['+id+']" type="number" class="form-control">';
+                table_wilayah.row.add([
+                  id,
+                  nama,
+                  input
+                  ]).draw(false);
+              });
+              $('#per-wilayah').show();
+            }
         }
       }
     });
   }
   function loadSup(){
+    $('#list-sup').html('');
     $.ajax({
       url:'getSupplier',
       type:'post',
       success:function(result){
         //lert('hai');
         var res = JSON.parse(result);
-        $.each(res,function(key,val){
-          var id = '<td>'+val.id_sup+'</td>';
-          var nama = '<td>'+val.nama_supplier+'</td>';
-          var select = '<td><input type="checkbox" id="inp-sup-'+val.id_sup+'" onclick="assignSup(&#39;'+val.id_sup+'&#39;,&#39;'+val.nama_supplier+'&#39;)"></td>';
-          $('#list-sup').append('<tr>'+select+id+nama+'</tr>');
-        });
+        if(!res.error){
+          $.each(res,function(key,val){
+            var id = '<td>'+val.id_sup+'</td>';
+            var nama = '<td>'+val.nama_supplier+'</td>';
+            var select = '<td><input type="checkbox" id="inp-sup-'+val.id_sup+'" onclick="assignSup(&#39;'+val.id_sup+'&#39;,&#39;'+val.nama_supplier+'&#39;)"></td>';
+            $('#list-sup').append('<tr>'+select+id+nama+'</tr>');
+            
+          });
+        }
       }
     });
   }
@@ -630,16 +870,25 @@
       }
     });
   }
-  function assignSup(id,nama){
-
+  function assignSup(id,harga_sup){
+    //alert(id);
     var input = '<input name="prod_supplier[&#39;'+id+'&#39;]" value="'+id+'" type="hidden">';
     var id_sup = '<td>'+id+'</td>';
     var harga = '<td><input name="supplier[&#39;'+id+'&#39;]" type="number" class="form-control"></td>';
+    
     var hapus = '<td><button class="btn btn-danger btn-sm" type="button" id="unass-'+id+'" onclick="unass(&#39;'+id+'&#39)";>X</button></td>'
-    if($('#inp-sup-'+id).is(':checked')){
+    if(harga_sup!=null){
+      //alert(harga_sup);
+      harga = '<td><input name="supplier[&#39;'+id+'&#39;]" type="number" class="form-control" value="'+harga_sup+'"></td>';
       $('#list-assigned-sup').append('<tr id="rowass-'+id+'">'+id_sup+harga+hapus+'</tr>');
-    }else{
-      $('#rowass-'+id).remove();
+      $('#inp-sup-'+id).prop('checked',true);
+    }else
+    {
+      if($('#inp-sup-'+id).is(':checked')){
+          $('#list-assigned-sup').append('<tr id="rowass-'+id+'">'+id_sup+harga+hapus+'</tr>');
+      }else{
+        $('#rowass-'+id).remove();
+      }
     }
   }
   function unass(id){
@@ -702,12 +951,64 @@
                 }
               }
               $("#subkategori-produk").append(option);
-
+              //$("#e-subkategori-produk").append(option);
             });
         $('#subkategori-row').show();
       }
     });
   }
+  function eTampilSubKat(idsub){
+    $('#e-subkategori-produk').html('')
+    var id_kategori = $('#e-kategori-produk').val();
+    $.ajax({
+      url:'subKategori',
+      type: 'POST',
+      data: {'idsubkat': id_kategori},
+      success: function(res){
+        var subkategori = JSON.parse(res);
+        //$("#sub-category").html("");
+        $.each(subkategori, function(key, val){
+          var option = '<option value="'+val.id_kategori+'">'+val.nama_kategori+'</option>';
+          if(idsub!=null){
+            if(val.id_kategori==idsub){
+                option = '<option value="'+val.id_kategori+'" selected="selected">'+val.nama_kategori+'</option>';
+              }
+            }              
+          $("#e-subkategori-produk").append(option);
+        });
+        $('#e-subkategori-row').show();
+      }
+    });
+  }
+  function editSupp(id_produk){
+    loadSup();
+    loadHargaSup(id_produk);
+    $('#modal-set-supplier').modal();
+  }
+  function loadHargaSup(id_produk){
+    $('#list-assigned-sup').html('');
+    $.ajax({
+      url:'getSupplier',
+      data:{'id_produk':id_produk},
+      type:'post',
+      success:function(result){
+        //alert(result);
+        var res = JSON.parse(result);
+        $.each(res,function(key,val){
+          var id = val.id_supplier;
+          var harga = val.harga_terkini;
+          assignSup(id,harga);
+        });
+      }
+
+    });
+  }
+  // function editSubkatProduk(){
+  //   var idsub = $('#e-kategori-produk').val();
+  //   alert(idsub);
+  //   eTampilSubKat(idsub);
+  // }
+
   function addProduk(){
     var data = $('#form-add-produk').serialize();
     $.ajax({
@@ -716,7 +1017,7 @@
       data:data,
       success:function(result){
         var res = JSON.parse(result);
-        alert(result);
+        //alert(result);
         if(res.error){
           bootbox.dialog({
             message: "Produk gagal ditambahkan",
@@ -728,6 +1029,7 @@
               },
             }
           });
+
         }else{
           bootbox.dialog({
             message: "Produk Berhasil ditambahkan",
@@ -739,7 +1041,10 @@
               },
             }
           });
-          updateView();
+          $('button[data-bb-handler=success]').focus();
+          $('input[name=id_produk]').focus();
+          //updateView();
+          location.reload();
         }
       }
     });
@@ -793,55 +1098,58 @@
     });
   }
   function editProduk(rowindex){
-    cancelEdit();
+    //cancelEdit();
+
     var data = table.row(rowindex).data();
+    //alert(data);
     var status = data[8]  
     if(status=='OK'){
-      $('#nonaktif').removeAttr('selected');
-      $('#kosong').removeAttr('selected');
-      $('#aktif').attr('selected','selected');
-      $('#tersedia').attr('selected','selected');
+      $('#e-nonaktif').removeAttr('selected');
+      $('#e-kosong').removeAttr('selected');
+      $('#e-aktif').attr('selected','selected');
+      $('#e-tersedia').attr('selected','selected');
     }else if(status=='kosong'){
-      $('#nonaktif').removeAttr('selected');
-      $('#tersedia').removeAttr('selected');
-      $('#aktif').attr('selected','selected');
-      $('#kosong').attr('selected','selected');    
+      $('#e-nonaktif').removeAttr('selected');
+      $('#e-tersedia').removeAttr('selected');
+      $('#e-aktif').attr('selected','selected');
+      $('#e-kosong').attr('selected','selected');    
     }else if(status=='nonaktif'){
-      $('#aktif').removeAttr('selected');
-      $('#kosong').removeAttr('selected');
-      $('#nonakif').attr('selected','selected');
-      $('#tersedia').attr('selected','selected');
+      $('#e-aktif').removeAttr('selected');
+      $('#e-kosong').removeAttr('selected');
+      $('#e-nonakif').attr('selected','selected');
+      $('#e-tersedia').attr('selected','selected');
     }else{
-      $('#aktif').removeAttr('selected');
-      $('#tersedia').removeAttr('selected');
-      $('#nonaktif').attr('selected','selected');
-      $('#kosong').attr('selected','selected');
+      $('#e-aktif').removeAttr('selected');
+      $('#e-tersedia').removeAttr('selected');
+      $('#e-nonaktif').attr('selected','selected');
+      $('#e-kosong').attr('selected','selected');
     }
-    $('#edit-field').show();
-    $('input[name=id_produk]').val(data[1]);
-    $('input[name=nama_produk]').val(data[2]);
-    $('input[name=harga_produk]').val(data[3]);
-    $('input[name=nominal_produk]').val(data[4]);
+    $('#e-edit-field').show();
+    $('#e-id-produk').val(data[1]);
+    $('#e-nama-produk').val(data[2]);
+    $('#e-harga-produk').val(data[3]);
+    $('#e-nominal-produk').val(data[4]);
     $('option').removeAttr('selected');
     $('option[value="'+data[5]+'"]').attr('selected','selected');
-    tampilSubKat(data[6]);
+    eTampilSubKat(data[6]);
+    alert(data[6]);
     $('option[value="'+data[7]+'"]').attr('selected','selected');
     $('option[value="'+data[6]+'"]').attr('selected','selected');
-    $('#panel-add-produk').attr('class','panel panel-warning col-md-6');
-    $('#add-produk-heading').html('Edit Produk: '+data[1]+' <button id="add-produk-btn" class="btn btn-primary" onclick="hideAdd()">Hide</button>');
-    $('#add-btn').hide();
-    $('#edit-btn').show();
-    showAdd();
+    //$('#panel-add-produk').attr('class','panel panel-warning col-md-6');
+    //$('#add-produk-heading').html('Edit Produk: '+data[1]+' <button id="add-produk-btn" class="btn btn-primary" onclick="hideAdd()">Hide</button>');
+    //$('#add-btn').hide();
+    //$('#edit-btn').show();
+    $('#modal-edit-produk').modal();
   }
   function updateProduk(){
-    var data = $('#form-add-produk').serialize();
+    var data = $('#form-edit-produk').serialize();
     $.ajax({
       url:'updateProduk',
       type:'POST',
       data:data,
       success:function(result){
         var res = JSON.parse(result);
-        //alert(result);
+        alert(result);
         if(res.error){
           bootbox.dialog({
             message: "Produk gagal ditambahkan",
@@ -880,9 +1188,9 @@
   }
   function updateView(){
     reloadTable();
-    $('input').val('');
-    $('#default-kategori').attr('selected','true');
-    $('#subkategori-row').hide();
-    $('#subkategori-produk').html('');
+    //$('input').val('');
+    //$('#default-kategori').attr('selected','true');
+    //$('#subkategori-row').hide();
+    //$('#subkategori-produk').html('');
   }
 </script>

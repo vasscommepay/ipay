@@ -3,7 +3,58 @@ var nano   = require('./nano');
 var connection = require('./db');
 
 var couchdb = {
-
+	"setNotif":function(to_member,from_member,activity,title,status,message,callback){
+		var ipay = nano.db.use('ipay');
+		var table = 'notification';
+		var doc = {};
+		doc['table']=table;
+		doc['from']=from_member;
+		doc['to_member']=to_member;
+		doc['activity']=activity;
+		doc['title']=title;
+		doc['status']=status;
+		doc['message']=message;
+		doc['timestamp']= Date.now();
+		ipay.insert(doc,function(err,body){
+			if(err){
+				callback(err)
+			}else{
+				callback(null,body);
+			}
+		});
+	}
+	,
+	"getNotif":function(status,member,callback){
+		var ipay = nano.db.use('ipay');
+		ipay.view('notification',status+'_notif',{keys:[member]},function(err,body){
+			if(err){
+				callback(err);
+			}else{
+				callback(null,body);
+			}
+		});
+	}
+	,
+	"activityLog":function(username,req,res,status,callback){
+		var ipay = nano.db.use('ipay');
+		var table = 'activity_log';
+		var timestamp = Date.now();
+		var doc = {};
+		doc['table']=table;
+		doc['user']=username;
+		doc['req']=req;
+		doc['res']=res;
+		doc['timestamp']=timestamp.toString();
+		doc['status']=status;
+		ipay.insert(doc,function(err,body){
+			if(err){
+				callback(err);
+			}else{
+				callback(null,body);
+			}
+		});
+	}
+	,
 	"exportUser":function(callback){
 		var users_db = nano.db.use('ipay_users');
 		var sql = "Select * FROM users";
@@ -44,13 +95,13 @@ var couchdb = {
 	}
 	,"exportSingleUser":function(username, callback){
 		var users_db = nano.db.use('ipay_users');
-		var sql = "Select * FROM users";
+		var sql = "Select * FROM users WHERE username="+connection.escape(username);
 		getData(sql,function(err,rows){
 			if(err){
 				console.log(err);
 				callback(err);
 			}else{
-				users_db.insert(user,username,function(err,body){
+				users_db.insert(rows[0],username,function(err,body){
 					if(err){
 						callback(err);
 					}else{ 
@@ -59,7 +110,7 @@ var couchdb = {
 							if(err){
 								callback(err);
 							}else{
-								callback(null.body);
+								callback(null,body);
 							}
 						});
 					}
@@ -126,111 +177,118 @@ var couchdb = {
 					get_level2 = "SELECT id_member FROM member_koordinator";
 					get_level3 = "SELECT id_member FROM member_agen";
 				}
-				async.parallel([
-					function(callback){
-						//Get level 1 member
-						var begin = Date.now();
-						if(get_level1!=null){
-							getData(get_level1,function(err,rows){
-								var speed = Date.now()-begin;
-								if(err){
-									callback(err);
-								}else{
-
-									//console.log("Get level 1 for member: "+id_member+" finished id "+speed+"ms");
-									level1_list = rows;
-									callback();
-								}
-							});
-						}else{
-							callback();
-						}
-					},
-					function(callback){
-						//Get level 2 member
-						var begin = Date.now();
-						if(get_level2!=null){
-							getData(get_level2,function(err,rows){
-								var speed = Date.now()-begin;
-								if(err){
-									callback(err);
-								}else{
-									//console.log("Get level 2 for member: "+id_member+"  finished id "+speed+"ms");
-									level2_list = rows;
-									callback();
-								}
-							});
-						}else{
-							callback();
-						}
-					},
-					function(callback){
-						//Get level 3 member
-						var begin = Date.now();
-						if(get_level3!=null){
-							getData(get_level3,function(err,rows){
-								var speed = Date.now()-begin;
-								if(err){
-									callback(err);
-								}else{
-									//console.log("Get level 3 for member: "+id_member+"  finished id "+speed+"ms");
-									level3_list = rows;
-									callback();
-								}
-							});
-						}else{
-							callback();
-						}
-					},
-					function(callback){
-						//get member contact
-						var begin = Date.now();
-						getData(get_contact,function(err,contact){
-							var speed = (Date.now()-begin);
-							if(err){
-								callback(err);
-							}else{
-								console.log("Get contact for member: "+id_member+"  finished id "+speed+"ms");
-								contact_list = contact;
-								callback();
-							}
-						});
-					}
-					,function(callback){
-						if(get_level1!=null){
-							connection.query("SELECT total_deposit FROM member_korwil WHERE id_member="+connection.escape(id_member),function(err,rows){
-								if(err)callback(err);
-								deposit = rows.total_deposit;
-								callback();
-							});
-						}
-					}
-					],
-					function(err){
-						if(err){
-
-						}else{
-							var doc = {nama:nama,tgl_lahir:tgl_lahir,jk:jenis_kelamin,id_num:identity_number,npwp:npwp,level:level_member,komisi:total_komisi,saldo:total_saldo,reg_num:reg_num,max_users:max_users,cur_user:cur_user,address:address,lv0:1,lv1:level1_list,lv2:level2_list,lv3:level3_list,contact:contact_list};
-							if(deposit!=null){
-								doc['deposit']=deposit;
-							}
+					async.series([
+						function(callback){
+							//Get level 1 member
 							var begin = Date.now();
-							member_db.insert(doc,""+id_member+"",function(err,body){
+							if(get_level1!=null){
+								getData(get_level1,function(err,rows){
+									var speed = Date.now()-begin;
+									if(err){
+										console.log(err);
+										callback(err);
+									}else{
+
+										console.log("Get level 1 for member: "+id_member+" finished id "+speed+"ms");
+										level1_list = rows;
+										callback();
+									}
+								});
+							}else{
+								callback();
+							}
+						},
+						function(callback){
+							//Get level 2 member
+							var begin = Date.now();
+							if(get_level2!=null){
+								getData(get_level2,function(err,rows){
+									var speed = Date.now()-begin;
+									if(err){
+										console.log(err);
+										callback(err);
+									}else{
+										console.log("Get level 2 for member: "+id_member+"  finished id "+speed+"ms");
+										level2_list = rows;
+										callback();
+									}
+								});
+							}else{
+								callback();
+							}
+						},
+						function(callback){
+							//Get level 3 member
+							var begin = Date.now();
+							if(get_level3!=null){
+								getData(get_level3,function(err,rows){
+									var speed = Date.now()-begin;
+									if(err){
+										console.log(err);
+										callback(err);
+									}else{
+										console.log("Get level 3 for member: "+id_member+"  finished id "+speed+"ms");
+										level3_list = rows;
+										callback();
+									}
+								});
+							}else{
+								callback();
+							}
+						},
+						function(callback){
+							//get member contact
+							var begin = Date.now();
+							getData(get_contact,function(err,contact){
+								var speed = (Date.now()-begin);
 								if(err){
 									console.log(err);
 									callback(err);
 								}else{
-									bod.push(body);
-									var speed = Date.now()-begin;
-									console.log("Insert into couchdb for member: "+id_member+" finised in: "+speed+"ms");
-									console.log("################ Finish exporting member: "+id_member+" ##################################");
+									console.log("Get contact for member: "+id_member+"  finished id "+speed+"ms");
+									contact_list = contact;
 									callback();
 								}
-							});			
+							});
 						}
-					});
-			},
-			 function(err){
+						// ,function(callback){
+						// 	if(get_level1!=null){
+						// 		connection.query("SELECT total_deposit FROM member_korwil WHERE id_member="+connection.escape(id_member),function(err,rows){
+						// 			if(err)callback(err);
+						// 			deposit = rows.total_deposit;
+						// 			callback();
+						// 		});
+						// 	}
+						// }
+						,
+						function(callback){
+							if(err){
+
+							}else{
+								var doc = {nama:nama,tgl_lahir:tgl_lahir,jk:jenis_kelamin,id_num:identity_number,npwp:npwp,level:level_member,komisi:total_komisi,saldo:total_saldo,reg_num:reg_num,max_users:max_users,cur_user:cur_user,address:address,lv0:1,lv1:level1_list,lv2:level2_list,lv3:level3_list,contact:contact_list};
+								if(deposit!=null){
+									doc['deposit']=deposit;
+								}
+								var begin = Date.now();
+								member_db.insert(doc,""+id_member+"",function(err,body){
+									if(err){
+										console.log(err);
+										callback(err);
+									}else{
+										bod.push(body);
+										var speed = Date.now()-begin;
+										console.log("Insert into couchdb for member: "+id_member+" finised in: "+speed+"ms");
+										console.log("################ Finish exporting member: "+id_member+" ##################################");
+										callback();
+									}
+								});			
+							}
+						}
+					],
+					callback);
+				}
+				,
+				function(err){
 				if(err){
 					console.log(err);
 					callback(err);
@@ -241,6 +299,182 @@ var couchdb = {
 				}
 			});
 		});
+	}
+	,"exportSingelMember":function(id_member,callback){
+		
+		var nama;
+		var tgl_lahir;
+		var jenis_kelamin;
+		var identity_number;
+		var level_member;
+		var total_saldo;
+		var total_komisi;
+		var reg_num;
+		var max_users;
+		var cur_user;
+		var address;
+		var level0 = 1;
+		var level1_list=[];
+		var level2_list=[];
+		var level3_list=[];
+		var get_level1;
+		var get_level2;
+		var get_level3;
+		var deposit = null;
+		var get_contact = "SELECT name,channel_id,channel_value FROM member_contact WHERE id_member="+id_member;
+		var contact_list;
+		
+			async.series([
+				function(callback){
+					getData("SELECT * FROM member WHERE id_member="+connection.escape(id_member),function(err,member){
+						if(err){
+							callback(err);
+						}else{
+							nama = member.nama;
+							tgl_lahir = member.tgl_lahir;
+							jenis_kelamin = member.jenis_kelamin;
+							identity_number = member.identity_number;
+							npwp = member.npwp;
+							level_member = member.level_member;
+							total_saldo = member.total_saldo;
+							total_komisi = member.total_komisi;
+							reg_num = member.reg_num;
+							max_users = member.max_users;
+							cur_user = member.current_users;
+							address = member.id_address;
+							if(level_member==1){
+								get_level1 = null;
+								get_level2 = "SELECT id_member FROM member_koordinator WHERE id_korwil="+id_member;
+								get_level3 = "SELECT id_member FROM member_agen WHERE id_koordinator IN (SELECT id_member FROM member_koordinator WHERE id_korwil ="+id_member+")";
+								level1_list = null;
+							}else if(level_member==2){
+								get_level1 = "SELECT id_korwil FROM member_koordinator WHERE id_member ="+id_member;
+								get_level2 = null;
+								get_level3 = "SELECT id_member FROM member_agen WHERE id_koordinator="+id_member;
+								level2_list = null;
+							}else if(level_member==3){
+								get_level1 = "SELECT id_korwil FROM member_koordinator WHERE id_member IN(SELECT id_koordinator FROM member_agen WHERE id_member ="+id_member+")";
+								get_level2 = "SELECT id_koordinator FROM member_agen WHERE id_member="+id_member;
+								get_level3 = null;
+								level3_list = null;
+							}else{
+								get_level1 = "SELECT id_member FROM member_korwil";
+								get_level2 = "SELECT id_member FROM member_koordinator";
+								get_level3 = "SELECT id_member FROM member_agen";
+							}
+							callback();
+						}
+					});
+				}
+				,
+				function(callback){
+					//Get level 1 member
+					var begin = Date.now();
+					if(get_level1!=null){
+						getData(get_level1,function(err,rows){
+							var speed = Date.now()-begin;
+							if(err){
+								console.log(err);
+								callback(err);
+							}else{
+
+								console.log("Get level 1 for member: "+id_member+" finished id "+speed+"ms");
+								level1_list = rows;
+								callback();
+							}
+						});
+					}else{
+						callback();
+					}
+				},
+				function(callback){
+					//Get level 2 member
+					var begin = Date.now();
+					if(get_level2!=null){
+						getData(get_level2,function(err,rows){
+							var speed = Date.now()-begin;
+							if(err){
+								console.log(err);
+								callback(err);
+							}else{
+								console.log("Get level 2 for member: "+id_member+"  finished id "+speed+"ms");
+								level2_list = rows;
+								callback();
+							}
+						});
+					}else{
+						callback();
+					}
+				},
+				function(callback){
+					//Get level 3 member
+					var begin = Date.now();
+					if(get_level3!=null){
+						getData(get_level3,function(err,rows){
+							var speed = Date.now()-begin;
+							if(err){
+								console.log(err);
+								callback(err);
+							}else{
+								console.log("Get level 3 for member: "+id_member+"  finished id "+speed+"ms");
+								level3_list = rows;
+								callback();
+							}
+						});
+					}else{
+						callback();
+					}
+				},
+				function(callback){
+					//get member contact
+					var begin = Date.now();
+					getData(get_contact,function(err,contact){
+						var speed = (Date.now()-begin);
+						if(err){
+							console.log(err);
+							callback(err);
+						}else{
+							console.log("Get contact for member: "+id_member+"  finished id "+speed+"ms");
+							contact_list = contact;
+							callback();
+						}
+					});
+				}
+				// ,function(callback){
+				// 	if(get_level1!=null){
+				// 		connection.query("SELECT total_deposit FROM member_korwil WHERE id_member="+connection.escape(id_member),function(err,rows){
+				// 			if(err)callback(err);
+				// 			deposit = rows.total_deposit;
+				// 			callback();
+				// 		});
+				// 	}
+				// }
+				,
+				function(callback){
+					if(err){
+
+					}else{
+						var doc = {nama:nama,tgl_lahir:tgl_lahir,jk:jenis_kelamin,id_num:identity_number,npwp:npwp,level:level_member,komisi:total_komisi,saldo:total_saldo,reg_num:reg_num,max_users:max_users,cur_user:cur_user,address:address,lv0:1,lv1:level1_list,lv2:level2_list,lv3:level3_list,contact:contact_list};
+						if(deposit!=null){
+							doc['deposit']=deposit;
+						}
+						var begin = Date.now();
+						member_db.insert(doc,""+id_member+"",function(err,body){
+							if(err){
+								console.log(err);
+								callback(err);
+							}else{
+								bod.push(body);
+								var speed = Date.now()-begin;
+								console.log("Insert into couchdb for member: "+id_member+" finised in: "+speed+"ms");
+								console.log("################ Finish exporting member: "+id_member+" ##################################");
+								callback();
+							}
+						});			
+					}
+				}
+			],
+			callback);
 	}
 	,"exportForm":function(callback){
 		var form_db = nano.db.use('ipay_form');
@@ -352,6 +586,47 @@ var couchdb = {
 				}
 			});
 		});
+	}
+	,"exportSingleForm":function(id_kategori,callback){
+		var form_db = nano.db.use('ipay_form');
+		var bod = [];
+		
+		var prop = [];
+		sql = "SELECT * FROM kategori_form WHERE id_kategori = '"+id_kategori+"'";
+		getData(sql,function(err,rows){
+			if(err){
+				console.log(err);
+				callback(err);
+			}else{
+				var i = 0;
+				for(i=0;i<rows.length;i++){
+					var prop_id = {};
+					var input_name = rows[i].input_name;
+					var input_type = rows[i].input_type;
+					var input_label = rows[i].input_label;
+					prop_id["input_name"]=input_name;
+					prop_id["input_type"]=input_type;
+					prop_id["input_label"]=input_label;
+					prop.push(prop_id);
+				}
+				console.log(id_kategori);
+				//callback();
+				form_db.insert({prop:prop},id_kategori,function(err,body){
+					if(err) console.log(err);
+					bod.push(body);
+					if(body.rev!=null){
+						connection.query("UPDATE kategori_form SET rev ='"+body.rev+"' WHERE id_kategori ='"+id_kategori+"'", function(err,result){
+							if(err)console.log(err);
+							callback(err);
+						});
+					}else{
+						callback(null,bod);
+					}
+				});
+			}
+			
+		});
+		
 	}
 	,"updateDb":function(dbname,doc_id,params,callback){
 		var db = nano.db.use(dbname);
@@ -676,9 +951,9 @@ var couchdb = {
 									supplier[supplier_id]=harga_terkini;
 								}
 								
-								var row = {_id:id_produk,_rev:rev, nama:nama,harga:harga,nominal:nominal,aktif:aktif,tipe:tipe,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
+								var row = {nama:nama,harga:harga,nominal:nominal,aktif:aktif,tipe:tipe,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
 
-								ipay.insert(row,function(err,body){
+								updateDb('ipay_produk',id_produk,row,function(err,body){
 									if(err){
 										console.log(err);
 										callback(err);
@@ -775,20 +1050,17 @@ var couchdb = {
 								var harga_terkini = supplierList[i].harga_terkini;
 								supplier[supplier_id]=harga_terkini;
 							}
-							row = {_id:id_produk,_rev:rev, nama:nama,harga:harga,nominal:nominal,aktif:aktif,tipe:tipe,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
+							row = {nama:nama,harga:harga,nominal:nominal,aktif:aktif,tipe:tipe,kosong:kosong,harga_beli:harga_beli,harga_jual:harga_jual,supplier:supplier};
 							callback();
 						}
 					}
 				});
 			},
 			function(callback){
-				ipay.insert(row,function(err,body){
+				updateDb('ipay_produk',id_produk,row,function(err,body){
 					if(err){
-						console.log(err);
 						callback(err);
 					}else{
-						bod = body;
-						newrev = body.rev;
 						callback();
 					}
 				});
@@ -941,11 +1213,56 @@ function getData(sql,callback){
 		}else{
 			if(rows.length==0){
 				err = sql+"empty table";
-				callback(err);
+				callback(null,null);
 			}else{
 				callback(null,rows);
 			}
 		}
 	});
 }
+
+function updateDb(dbname,doc_id,params,callback){
+		var db = nano.db.use(dbname);
+		var oldbody;
+		var newbody;
+		async.series([
+			function(callback){
+				db.get(doc_id,function(err,body){
+					if(err){
+						callback(err);
+					}else{
+						if(body.length==0){
+							callback("no record found");
+						}else{
+							oldbody = body;
+							//console.log("doc_id: ",doc_id);
+							//console.log('oldbody: ',oldbody);
+							callback();
+						}
+					}
+				});
+			}
+		],function(err){
+			if(err){
+				callback(err);
+				//console.log("Updatedb ERORR: "+err);
+			}else{
+				//delete oldbody.rev;
+				for(keys in params){
+					//console.log("keys: "+keys);
+					//console.log("values: "+params[keys]);
+					oldbody[keys]=params[keys];
+				}
+				db.insert(oldbody,function(err,body){
+					if(err){
+						callback(err);
+						//console.log("Updatedb ERORR: "+err);
+					}else{
+						callback(null,body);
+					}
+				});
+			}
+		});
+	}
+
 module.exports = couchdb;
