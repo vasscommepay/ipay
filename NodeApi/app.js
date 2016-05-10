@@ -37,7 +37,7 @@ var member_db = nano.db.use('ipay_member');
 
 
 // view engine setup
-app.set('port', process.env.PORT || 81, '127.0.0.1');
+app.set('port', process.env.PORT || 81, '192.168.173.13');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -156,8 +156,10 @@ function cekRespon(){
                         var qty = value.order_qty;
                         var id_produk = value.id_produk;
                         couchdb.setNotif(id_member,null,'transaction','transaksi direspon','new',{id_transaksi:id_transaksi,status:'sukses'},function(err,row){});
-                        
-                        setKomisi(id_produk,qty,id_korwil,id_koor,id,function(err,komisi_korwil,komisi_koor){
+                        setResponded(id,function(err,res){
+
+                        });
+                        setKomisi(id_produk,qty,id_korwil,id_koor,id_member,id,function(err,komisi_korwil,komisi_koor){
                           if(err){
                             callback(err);
                           }else{
@@ -168,6 +170,9 @@ function cekRespon(){
                           }
                       });
                     }else if(status_biller=='gagal'){
+                        setResponded(id,function(err,res){
+
+                        });
                         createRefund(id,function(err,result){
                           if(err){
                             callback(err);
@@ -217,13 +222,13 @@ function setResponded(doc_id,callback){
 });
 }
 
-function setKomisi(id_produk,qty,id_korwil,id_koor,id_tran,callback){
+function setKomisi(id_produk,qty,id_korwil,id_koor,id_member,id_tran,callback){
   produk_db.get(id_produk,function(err,rows){
     if(err){
       callback(err);
   }else{
-      var harga_jual_koor = rows.harga_jual[id_koor];
-      var harga_jual_korwil = rows.harga_jual[id_korwil];
+      var harga_jual_koor = rows.harga_beli[id_member];
+      var harga_jual_korwil = rows.harga_beli[id_koor];
       var harga_beli_koor = rows.harga_beli[id_koor];
       var harga_beli_korwil = rows.harga_beli[id_korwil];
       var komisi_koor = (harga_jual_koor - harga_beli_koor)*qty;
@@ -234,9 +239,7 @@ function setKomisi(id_produk,qty,id_korwil,id_koor,id_tran,callback){
         if(err){
           callback(id_tran+err);
       }else{
-          setResponded(id_tran,function(err,res){
-
-          });
+          
           callback(null,komisi_korwil,komisi_koor);
       }
   });
@@ -251,9 +254,6 @@ function createRefund(id_transaksi,callback){
     if(err){
       callback(id_transaksi+err);
   }else{
-      setResponded(id_transaksi,function(err,res){
-
-      });
       callback(null,true);
   }
 });

@@ -35,34 +35,37 @@ app.use(bodyParser.text());
 router.post('/',function (req,res,next) {
 	var respond = req.text.toLowerCase();
 	var doc;
-	var status;
-	if(respond.includes('SUKSES') || respond.includes('sukses')){
+	var status='tidak tahu';
+	if(respond.includes('sukses')){
 		doc = tranSukses(respond);
 		status = 'sukses';
-	}else if(respond.includes('GAGAL') || respond.includes('gagal')){
+	}else if(respond.includes('gagal')){
 		doc = tranGagal(respond);
 		status = 'gagal';
 	}else{
-		doc = readRes();
+		doc = 'haha haiaia';
 		status = 'status';
 	}
+	console.log(status);
 	console.log('%j',doc);
 	//res.send(doc);
+	couchdb.respondLog(doc,status,function(err,body){
+
+	});
 	updateTrans(doc,status,function(err,body){
 		if(err){
 			console.log(err);
-			res.send(err);
 		}else{
-			res.send('Respon telah diterima');
+			
 		}
 	});
-	
+	res.send('Respon telah diterima');
 });
 
 function updateTrans(doc,status,callback){
 	var trans_db = nano.db.use('ipay_transaction');
 	var id;
-	var produk_tujuan = doc.produk_tujuan;
+	var produk_tujuan = doc.produk_tujuan.toUpperCase();
 	console.log(produk_tujuan);
 	var biaya = doc.biaya;
 	async.series([
@@ -77,16 +80,18 @@ function updateTrans(doc,status,callback){
 					console.log(produk_tujuan);
 					//console.log('%j',body.rows[0]);
 					id = body.rows[0].id;
+					console.log(id);
 					callback();
 				}
 			});
 		}
 		,
 		function(callback){
-			couchdb.updateDb('ipay_transaction',id,{'status_biller':status,'biaya':biaya,'reff':doc.ref},function(err,body){
+			couchdb.updateDb('ipay_transaction',id,{'status':status,'biaya':biaya,'reff':doc.ref},function(err,body){
 				if(err){
 					callback(err);
 				}else{
+					console.log('transaction updated');
 					callback();
 				}
 			});
@@ -98,53 +103,74 @@ function updateTrans(doc,status,callback){
 		}else{
 			callback(null,err);
 		}
-	});
-	
+	});	
 }
-
-function tranSukses(message){
-	var str = message;
-    var eid = str.indexOf(' ');
-	var bid = str.search('#');
-	var id = str.substr(bid+1,eid-1);
-	var bprod = eid+11;
-	var eprod = str.indexOf(" (");
-	var prod = str.substring(bprod,eprod);
-	var bbia = str.indexOf("(");
-	var ebia = str.indexOf('ke');
-	var bia = str.substring(bbia+3,ebia-2);
-	var biaya = bia.replace('.','');
-	var btuj = ebia+3;
-	var etuj = str.indexOf(' sukses');
-	var tuj = str.substring(btuj,etuj);
-	var bsn = str.indexOf('.',etuj);
-	var esn = str.indexOf('. saldo');
-	var ref = str.substring(bsn+1,esn);
-	var bsal = str.indexOf('rp ');
-	var esal = str.indexOf('@');
-	var sal = str.substring(bsal+3,esal);
-	var saldo = sal.replace('.','');
-	var btime = str.indexOf('@');
-	var etime = str.indexOf('r##');
-	var time = str.substring(btime+1,etime);
+function tranPernah(message){
+	console.log('message: ',message);
+	var titik = message.indexOf('.');
+	var eprotuj = message.indexOf(' ',titik);
+	var protuj = message.substring(0,eprotuj);
+	console.log(protuj);
+	var bref = message.indexOf("/");
+	var eref = message.indexOf("saldo");
+	var ref = readRef(message.substring(bref+5,eref));
+	console.log('ref %j: ',ref);
+	var jam = message.indexOf('jam');
+	var btime = message.indexOf(' ',jam);
+	var etime = message.indexOf(',');
+	var time = message.substring(btime+1,etime);
+	console.log('time: ',time);
 	var doc = {};
-	var idku = '352879067055724';
-	var time = new Date();
-	var waktu = time.toJSON();
-	var waktu_sign = Date.parse(time);
-	 waktu = waktu.substring(0,waktu.indexOf('.')).replace('T',' ');
-	 var signature = new Buffer(idku+' '+waktu_sign).toString('base64');
-	 ref = readRef(ref);
-	doc['sign']=signature;
-	doc['id_tran']=id;
-	doc['produk_tujuan']=prod+'_'+tuj;
-	doc['id_produk']=prod;
-	doc['biaya']=bia.replace('.','');
-	doc['tujuan']=tuj;
+	doc['produk_tujuan']=protuj.replace('.','_').replace(' ','');
+	doc['biaya']=ref.total;
 	doc['ref']=ref;
-	doc['saldo']=sal;
 	doc['time']=time;
+	console.log('%j',doc);
 	return doc;
+}
+function tranSukses(message){
+	if(message.includes('sdh')){
+		return tranPernah(message);
+	}else{
+		var str = message;
+	    var eid = str.indexOf(' ');
+		var bid = str.search('#');
+		var id = str.substr(bid+1,eid-1);
+		var bprod = eid+11;
+		var eprod = str.indexOf(" (");
+		var prod = str.substring(bprod,eprod);
+		var bbia = str.indexOf("(");
+		var ebia = str.indexOf('ke');
+		var bia = str.substring(bbia+3,ebia-2);
+		var biaya = bia.replace('.','');
+		var btuj = ebia+3;
+		var etuj = str.indexOf(' sukses');
+		var tuj = str.substring(btuj,etuj);
+		var bsn = str.indexOf('.',etuj);
+		var esn = str.indexOf('. saldo');
+		var ref = str.substring(bsn+1,esn);
+		var bsal = str.indexOf('rp ');
+		var esal = str.indexOf('@');
+		var sal = str.substring(bsal+3,esal);
+		var saldo = sal.replace('.','');
+		var btime = str.indexOf('@');
+		var etime = str.indexOf('r##');
+		var time = str.substring(btime+1,etime);
+		var doc = {};
+		ref = readRef(ref);
+		doc['id_tran']=id;
+		doc['id_produk']=prod;
+		doc['biaya']=bia.replace('.','');
+		doc['tujuan']=tuj;
+		doc['produk_tujuan']=doc.prod+'_'+doc.tujuan;
+		doc['ref']=ref;
+		if(doc.ref.tagihan!=null){
+			doc['biaya']=doc.ref.tagihan;
+		}
+		doc['saldo']=sal;
+		doc['time']=time;
+		return doc;
+	}
 }
 function tranGagal(message){
 	var message = message.toLowerCase();
@@ -190,9 +216,13 @@ function tranGagal(message){
 		produk_tujuan = produk+'_'+tujuan;
 	}else{
 		status = 'gagal manual';
-		var eprotuj = message.indexOf(' ');
+		var titik = message.indexOf('.');
+		var eprotuj = message.indexOf(' ',titik);
 		var protuj = message.substring(0,eprotuj);
-		produk_tujuan = protuj.replace('.','_');
+		if(protuj.includes(" ")){
+			protuj.substr(lastIndexOf(" "));
+		}
+		produk_tujuan = protuj.replace('.','_').replace(' ','');
 	}
 	var btime = message.indexOf('@');
 	var etime = message.indexOf('.',btime);
@@ -211,7 +241,7 @@ function readRef(ref){
 	var bayar;
 	var lastIndexOfRp = 0;
 	var lastIndexOfO = 0;
-	if(ref.includes('premi') || ref.includes('tagihan')){
+	if(ref.includes('premi') || ref.includes('total')){
 		var btag = ref.indexOf('rp',lastIndexOfRp);
 		var etag = ref.indexOf(',00',lastIndexOfO);
 		lastIndexOfRp = btag+1;
@@ -234,7 +264,7 @@ function readRef(ref){
 		ref_ret['admin']=total.replace('.','').replace('rp','');
 		ref_ret['total']=admin.replace('.','').replace('rp','');
 		ref_ret['bayar']=bayar.replace('.','').replace('rp','');
-		ref_ret['reff']=ref.substring(ref.indexOf('reff')+4);
+		ref_ret['reff']=ref.substring(ref.indexOf('ref'));
 	}else{
 		ref_ret = ref;
 	}

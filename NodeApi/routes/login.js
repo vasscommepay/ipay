@@ -74,12 +74,15 @@ router.post("/",function(req,res,next) {
 								}else{
 									var uplink = rows[0].atasan;
 									if(level==0)uplink=1;
+									console.log('islogin: %s, session: %s',true,session);
+									//connection.destroy();
 									res.json({"isLogin":"true","saldo":saldo,"komisi":komisi,"nama":nama,"member_id":memberid,"session":session,"level":level,"uplink":uplink});
 								}
 							}
 						});
 						
 					}else{
+						//connection.destroy();
 						res.json({"isLogin":false,"message":"User tidak terdaftar"});
 					}
 				}
@@ -102,10 +105,12 @@ function setSession(username, session){
 		if(err){
 			console.log(err);
 		}else{
+			console.log(session);
 			couchdb.updateDb('ipay_users',username,{'session':session,'updated_at':Date.now()},function(err,body){
 				if(err){
 					console.log(err);
 				}else{
+
 					console.log('New user login: '+username+' session: '+session);
 				}
 			});

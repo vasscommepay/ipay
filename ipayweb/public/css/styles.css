@@ -385,6 +385,9 @@ font-size:1vw;
 .selected {
 	background-color:var(--or1)!important;
 }
+.notif-panel{
+	display: none;
+}
 .dropdown-menu {
     position: absolute;
     top: 100%;
@@ -458,3 +461,5 @@ a .close-box:hover{
 .yes{font-size:5vw;}.yes a{color:green;}.yes a:hover{color:var(--gr3);}
 .no{font-size:5vw;}.no a{color:red;}.no a:hover{color:var(--p2);}
 #logoutmodal .modal-header{background-color:var(--or2);color:white;}#logoutmodal .modal-body{height:auto;height:15vh;}
+
+#notif-btn{color:var(--b1);}#notif-btn:hover{color:var(--b2);}

@@ -6,7 +6,11 @@ var async      = require('async');
 var nano   = require('./nano');
 var nodemailer = require('nodemailer');
 var app = express();
+var request 	= require("request");
 var couchdb = require('./couchdbfunction');
+var moment = require('moment-timezone');
+moment().tz("Asia/Jakarta").format();
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -34,6 +38,61 @@ router.get('/',function(req,res){
 		}
 	});
 });
+router.post('/sendRequest',function(req,res){
+	var id_produk = req.body.produk;
+	var tujuan = req.body.tujuan;
+	var mode = req.body.mode;
+	sendRequest(id_produk,tujuan,mode,function(err,response,body){
+		if(err){
+			res.json({'error':err});
+		}else{
+			res.json({'response':response,'body':body});
+		}
+	});
+	//res.json({'response':id_produk,'body':tujuan});
+});
+function sendRequest(id_produk,tujuan,mode,callback){
+	var format;
+	var id = '352879067055724';
+	var pin = '4321';
+	if(mode=='cek_harga'){
+		format = 'harga.'+id_produk;
+	}else if(mode=='cek_tagihan'){
+		format = id_produk+'cek.'+tujuan;
+	}else if(mode=='bayar_tagihan'){
+		format = id_produk+'byr.'+tujuan;
+	}else{
+		format = id_produk+'.'+tujuan;
+	}
+	var message = format+pin;
+	var time = new Date();
+	var waktu = time.toISOString();
+	waktu = waktu.substring(0,waktu.indexOf('.')).replace('T',' ');
+	var waktu_sign = Date.parse(waktu)/1000;
+ 	var signature = new Buffer(id+' '+waktu_sign).toString('base64');
+ 	console.log(signature);
+ 	var body=({waktu:waktu,waktu_sign:waktu_sign,signature:signature});
+ 	//callback(null,null,body);
+	request({
+	  uri: "https://10.0.0.6/TransaksiJesJes",
+	  method: "POST",
+	  "rejectUnauthorized": false,
+	  form: {
+	    "id":id,
+	    "message":message,
+	    "waktu":waktu,
+	    "signature":signature
+	  }
+	}, function(error, response, body) {
+	  if(error){
+	  	callback(error)
+	  }else{
+	  	callback(null,response,body);
+	  	console.log(response,body);
+	  	request.end();
+	  }
+	});
+}
 
 function sendEmail(to,subject,message,callback){
 	var transporter = nodemailer.createTransport({
@@ -50,6 +109,7 @@ function sendEmail(to,subject,message,callback){
 	    }
     });
 
+	var message = '<body>    <div class="container">		<div class="page">			<div class="mail-title">				<h2>Selamat Anda Telah Terdaftar Pada iPay</h2>			</div>			<div class="mail-body">				Selamat, anda telah terdaftar sebagai"+role+"ipay<br>				Berikut adalah informasi terkait dengan akun anda:<br>				<ul>					<li>Nama: Bagus Fibrianto</li>					<li>Role: Bos</li>					<li>Nomor Registrasi: sempal</li><b></b>				</ul>				<p>Gunakan nomor registrasi untuk membuat akun baru pada iPay.</p>			</div>		</div>		<div class="mail-footer">    		<div class="footer-element" align="center">    			iPay    		</div>    		<div class="footer-element" align="center">    			Layanan pembayaran    		</div>    		<div class="footer-element" align="center">    			Mantab    		</div>';
 	var mailOptions = {
 	    from: 'regsender@ipay.id', // sender address
 	    to: to, // list of receivers

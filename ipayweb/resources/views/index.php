@@ -46,8 +46,12 @@
       //$('#notif-bar').fadeOut(10000);
     }
     function getNotif(data,callback){
+      var url = 'get-notif';
+      if(data.status!='new'){
+        url = 'get-all-notif';
+      }
       $.ajax({
-        url:'get-notif',
+        url:url,
         type:'post',
         data:data,
         success:function(result){
@@ -80,6 +84,7 @@
   function checkNotif(){
     getNotif({status:'new'},function(rows){
       var notif_count = rows.length;
+      //alert(notif_count);
       var last_notif = $('#notif-count').html();
       $('.notif-count').html(notif_count);
       if(notif_count!=0){
@@ -192,6 +197,13 @@
         $("head").append(cssLink); 
          //alert("Thanks for visiting!");
        });
+      $("#notif-btn").click(function(){
+        clearInterval();
+        $('#mainmenu').load('pages/notification.html');
+        $('#switcher').remove();
+        var cssLink = $("<link rel='stylesheet' id='switcher' type='text/css' href='css/blue.css'>");
+        $("head").append(cssLink); 
+      });
       $("#prdclk").click(function(){
         clearInterval();
         $('#mainmenu').load('pages/aturproduk.html');
@@ -348,7 +360,7 @@ $.ajaxSetup({
             <p><a href="#" id="user-account"><i class="glyphicon glyphicon-user"></i><?php echo Session::get('username'); ?> - <?php echo Session::get('nama'); ?></a></p>
           </li>
           <li>
-            <p>|<a href="#" id="notif-btn"><i class="glyphicon glyphicon-bell"></i><span id="notif-count">0</span> New Notificaitons</a></p>
+            <p>|<a href="#" id="notif-btn"><i class="glyphicon glyphicon-bell"></i><span id="notif-count">0</span> New Notifications</a></p>
           </li>
           <li>
             <p>|<a href="#" id="saldo-btn"><i class="glyphicon glyphicon-usd"></i><span id="saldo-member"><?php echo Session::get('saldo'); ?></span></a></p>

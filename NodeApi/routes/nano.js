@@ -1,4 +1,4 @@
-var local_address = 'http://localhost:5984';
+var local_address = 'http://127.0.0.1:5984';
 var cloud_address = 'https://couchdb-8d8a45.smileupps.com';
 var atas_address = 'http://10.0.0.4:5984';
 var nano   = require('nano')(atas_address)

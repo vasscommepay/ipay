@@ -53,6 +53,7 @@ Route::group(['middleware' => 'web'], function () {
 	Route::get('get-histori-saldo','memberController@getHistoriSaldo');
 	Route::post('req-tambah-saldo','memberController@requestTambahSaldo');
 	Route::post('get-notif','memberController@getNotif');
+	Route::post('get-all-notif','memberController@getAllNotif');
 	// Route::get('produk-page',function(){
 	// 	return view('produk');
 	// });

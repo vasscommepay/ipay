@@ -66,20 +66,20 @@ router.post('/cekHarga',function(req,res){
 			var tipe = body.tipe;
 			console.log(body.harga_beli[id_member]);
 			if(tipe=='postpaid'){
-				getPostpaidBill(id_produk,tujuan,function(err,bill){
+				getPostpaidBill(id_produk,tujuan,function(err,bill,ref){
 					if(err){
 						console.log(err);
 						res.json({'error':true,'msg':err});
 					}else{
 						harga = bill;
 						console.log('harga: ',bill);
-						res.json({'error':false,'harga':harga,'kosong':kosong,'aktif':aktif});
+						res.json({'error':false,'tipe':'postpaid','harga':harga,'kosong':kosong,'aktif':aktif,ref:ref});
 						//couchdb.activityLog(username,req.url,res);
 					}
 				});
 			}else{
 				console.log('%j',body);
-				res.json({'error':false,'harga':harga,'kosong':kosong,'aktif':aktif});
+				res.json({'error':false,'tipe':'prepaid','harga':harga,'kosong':kosong,'aktif':aktif});
 			}
 		}
 	});
@@ -153,7 +153,7 @@ router.post('/getMutasi',function(req,res){
 		}else{
 			res.json(rows);
 			//console.log('res: %c',res);
-			couchdb.activityLog(req.username,req.url,rows,res.statusCode,function(err,body){});
+			couchdb.activityLog(req.username,req.url,sql_query,res.statusCode,function(err,body){});
 		}
 	});
 });
@@ -173,7 +173,7 @@ router.post('/getTransaction',function(req,res){
 			}else{
 				respond = {"error":false,"rows":body};
 				res.json(respond);
-				couchdb.activityLog(req.username,req.url,respond,res.statusCode,function(err,body){});
+				couchdb.activityLog(req.username,req.url,'responded',res.statusCode,function(err,body){});
 			}
 		}
 	});
@@ -226,76 +226,76 @@ router.post('/createOrder',function(req,res){
 	});
 });
 
-router.post('/simulasiTransaksi',function(req,res){//UNTUK TRANSAKSI
-	var produks = req.body.prod;
-	var id_member = req.body.id_member;
-	var prod_count = produks.length;
-	var index;
-	var id_uplink = connection.escape(req.body.id_uplink);
-	var orderid = req.body.orderid;
-	var total_biaya=0;
-	var total_saldo;
-	var status_biaya;
-	var saldo_cukup;
-	var isSuccess;
-	var status_order;
-	//var isCheck = req.body.isCheck;
-	var prod_stat = [];
-	var sql = "SELECT total_saldo FROM member WHERE id_member = ?";
-	async.series([
-		function(callback){//Mendapatkan saldo member untuk cek apakah saldo cukup
-			getSaldo(id_member,function(err,saldo){
-				if(err) return callback(err);
-				total_saldo = saldo;
-				callback();
-			});
-		},
-		function(callback){    
-			async.each(produks, function(produk, callback){//Transaksi untuk setiap produk
-				var id_produk = produk.id_produk;
-				var qty = produk.qty;
-				var harga_beli;
-				var total;
-				var stok;		
-				var harga_jual;
-				var harga_jual_member;
-				var tujuan = req.body.tujuan;
-				var status_stok;
-				var status_kosong;
-				var status_aktif;
-				var isSuccess;
-				var status_transaksi=false;
-				var status=[];
-				var supplier;
-				var harga_supplier;
-				var produk = nano.db.use('ipay_produk');
-				cekProduk(id_produk,function(err,status){
-					console.log(status);
-					prod_stat.push(status);
-					callback();
-				});
+// router.post('/simulasiTransaksi',function(req,res){//UNTUK TRANSAKSI
+// 	var produks = req.body.prod;
+// 	var id_member = req.body.id_member;
+// 	var prod_count = produks.length;
+// 	var index;
+// 	var id_uplink = connection.escape(req.body.id_uplink);
+// 	var orderid = req.body.orderid;
+// 	var total_biaya=0;
+// 	var total_saldo;
+// 	var status_biaya;
+// 	var saldo_cukup;
+// 	var isSuccess;
+// 	var status_order;
+// 	//var isCheck = req.body.isCheck;
+// 	var prod_stat = [];
+// 	var sql = "SELECT total_saldo FROM member WHERE id_member = ?";
+// 	async.series([
+// 		function(callback){//Mendapatkan saldo member untuk cek apakah saldo cukup
+// 			getSaldo(id_member,function(err,saldo){
+// 				if(err) return callback(err);
+// 				total_saldo = saldo;
+// 				callback();
+// 			});
+// 		},
+// 		function(callback){    
+// 			async.each(produks, function(produk, callback){//Transaksi untuk setiap produk
+// 				var id_produk = produk.id_produk;
+// 				var qty = produk.qty;
+// 				var harga_beli;
+// 				var total;
+// 				var stok;		
+// 				var harga_jual;
+// 				var harga_jual_member;
+// 				var tujuan = req.body.tujuan;
+// 				var status_stok;
+// 				var status_kosong;
+// 				var status_aktif;
+// 				var isSuccess;
+// 				var status_transaksi=false;
+// 				var status=[];
+// 				var supplier;
+// 				var harga_supplier;
+// 				var produk = nano.db.use('ipay_produk');
+// 				cekProduk(id_produk,function(err,status){
+// 					console.log(status);
+// 					prod_stat.push(status);
+// 					callback();
+// 				});
 
-			},callback);
+// 			},callback);
 			
-		}
-		],
-		function(err){
-			console.log("callback: sukses");
-			if(total_saldo<total_biaya){
-				saldo_cukup = false;
-			}else{
-				saldo_cukup = true;
-			}
-			status_order = [{
-				"isSuccess":isSuccess,
-				"total_biaya":total_biaya,
-				"saldo":total_saldo,
-				"saldo_cukup":saldo_cukup,
-				"prod_stat":prod_stat
-			}];
-			res.json(status_order);
-		});			
-});
+// 		}
+// 		],
+// 		function(err){
+// 			console.log("callback: sukses");
+// 			if(total_saldo<total_biaya){
+// 				saldo_cukup = false;
+// 			}else{
+// 				saldo_cukup = true;
+// 			}
+// 			status_order = [{
+// 				"isSuccess":isSuccess,
+// 				"total_biaya":total_biaya,
+// 				"saldo":total_saldo,
+// 				"saldo_cukup":saldo_cukup,
+// 				"prod_stat":prod_stat
+// 			}];
+// 			res.json(status_order);
+// 		});			
+// });
 
 function getData(sql,callback){
 	connection.query(sql,function(err,rows){
@@ -374,7 +374,9 @@ function getPostpaidBill(id_produk,nomorPelanggan,callback){
 	var transaction_db = nano.db.use('ipay_transaction');
 	var produk_tujuan = id_produk.toUpperCase()+'CEK_'+nomorPelanggan;
 	var bill = null;
+	var status_biller = null;
 	var id;
+	var ref;
 	async.series([
 		function(callback){
 			var doc = {id_produk:id_produk,tujuan:nomorPelanggan,produk_tujuan:produk_tujuan,new_trans:true,biaya:null}
@@ -392,6 +394,7 @@ function getPostpaidBill(id_produk,nomorPelanggan,callback){
 		}
 		,
 		function(callback){
+			console.log('send request',id_produk,nomorPelanggan);
 			sendRequest(id_produk,nomorPelanggan,'cek_tagihan');
 			callback();
 		}
@@ -400,14 +403,18 @@ function getPostpaidBill(id_produk,nomorPelanggan,callback){
 			async.whilst(
 				function(){
 					//console.log('waiting for respond');
-					return bill == null;
+					return status_biller == null;
 				}
 				,function(callback){
-					cekPostpaidRespond(id,function(err,getbill){
+					cekPostpaidRespond(id,function(err,getbill,status){
 						if(err){
 							callback(err);
 						}else{
-							bill = getbill;
+							status_biller = status;
+							//console.log('status: ',status);
+							bill = getbill.biaya;
+							ref = getbill;
+							//console.log('bill %s: %s',produk_tujuan,bill);
 							setTimeout(callback,1000);
 						}
 					});
@@ -420,6 +427,7 @@ function getPostpaidBill(id_produk,nomorPelanggan,callback){
 				if(err){
 					callback(err);
 				}else{
+					console.log('transaction %s responded',id);
 					callback();
 				}
 			});
@@ -429,20 +437,26 @@ function getPostpaidBill(id_produk,nomorPelanggan,callback){
 		if(err){
 			callback(err);
 		}else{
-			callback(null,bill);
+			callback(null,bill,ref);
 		}
 	});
 }
 
 function cekPostpaidRespond(id,callback){
 	var transaction_db = nano.db.use('ipay_transaction');
-	console.log('waiting for respond: ',id);
+	//console.log('waiting for respond: ',id);
 	transaction_db.get(id,function(err,body){
 		if(err){
 			callback(err);
 		}else{
-			var bill = body.biaya;
-			callback(null,bill);
+			var bill = body;
+			var status = body.status;
+			//console.log('cekstatus %j: ',body);
+			if(status =='gagal'){
+				callback(null,null,status);
+			}else{
+				callback(null,bill,status);
+			}
 		}
 
 	});
@@ -460,15 +474,20 @@ function sendRequest(id_produk,tujuan,mode){
 	}else{
 		format = id_produk+'.'+tujuan;
 	}
-	var message = format+pin;
+	var message = format+'.'+pin;
 	var time = new Date();
-	var waktu = time.toJSON();
+	var waktu = time.toISOString();
 	waktu = waktu.substring(0,waktu.indexOf('.')).replace('T',' ');
-	var waktu_sign = Date.parse(time);
+	var waktu_sign = Date.parse(waktu)/1000;
  	var signature = new Buffer(id+' '+waktu_sign).toString('base64');
+ 	console.log(signature);
+ 	console.log(message);
+ 	var body=({waktu:waktu,waktu_sign:waktu_sign,signature:signature});
+ 	//callback(null,null,body);
 	request({
-	  uri: "https://11.0.0.47/TransaksiJesJes",
+	  uri: "https://10.0.0.6/TransaksiJesJes",
 	  method: "POST",
+	  "rejectUnauthorized": false,
 	  form: {
 	    "id":id,
 	    "message":message,
@@ -476,9 +495,14 @@ function sendRequest(id_produk,tujuan,mode){
 	    "signature":signature
 	  }
 	}, function(error, response, body) {
-	  console.log(body);
+	  if(error){
+	  	console.log(error)
+	  }else{
+	  	console.log('response: %j',body);
+	  }
 	});
 }
+
 function cekSaldo(id_member,callback){
 	var member_db = nano.db.use('ipay_member');
 	member_db.get(id_member,function(err,body){
@@ -708,7 +732,11 @@ router.post('/transaksi',function(req,res){//UNTUK TRANSAKSI
 									var end = Date.now();
 									var speed = end-begin;
 									catatcouchspeed = speed;
-									sendRequest(id_produk+'byr',tujuan);
+									if(status.tipe==='postpaid'){
+										sendRequest(id_produk,tujuan,'bayar_tagihan');
+									}else{
+										sendRequest(id_produk,tujuan,'beli');
+									}
 									callback();
 								} 
 							});

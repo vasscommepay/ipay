@@ -11,7 +11,7 @@ var session = function cekSession(session,callback) {
 		}else{
 			var result = body.rows;
 			if(result.length==0){
-				//console.log("session notfound");
+				console.log("session notfound");
 				err = 'session not found';
 				callback(err);
 			}else{
@@ -30,7 +30,7 @@ var session = function cekSession(session,callback) {
 				}else{
 					//console.log("session true for username: "+username);
 					couchdb.updateDb('ipay_users',username,{'updated_at':Date.now()},function(err,body){
-						
+						//console.log('session updated');
 					});
 					callback(null,true,false,username);
 				}

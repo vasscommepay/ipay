@@ -130,7 +130,72 @@ router.post("/tampil-post",function(req, res, next) {
 		}
 	});
 });
+
+router.post("/getAllNotif",function(req,res){
+	console.log(req.method, req.url);
+	var id_member = req.body.id_member;
+	var status = req.body.status;
+	var knowed = req.body.knowed;
+	var this_body;
+	var rows;
+	var results =[];
+	var respond;
+	async.series([
+		function(callback){
+			//console.log('get notif');
+			couchdb.getNotif(status,id_member,function(err,body){
+				if(err){
+					callback(err);
+				}else{
+					this_body = body;
+					rows = body.rows;
+					callback();
+				}
+			});
+		}
+		,
+		function(callback){
+			async.each(rows,function(row,callback){
+				var value = row.value;
+				var id = row.id;
+				var member = value.from;
+				var member_db = nano.db.use('ipay_member');
+				member_db.get(member,function(err,body){
+					if(err){
+						callback(err);
+					}else{
+						value['from']=body.nama;
+						results.push(value);
+						callback();
+						// couchdb.updateDb('ipay',id,{'status':'posted'},function(err,body){
+						// 	if(err){
+						// 		callback(err);
+						// 	}else{
+						// 		console.log(id,'updated');
+						// 		
+						// 	}
+						// });
+					}
+				});
+			}
+			,
+			callback);
+		}
+	]
+	,function(err){
+		if(err){
+			console.log(err);
+			respond = {'error':true,'msg':err};
+		}else{
+			respond = results;
+		}
+		res.json(respond);
+		//couchdb.activityLog(req.username,req.url,respond,res.statusCode,function(err,body){});
+	});
+	
+});
 router.post("/getNotif",function(req,res){
+	//console.log(req.method, req.url);
 	var id_member = req.body.id_member;
 	var status = req.body.status;
 	var knowed = req.body.knowed;
@@ -194,6 +259,7 @@ router.post("/getNotif",function(req,res){
 
 router.post("/newMember",function(req, res, next) {
 	var start = Date.now();
+	var regnum = createRegNumber(8);
 	var id_atasan;
 	var newMemberId;
 	var addressId;
@@ -252,7 +318,7 @@ router.post("/newMember",function(req, res, next) {
 			});
         },
         function(callback) {
-        	var simpan = { sql : 'insert into member (identity_number,nama,tgl_lahir,jenis_kelamin, npwp, level_member,max_users,reg_num,id_address) values ("'+req.body.identity_number+'" , "'+req.body.nama+'" , "'+req.body.tanggal_lahir+'" , "'+req.body.jenis_kelamin+'" , "'+req.body.npwp+'" , "'+newMemberLevel+'",2,"'+createRegNumber(8)+'",'+addressId+')' };
+        	var simpan = { sql : 'insert into member (identity_number,nama,tgl_lahir,jenis_kelamin, npwp, level_member,max_users,reg_num,id_address) values ("'+req.body.identity_number+'" , "'+req.body.nama+'" , "'+req.body.tanggal_lahir+'" , "'+req.body.jenis_kelamin+'" , "'+req.body.npwp+'" , "'+newMemberLevel+'",2,"'+regnum+'",'+addressId+')' };
         	connection.query(simpan, function(err, result) {
 				if (err){
 				   console.log(err);
@@ -345,8 +411,14 @@ router.post("/newMember",function(req, res, next) {
         	}else{
         		role="Agen";
         	}
-        	var message = "Selamat anada telah terdaftar sebagai "+role+" iPay.<br>";
-        	sendEmail(email,"Registrasi Ipay");
+        	var message = '<body>    <style type="text/css">    	body{    		font-family: monospace;    		background-color: orange;    	}    	.container{    		margin-left: 10%;    		margin-right: 10%;    	}    	.page{    		top: 0px;    		background-color: white;    	}    	.mail-title{    		top: 0;    		padding-top: 2%;    		text-align: center;    	}    	.mail-body{    		margin-right: 15%;		    margin-left: 15%;		    padding-bottom: 6%;		    margin-top: 3%;    	}    	.mail-footer{    		background-color: dimgrey;		    padding-right: 10%;		    padding-left: 10%;		    padding-top: 4%;		    padding-bottom: 4%;		    position: absolute;		    width: 59%;    	}    	.footer-element{    		width: 30%;    		text-align: justify;		    position: relative;		    padding: 15px;		    display: flex;		    box-sizing: border-box;		    float: left;    	}    </style>	<div class="container">		<div class="page">			<div class="mail-title">				<h2>Selamat Anda Telah Terdaftar Pada iPay</h2>			</div>			<div class="mail-body">				Selamat, anda telah terdaftar sebagai"+role+"ipay<br>				Berikut adalah informasi terkait dengan akun anda:<br>				<ul>					<li>Nama: '+req.body.nama+'</li>					<li>Role: '+role+'</li>					<li>Nomor Registrasi: '+regnum+'</li><b></b>				</ul>				<p>Gunakan nomor registrasi untuk membuat akun baru pada iPay.</p>			</div>		</div>		<div class="mail-footer">    		<div class="footer-element" align="center">    			iPay    		</div>    		<div class="footer-element" align="center">    			Layanan pembayaran    		</div>    		<div class="footer-element" align="center">    			Mantab    		</div>';
+        	sendEmail(email,"Registrasi Ipay",message,function(err,info){
+        		if(err){
+        			callback(err);
+        		}else{
+        			callback();
+        		}
+        	});
         }
     ], function(err) {
     	if (err) return next(err);

@@ -1,14 +1,75 @@
 <body>
-	<div style="">
-		<div style="">
-			<div align="center" style="">
+    <style type="text/css">
+    	body{
+    		font-family: monospace;
+    		background-color: orange;
+    	}
+    	.container{
+    		margin-left: 10%;
+    		margin-right: 10%;
+    	}
+    	.page{
+    		top: 0px;
+    		background-color: white;
+    	}
+    	.mail-title{
+    		top: 0;
+    		padding-top: 2%;
+    		text-align: center;
+    	}
+    	.mail-body{
+    		margin-right: 15%;
+		    margin-left: 15%;
+		    padding-bottom: 6%;
+		    margin-top: 3%;
+    	}
+    	.mail-footer{
+    		background-color: dimgrey;
+		    padding-right: 10%;
+		    padding-left: 10%;
+		    padding-top: 4%;
+		    padding-bottom: 4%;
+		    position: absolute;
+		    width: 59%;
+    	}
+    	.footer-element{
+    		width: 30%;
+    		text-align: justify;
+		    position: relative;
+		    padding: 15px;
+		    display: flex;
+		    box-sizing: border-box;
+		    float: left;
+    	}
+
+    </style>
+	<div class="container">
+		<div class="page">
+			<div class="mail-title">
 				<h2>Selamat Anda Telah Terdaftar Pada iPay</h2>
 			</div>
-			<div style="">
-				
+			<div class="mail-body">
+				Selamat, anda telah terdaftar sebagai"+role+"ipay<br>
+				Berikut adalah informasi terkait dengan akun anda:<br>
+				<ul>
+					<li>Nama: </li>
+					<li>Role:</li>
+					<li>Nomor Registrasi: </li><b></b>
+				</ul>
+				<p>Gunakan nomor registrasi untuk membuat akun baru pada iPay.</p>
 			</div>
 		</div>
-		<div style="">
+		<div class="mail-footer">
+    		<div class="footer-element" align="center">
+    			iPay
+    		</div>
+    		<div class="footer-element" align="center">
+    			Layanan pembayaran
+    		</div>
+    		<div class="footer-element" align="center">
+    			Mantab
+    		</div>
+   	
 			
 		</div>
 	</div>

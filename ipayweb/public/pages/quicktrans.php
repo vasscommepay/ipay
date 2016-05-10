@@ -116,7 +116,6 @@ $('.left-button').click(function() {
         <label class="col-md-5 control-label">Jenis provider</label><input type="text" class="col-md-7" /></div>
         <div class="form-group"> -->
                     </div>
-                    <h4>Harga Beli: </h4>
                     <div align="center">
                         <h2  id="harga" style="color:green;display: "></h2>
                     </div>
@@ -171,13 +170,22 @@ $('.left-button').click(function() {
                     //alert(result);
                     var res = JSON.parse(result);
                     if(!res.error){
-                    var harga = setComma(res.harga);
+                        var harga = setComma(res.harga);
                         if(res.kosong){
                             $('#harga').html('Maaf produk sedang kosong');
                         }else if(!res.aktif){
                             $('#harga').html('Maaf produk sedang tidak dijual');
                         }else{
-                            $('#harga').html('Rp '+harga+',-');
+                            if(res.tipe=="postpaid"){
+                                var reff = res.ref.reff;
+                                var tagihan = reff.tagihan;
+                                var admin = reff.admin;
+                                var ket = reff.reff.substring(0,reff.reff.indexOf('tag')).toUpperCase();
+                                $('#harga').html(ket+'<br>Tagihan: Rp '+tagihan+',-<br>Admin: Rp '+admin+',-<br>Rp Total: '+harga+',-');
+                            }else{
+                                $('#harga').html('Rp '+harga+',-');
+                            }
+                            
                         }
                     }
                 }
@@ -207,7 +215,7 @@ $('.left-button').click(function() {
     function getProduk(id_kategori){
         $.post('produk',{'id_kategori': id_kategori},function(success){
             var list_produk = JSON.parse(success);
-            //alert(success); 
+            alert(success); 
             $("#produk_list").html("");
             $.each(list_produk,function(key,val){
                 var idpro = val.id;
@@ -230,6 +238,7 @@ $('.left-button').click(function() {
                 //$("#formproduk").html("");
                 //alert(res);
                 $("#formproduk").html("");
+                $("#harga").html("");
                 //alert (label.length);
                 if(label.length>1){
                     $.each(label, function(key, val){
@@ -250,7 +259,7 @@ $('.left-button').click(function() {
                         var inputname = val.input_name;
                         var inputtype = val.input_type;
                         var inputlabel = val.input_label;
-                        var input = '<input type="'+inputtype+'" name="'+inputname+'" class="form-control">';
+                        var input = '<input type="'+inputtype+'" name="'+inputname+'" class="form-control" onchange="cekHarga()">';
                         getProduk(id_kategori);
                         if(inputname!='quantity'){
                             $("#formproduk").append('<div class="form-group"><label>'+inputlabel+'</label>'+input+'</div>');

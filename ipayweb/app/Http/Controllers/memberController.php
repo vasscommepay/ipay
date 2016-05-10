@@ -16,18 +16,26 @@ class memberController extends Controller {
 		$this->params = array('session'=>$session,'id_member'=>$id_member);
 		$this->sendPostRequest();
 	}
+
 	public function getNotif(){
 		$session = Session::get('session');
 		$id_member = Session::get('member_id');
 		$status = Request::input('status');
-		
 		$this->params = array('session'=>$session,'id_member'=>$id_member,'status'=>$status);
-		if(Request::has('knowed')){
-			$this->params = array('session'=>$session,'id_member'=>$id_member,'status'=>$status,'knowed'=>true);
-		}
 		$this->url = 'member/getNotif';
 		$this->sendPostRequest();
 	}
+
+	public function getAllNotif(){
+		$session = Session::get('session');
+		$id_member = Session::get('member_id');
+		$status = Request::input('status');
+		$this->params = array('session'=>$session,'id_member'=>$id_member,'status'=>$status);
+		$this->url = 'member/getAllNotif';
+		//echo json_encode($this->params);
+		$this->sendPostRequest();
+	}
+
 
 	public function getHistoriSaldo(){
 		$session = Session::get('session');

@@ -55,6 +55,23 @@ var couchdb = {
 		});
 	}
 	,
+	"respondLog":function(respond,status,callback){
+		var ipay = nano.db.use('ipay');
+		var doc = {};
+		var timestamp = Date.now();
+		doc['timestamp']=timestamp.toString();
+		doc['table']='respond_log';
+		doc['status']=status;
+		doc['respond']=respond;
+		ipay.insert(doc,function(err,body){
+			if(err){
+				callback(err);
+			}else{
+				callback(null,body);
+			}
+		});
+	}
+	,
 	"exportUser":function(callback){
 		var users_db = nano.db.use('ipay_users');
 		var sql = "Select * FROM users";

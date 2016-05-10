@@ -72,7 +72,7 @@
         </div>
         <div class="clearfix"></div>
 		<div class="form-group">
-        <button id="loginbutton" class="btn col-md-5 col-sm-5 col-xs-5 trs" name="submit" onclick="cekLogin()"><i class="glyphicon glyphicon-send"></i> Login</button>
+        <button id="loginbutton" class="btn col-md-5 col-sm-5 col-xs-5 trs" name="submit" onclick=""><i class="glyphicon glyphicon-send"></i> Login</button>
         <a href="daftarregistrasi"><button class="btn regbtn col-md-5 col-sm-5 col-xs-5 trs" type="button"><i class="glyphicon glyphicon-pencil"></i> Register</button></a>
 		</div>
     </form>                       
