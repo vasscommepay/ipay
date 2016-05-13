@@ -107,7 +107,7 @@ box-shadow: -1px 0px 26px -5px rgba(0,0,0,0.22);
 /* SLIDE 1 */
 #slide1top{position:fixed;z-index:999!important;padding-right:0!important;}
 #slide1top #mainlogo img{width:70%;padding:3%;}
-#mainmenu{padding:0!important;}#mainmenu ul {list-style-type:none;padding:0!important;margin-left:-10vw;}
+#mainmenu{padding:0!important;}#mainmenu ul {list-style-type:none;padding:0!important;margin-left:5vw;}
 #mainmenu ul li{padding:1vw;padding-left:2vw;padding-right:2vw;float:left;overflow:hidden;}
 #mainmenu ul li a{ font-family:stellar; color:var(--gr4);}
 #mainmenu ul li a:hover{text-decoration:none; color:var(--or4);}

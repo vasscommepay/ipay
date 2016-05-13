@@ -52,18 +52,16 @@ Object.size = function(obj) {
           //alert(result);
           var cart = JSON.parse(result);
           var count = Object.size(cart);
-          //alert(count);
-          //$('#cart-count').append('<div class="col-md-3 col-sm-3 col-xs-3"><p  class="trs">'+count+'</p></div>')
           $('#cart-count').html(count);
         }
       });
 
-  $(".loginmodal").click(function(){
+  /*$(".loginmodal").click(function(){
         $("#login").modal();
     });
   $(".signupmodal").click(function(){
         $("#signup").modal();
-    });
+    });*/
   
 var $animation_elements = $('.animation-element');
 var $window = $(window);
@@ -108,8 +106,10 @@ function check_if_in_view() {
 
       $("#transnow").click(function(){
         $('#mainslider').load('pages/transaction_page.html');
-     
-       });
+      });
+      $("#transnow1").click(function(){
+        $('#mainslider').load('pages/transaction_page.html');
+      });
 
 $window.on('scroll resize', check_if_in_view);
 $window.trigger('scroll');
@@ -146,7 +146,7 @@ $("#closebutton").on('click', function(){
             var total1=$('#total').val();
             if (total!=total1) {
                 bootbox.dialog({
-                  message: "Wrong Calculation Entered",
+                  message: "Masukkan Hitungan yang Benar",
                   title: "Pesan Kesalahan",
                   buttons: {
                     success: {
@@ -222,6 +222,7 @@ window.requestAnimationFrame = (function(){
     <div id="slide1" class="sct_1 container-fluid" >
       <div id="slide1top" class="col-md-12 col-sm col-xs-12 shd wbg">
         <a href=""><div id="mainlogo" class="col-md-2 col-sm-2 col-xs-5"><img src="images/ipaylogo.png" class="trs"></div></a>
+
         <div id="minimenu" class="col-xs-1 pull-right visible-xs"><i class="glyphicon glyphicon-option-vertical"></i></div>
         <div class="hiddenmenu col-xs-12 visible-xs softtrs softshd">
         <div id="closebutton"><i class="glyphicon glyphicon-remove-circle"></i></div>
@@ -245,7 +246,40 @@ window.requestAnimationFrame = (function(){
   </ul>
 </div>
 
-<ul id="maintile" class="tiles col-md-12 col-xs-12">
+<?php 
+  if (Session::get('session') == null){
+    echo '<input type="hidden" value="';
+    echo Session::get('level'); 
+    echo '" id="level_nonmember" />';
+    echo '<ul id="maintile" class="tiles col-md-12 col-xs-12"><div class="row">';
+    echo '<li id="transnow1" class="col-xs-12"><div class="tile tile-trans rotate3d rotate3dY metro-tile "><div class="faces">';
+    echo '<div class="front tile-gray"><p class="tile-parmed">Transaksi<br />Sekarang</p></div>';
+    echo '<div class="back tile-green iconpic centering"><img src="images/cashiericon.png" /></div></div></div></li></div>';
+    echo '<div class="row"><li class="col-xs-6"><div class="tile tile-trans rotate3d rotate3dY metro-tile ">';
+    echo '<div class="faces"><div class="front tile-darkore iconpic centering"><img src="images/regicon.png" /></div>';
+    echo '<a href="#" class="signupmodal"><div class="back tile-orange"><p class="tile-parmed">Signup</p></div></a>';
+    echo '</div></div></li><li class="col-xs-6"><div class="tile tile-trans rotate3d rotate3dY metro-tile "><div class="faces">';
+    echo '<div class="front tile-blue iconpic centering"><img src="images/logicon.png" /></div>';
+    echo '<a href="#" class="loginmodal"><div class="back tile-deepblue"><p class="tile-parmed">Login</p></div></a></div></div></li></div></ul>';
+  }
+  /*else{
+    echo '<input type="hidden" value="';
+    echo Session::get('level'); 
+    echo '" id="level_member" />';
+    echo '<ul id="maintile" class="tiles col-md-12 col-xs-12"><div class="row">';
+    echo '<li id="transnow1" class="col-xs-12"><div class="tile tile-trans rotate3d rotate3dY metro-tile "><div class="faces">';
+    echo '<div class="front tile-gray"><p class="tile-parmed">Transaksi<br />Sekarang</p></div>';
+    echo '<div class="back tile-green iconpic centering"><img src="images/cashiericon.png" /></div></div></div></li></div>';
+    echo '<div class="row"><li class="col-xs-6"><div class="tile tile-trans rotate3d rotate3dY metro-tile ">';
+    echo '<div class="faces"><div class="front tile-darkore iconpic centering"><img src="images/regicon.png" /></div>';
+    echo '<a href="#" class="signupmodal"><div class="back tile-orange"><p class="tile-parmed">Daftar Member</p></div></a>';
+    echo '</div></div></li><li class="col-xs-6"><div class="tile tile-trans rotate3d rotate3dY metro-tile "><div class="faces">';
+    echo '<div class="front tile-blue iconpic centering"><img src="images/logicon.png" /></div>';
+    echo '<a href="logout" class="logoutmodal trs"><div class="back tile-deepblue"><p class="tile-parmed">Logout</p></div></a></div></div></li></div></ul>';
+  }*/
+?>
+
+<!--<ul id="maintile" class="tiles col-md-12 col-xs-12">
 <div class="row">
 <li class="col-xs-12"><div class="tile tile-trans rotate3d rotate3dY metro-tile ">
 <div class="faces">
@@ -265,7 +299,7 @@ window.requestAnimationFrame = (function(){
 <a href="#" class="loginmodal"><div class="back tile-deepblue"><p class="tile-parmed">Login</p></div></a>
 </div></div></li>
 </div>
-</ul>
+</ul>-->
 
 </div>
 <div id="minisocmed" class="col-xs-5 row-centered">
@@ -279,8 +313,9 @@ window.requestAnimationFrame = (function(){
 </div>
 <div id="menucopyright" class="col-xs-12 row-centered" style="margin-top:0;">&copy; iPay Copyright 2016</div>
 </div>
-<div id="mainmenu" class="col-md-8 col-sm-9 hidden-xs pull-right">
 
+
+<div id="mainmenu" class="col-md-8 col-sm-9 hidden-xs pull-right">
   <div style="display: none" id="shopping_cart" onclick="showCart()" class="col-md-2 col-sm-2 col-xs-2 col-md-offset-3 row-centered">
   <a href="#" class="cartmodal trs"><div class="col-md-3 col-sm-3 col-xs-4"><img class="trs" src="images/shopcart_icon.png" class="trs"></div>
   <div class="col-md-3 col-sm-3 col-xs-3"><p id="cart-count" class="trs">0</p></div></a></div>
@@ -291,7 +326,7 @@ window.requestAnimationFrame = (function(){
 
  <ul class="navbar-nav">
   <li class="active"><a href="#" class="ipay trs">ABOUT<span class="sr-only">(current)</span></a></li>
-    <li><a href="#" class="ipaystore trs">IPAYSTORE</a></li>
+    <li><a href="#slide2" class="ipaystore trs">IPAYSTORE</a></li>
     <li><a href="#" class="afiliasi trs">AFILIASI</a></li>
     <li><a href="#slide3" class="contact trs">CONTACT</a></li>
     <li><a href="#" class="blog trs">BLOG</a></li>
@@ -302,9 +337,13 @@ window.requestAnimationFrame = (function(){
         //echo '<input type="hidden" value="';
         //echo Session::get('level'); 
         //echo '" />';
-        echo '<li id="loginup" class="signup"><a href="#" class="loginmodal trs">Login</a> | <a href="#" class="signupmodal trs">Signup</a></li><li id="transnow" class="quicktrans"><div class="tile tile-trans rotate3d rotate3dY metro-tile centering"><div class="faces"><div class="front tile-orange iconpic centering"><img src="images/cashiericon.png" /></div><div class="back tile-darkore"><a href="#"><p class="tile-parsmall centersmall">Transaksi<br>Sekarang</p></a></div></div></div></li>';
+        echo '<input type="hidden" value="';
+        echo Session::get('level'); 
+        echo '" id="level_nonmember" />';
+        echo '<li id="loginup" class="signup"><a href="http://192.168.173.14/" class="loginmodal trs">Login</a> | <a href="http://192.168.173.14/" class="signupmodal trs">Signup</a></li><li id="transnow" class="quicktrans"><div class="tile tile-trans rotate3d rotate3dY metro-tile centering"><div class="faces"><div class="front tile-orange iconpic centering"><img src="images/cashiericon.png" /></div><div class="back tile-darkore"><a href="#"><p class="tile-parsmall centersmall">Transaksi<br>Sekarang</p></a></div></div></div></li>';
+        //echo '<li id="loginup" class="signup"><a href="http://192.168.173.14/" class="loginmodal trs">Login</a></li><li id="transnow" class="quicktrans"><div class="tile tile-trans rotate3d rotate3dY metro-tile centering"><div class="faces"><div class="front tile-orange iconpic centering"><img src="images/cashiericon.png" /></div><div class="back tile-darkore"><a href="#"><p class="tile-parsmall centersmall">Transaksi<br>Sekarang</p></a></div></div></div></li>';
       }
-      else {
+      /*else {
         //echo '<li id="blogout" class="signup"><a href="logout" class="logoutmodal trs">Logout</a></li><li id="transnow" class="quicktrans"><div class="tile tile-trans rotate3d rotate3dY metro-tile centering"><div class="faces"><div class="front tile-orange iconpic centering"><img src="images/cashiericon.png" /></div><div class="back tile-darkore"><a href="#"><p class="tile-parsmall centersmall">Transaksi<br>Sekarang</p></a></div></div></div></li>';
         echo '<input type="hidden" value="';
         echo Session::get('level'); 
@@ -315,7 +354,7 @@ window.requestAnimationFrame = (function(){
         echo '<label align="right" align="right">Sisa Saldo: </label><p id="total-saldo">';
         echo Session::get('saldo');
         echo '</p><br>';
-      }
+      }*/
       ?>
     
     <!--<label align="right" align="right">Sisa Saldo: </label><p id="total-saldo"><?php //echo Session::get('saldo'); ?></p><br>-->
@@ -351,8 +390,7 @@ window.requestAnimationFrame = (function(){
      <img src="assets/images/step1.png">
     </div>
 <div id="sidetext" class="animation-element slide-right showcase col-md-6 col-sm-6 col-xs-12">
-<h1>LAYANAN PEMBAYARAN
-BERSAMA IPAY</h1>
+<h1>TRANSAKSI PRAKTIS DALAM SATU PERANGKAT</h1>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
 tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim 
 veniam, quis nostrud exercitation ullamco laboris.</p>
@@ -361,8 +399,7 @@ veniam, quis nostrud exercitation ullamco laboris.</p>
   </div>
 <div id="minislide" class="col-md-12 col-xs-12 gr2bg">
 <div id="sidetext" class="animation-element slide-right showcase col-md-6 col-sm-6 hidden-xs">
-<h1>LAYANAN PEMBAYARAN
-BERSAMA IPAY</h1>
+<h1>SOLUSI UNTUK PEMBAYARAN ANDA</h1>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
 tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim 
 veniam, quis nostrud exercitation ullamco laboris.</p>
@@ -385,8 +422,7 @@ veniam, quis nostrud exercitation ullamco laboris.</p>
      <img src="assets/images/step3.png">
     </div>
 <div id="sidetext" class="animation-element slide-right showcase col-md-6 col-sm-6 col-xs-12">
-<h1>LAYANAN PEMBAYARAN
-BERSAMA IPAY</h1>
+<h1>KAPANPUN DAN DIMANAPUN</h1>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
 tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim 
 veniam, quis nostrud exercitation ullamco laboris.</p>
@@ -567,6 +603,34 @@ veniam, quis nostrud exercitation ullamco laboris.</p>
     </div>
   </div>
 </div>
+<!-- MODAL CART -->
+<div class="modal fade" id="carts" role="dialog">
+  <div class="modal-dialog"> 
+        
+        <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <img class="carticon2" src="images/carticon2.png" /><span class="cartmodalheadtext">List Pembayaran</span>
+      </div>
+
+      <div id="stepwrappmain" class="col-md-12">
+        <div id="invgroup" class="col-md-12 col-xs-12 row-centered">
+            <span class="detlogo col-md-2 col-xs-1"><img src="images/garudaicon.png" /></span>
+            <span class="dettext col-md-8 col-centered">Pembayaran Tiket Garuda Nomor:7ASGC8</span>
+            <span><button class="btn btn-link" onclick="remove()"><i class="glyphicon glyphicon-remove-circle"></i></button></span>
+          </div>
+      </div>
+
+      <div class="modal-footer">
+        <!-- Chek out transaksi-->
+        <p><a id="chckout" class="close" data-dismiss="modal" href="#" onclick="cektransaksi()"><img src="images/finishbutton.png"/>Checkout</a></p>
+        <!--<p><a id="chckout" class="close" data-dismiss="modal" href="#" onclick="ceklist()"><img src="images/finishbutton.png"/>Checkout</a></p>-->
+        <!--<p><a id="chckout" class="close" data-dismiss="modal" href="#" onclick="checkOutCart()"><img src="images/finishbutton.png"/>Checkout</a></p>-->
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 <script type="text/javascript">
   /*function cekLogin(){
@@ -718,7 +782,7 @@ veniam, quis nostrud exercitation ullamco laboris.</p>
           var produk = val.id_produk;
           var tujuan = val.tujuan;
           var qty = val.qty;
-          $('#stepwrappmain').append('<div id="invgroup'+key+'" class="col-md-12 col-xs-12 row-centered"><span class="detlogo col-md-2 col-xs-1">'+qty+'</span><span class="dettext col-md-8 col-centered">Produk '+produk+' Tujuan: '+tujuan+'</span><span><button class="btn btn-link" onclick="remove_prod('+key+')"><i class="glyphicon glyphicon-remove-circle"></i></button></span></div>');
+          $('#stepwrappmain').append('<div id="invgroup'+key+'" class="col-md-12 col-xs-12 row-centered"><span class="detlogo col-md-2 col-xs-1">'+qty+'</span><span class="dettext col-md-8 col-centered">Produk'+produk+' Tujuan: '+tujuan+'</span><span><button class="btn btn-link" onclick="remove_prod('+key+')"><i class="glyphicon glyphicon-remove-circle"></i></button></span></div>');
         });
       }
     });

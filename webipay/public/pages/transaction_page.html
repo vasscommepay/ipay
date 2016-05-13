@@ -5,6 +5,21 @@
 <link href="css/transaction.css" rel="stylesheet" type="text/css">
 <script type="text/javascript">
 $(document).ready(function(){
+  /*var lv = $("#level_nonmember").val();
+        if(lv==0){
+          $.ajax({
+            url:'kategori',
+            type: 'POST',
+            success: function(res){
+              var kategori = JSON.parse(res);
+              $.each(kategori, function(key, val){
+                var idkat = val.id_kategori;
+                var namakat = val.nama_kategori;
+                //$("#allCategory").append('<a href="#generalcat"><div id="category" class="bullet greymenu tile slideTextRight" onclick="tampilSubKat(&#39'+idkat+'&#39)"><div><p>'+idkat+'</p></div><div><p><img src="images/'+namakat+'.png" /></p></div></div></a>');
+              });
+            }
+          });
+        }*/
   $.ajaxSetup({
         headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -14,9 +29,9 @@ $(document).ready(function(){
       $(".cartmodal").click(function(){
         $("#carts").modal();
       });
-      $('#chckout').click(function(){
+      /*$('#chckout').click(function(){
         $('#midform1').load('pages/checkout.html');
-      });
+      });*/
       $('#tambahsaldo').click(function(){
         $('#formsaldo').show()
         $('#defsurface').hide()
@@ -237,13 +252,15 @@ $("#closebutton").on('click', function(){
   <div class="row-centered"><p class="col-md-5 col-sm-5 col-xs-5 col-centered">Pilih Kategori dan Produk untuk memulai pembayaran</p></div>
   </div>
   <div id="aform" class="col-md-12 col-xs-12 col-centered">
-  <h2>PEMBAYARAN -NAMA PRODUK-</h2>
+    
   <form id="formproduk" class="form-horizontal"  method="post" action="">
+      <h2>PEMBAYARAN -NAMA PRODUK-</h2>
       <div id="inputisi">
         
       </div>
-      <button type="button" class="col-md-5 btn btn-default" onclick="checkout()"><i class=""></i>Check Out</button>
-      <button type="button" class="col-md-5 btn btn-default" onclick="addcart()"><i class=""></i>Add to Cart</button>
+      <div class="col-md-3"></div>
+      <button type="button" class="col-md-3 btn btn-default" onclick="checkout()"><i class=""></i>Check Out</button>
+      <button type="button" class="col-md-3 btn btn-default" onclick="addcart()"><i class=""></i>Add to Cart</button>
   </form>
 
   </div>
@@ -257,7 +274,7 @@ $("#closebutton").on('click', function(){
           <label class="col-md-5 control-label">Nominal Saldo</label>
           <input type="number" required="" class="col-md-7" name="nominalsaldo" />
         </div>
-        <!--<div class="form-group">
+        <div class="form-group">
           <label class="col-md-5 control-label">Tipe Pembayaran</label>
           <select id="tipe-pembayaran" name="jalur" class="col-md-7">
               <option value="cash">Cash</option>
@@ -272,11 +289,12 @@ $("#closebutton").on('click', function(){
         <div class="form-group">
           <label class="col-md-5 control-label">Nama Pembayar</label>
           <input type="text" required="" class="col-md-7" name="nama_pembayar" />
-        </div>-->
+        </div>
 
       </div>
-      <button type="button" class="col-md-5 btn btn-default" onclick="buySaldo()" ><i class=""></i>Beli Saldo</button>
-      <button type="button" class="col-md-5 btn btn-default"><i class=""></i>Cancel</button>
+      <div class="col-md-3"></div>
+      <button type="button" class="col-md-3 btn btn-default" onclick="buySaldo()" ><i class=""></i>Beli Saldo</button>
+      <button type="button" class="col-md-3 btn btn-default"><i class=""></i>Cancel</button>
   </form>
 
   </div>
@@ -284,28 +302,6 @@ $("#closebutton").on('click', function(){
   </div>
   </div>
 
-</div>
-
- <!-- MODAL CART -->
-<div class="modal fade" id="carts" role="dialog">
-  <div class="modal-dialog"> 
-        
-        <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <img class="carticon2" src="images/carticon2.png" /><span class="cartmodalheadtext">List Pembayaran</span>
-      </div>
-
-      <div id="stepwrappmain" class="col-md-12">
-      </div>
-
-      <div class="modal-footer">
-        <p><a id="chckout" class="close" data-dismiss="modal" href="#" onclick="ceklist()"><img src="images/finishbutton.png"/>Checkout</a></p>
-        <!--<p><a id="chckout" class="close" data-dismiss="modal" href="#" onclick="checkOutCart()"><img src="images/finishbutton.png"/>Checkout</a></p>-->
-      </div>
-    </div>
-  </div>
 </div>
 </body>
 <script type="text/javascript">
@@ -321,7 +317,7 @@ $("#closebutton").on('click', function(){
                     var idsub = val.id_kategori;
                     var namasub = val.nama_kategori;
                     var subkat = val.id_super_kategori;
-                    $("#allSubCategory").append('<li><a href="#aform"><div id="category" class="bullet whitemenu tile slideTextRight" onclick="isiform(&#39'+idsub+'&#39)"><div><p>'+namasub+'</p></div><div><p><img src="assets/images/'+namasub+'.png" /></p></div></div></a></li>');
+                    $("#allSubCategory").append('<li><a href="#aform"><div id="subcategory" class="bullet whitemenu tile slideTextRight" onclick="isiform(&#39'+idsub+'&#39)"><div><p>'+namasub+'</p></div><div><p><img src="assets/images/'+namasub+'.png" /></p></div></div></a></li>');
                 });
             }
         });
@@ -414,7 +410,7 @@ function checkOutCart(){
 //transaksi masuk ke dalam step list sebelum transaksi langsung
 function ceklist(){
   //$('#carts').modal('show');
-  $('#cekout').html("");
+  //$('#cekout').html("");
   $.ajax({
     url:'getCart',
     //url:'listCart',
@@ -426,12 +422,34 @@ function ceklist(){
         var produk = val.id_produk;
         var tujuan = val.tujuan;
         var qty = val.qty;
-        var harga = val.harga_beli;
+        var harga = val.harga;
         $('#invgroup1').append('<span class="detlogo col-md-1">'+qty+'</span><span class="dettext col-md-6 col-centered">Produk '+produk+' Tujuan: '+tujuan+'</span><span class="detprice col-md-4 col-centered">Rp. '+harga+'</span><span><button class="btn btn-link" onclick="remove_prod('+key+')"><i class="glyphicon glyphicon-remove-circle"></i></button></span>');
       });
     }
   });
 }
+
+function cektransaksi(){
+  $.ajax({
+    url:'checkOutCart',
+    type:'post',
+    success:function(result){
+      //$('#finish').show()
+      alert(result);
+      var res = JSON.parse(result);
+      if(res.error){
+        alert(res.message);
+      }else{
+        bootbox.alert("Transaksi diproses");
+        //alert(res.status);
+        $('#midformwiz').hide();
+        var cart_count = $('#cart-count').html();
+        $('#cart-count').html(0);
+      }
+    }
+  });
+}
+
 function remove_prod(id){
   $.ajax({
     url:'removeFromCart',

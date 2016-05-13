@@ -237,7 +237,7 @@
 }
 #aform .form-horizontal, #bform .form-horizontal, #cform .form-horizontal{margin-top:5%;}
 #aform input, #bform input, #cform input{height:5vh;line-height:1vh;}
-#aform button, #bform button, #cform button{background-color:var(--or2);outline:0;color: black;height:5vh;}
+#aform button, #bform button, #cform button{background-color:var(--or2);outline:0;border:0;color:var(--or4);height:5vh;}
 #aform button:hover{background-color:var(--or3);}#bform button:hover{background-color:var(--or3);}#cform button:hover{background-color:var(--or3);}
 #aform:target {
 	opacity: 1;

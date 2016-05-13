@@ -15,7 +15,8 @@ class LoginC extends Controller
         $username = Request::input('username');
         $password = Request::input('password');
 
-        $this->url = "login";
+        $this->url = "http://192.168.173.14/";
+        //$this->url = "login";
         $params = array("username"=>$username,"password"=>$password);
         $this->params = $params;
                                                                                                                       

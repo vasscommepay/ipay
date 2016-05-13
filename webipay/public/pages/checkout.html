@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    /*$(document).ready(function(){
+    $(document).ready(function(){
         //var table = $("#member-data").DataTable({"scrollX": true, "order":[[3,"desc"]]});
        $.ajax({
             url:'getDaftarTransaksi',
@@ -12,7 +12,7 @@
                     //var res = datas.rows;
                     //var transaksi = res.rows;
                     //alert(transaksi);
-                    /*$.each(transaksi,function(key,val){
+                    $.each(transaksi,function(key,val){
                         i++
                         var data = val.value;
                         
@@ -38,9 +38,9 @@
                             $(rownode).css('color','white');
                         }
                               // $("#table-body").append("<tr><td>"+i+"</td>"+"<td>"+val.created_at+"</td>"+"<td>"+val.id_transaksi+"</td>"+"<td>"+val.id_order+"</td>"+"<td>"+val.id_produk+"</td>"+"<td>"+val.quantities+"</td>"+"<td>"+val.total_biaya+"</td>"+"<td>"+val.tujuan+"</td>"+"<td><span id='stat"+val.id_transaksi+"'>"+val.status+"</span></td></tr>");
-                  });*/
+                  });
                     //$.each(transaksi,function(key,val){
-                   /* $.each(datas,function(key,val){
+                    $.each(datas,function(key,val){
                         var data = val.value;
                         var time = new Date(data.timestamp);
                         var tanggal = time.toDateString();
@@ -56,7 +56,7 @@
                 //}
             }
         });
-    });*/
+    });
 
 /*$(document).ready(function(){
     $.ajax({
@@ -87,10 +87,6 @@ $('#next3').on('click', function(){
     $('#midformwiz li').removeClass('wizactive');
     $('#3').addClass('wizactive');
 });
-$('#finish').on('click', function(){
-    $('#midformwiz li').removeClass('wizactive');
-    $('#3').addClass('wizactive');
-});
 $('#kategori_list').hide()
 $('#cart-count').hide()
 $('#shopping_cart').hide()
@@ -101,6 +97,7 @@ $('#midform1').show()
 $("#tambahsaldo").hide()
 $("#atasmid").show()          
 </script>
+
 <body>
 <div id="transpagewrapp" class="col-md-12 dashboard1">
 <div id="midformwiz" class="row row-centered">
@@ -131,12 +128,10 @@ $("#atasmid").show()
     <img src="images/nextbutton.png"  />Berikutnya</span>
     </div></a>
     </div>
-    </div>
-
-    
+    </div> 
 </div>
-<div id="step2" class="midformcheckout checkactive col-md-12">
 
+<div id="step2" class="midformcheckout checkactive col-md-12">
 <span class="headcheckout row">METODE PEMBAYARAN</span>
 <span class="checkouttanggal row">Tanggal Transaksi: 06-09-2015</span>
 <div id="stepwrapp" class="col-md-12">
@@ -156,11 +151,8 @@ $("#atasmid").show()
 <img src="images/nextbutton.png"  />Berikutnya</span>
 </div></a>
 </div>
-
 </div>
-
 </div>
-
 
 <div id="step3" class="midformcheckout col-md-12">
 <span class="checkouttanggal row">Tanggal Transaksi: 06-09-2015</span>
@@ -170,30 +162,25 @@ $("#atasmid").show()
 </div>
 <div id="footwrapper" class="col-md-12">
 <a href="#finish">
-<div id="finish" class="row" onclick="checkOutCart()"><span class="nextbutton">
+<div id="finishselesai" class="row" onclick="checkOutCart()"><span class="nextbutton">
 <img src="images/finishbutton.png"  />Finish</span>
 </div></a>
 </div>
-
 </div>
-
 </div>
 
 <div id="finish" style="display: none" class="midformcheckout col-md-12">
-<span class="checkouttanggal row">Tanggal Transaksi: 06-09-2015</span>
 <div id="stepwrapp" class="col-md-12">
-<div id="stepwrappmain" class="row laststep">
-
+<div id="stepwrappmain" class="col-md-12">
+    <br>
+    <div id="invgroup" class="col-md-12">
+    <span class="detlogo col-md-1"></span>Transaksi Berhasil
+    </div>
 </div>
-<div id="footwrapper" class="col-md-12">
-<span>Transaksi sukses</span>
 </div>
-
-</div>
-
 </div>
 
-</div>
+</div></div>
 </body>
 <script type="text/javascript">
 function checkOutCart(){
@@ -201,6 +188,7 @@ function checkOutCart(){
         url:'checkOutCart',
         type:'post',
         success:function(result){
+            $('#finish').show()
             alert(result);
             var res = JSON.parse(result);
             if(res.error){
@@ -210,7 +198,8 @@ function checkOutCart(){
             //$('#cart-count').html(0);
             alert(res.status);
             $('#midformwiz').hide()
-            $('#finish').show()
+            //$('#finish').show()
+            $('#stepwrapp').html("");
             }
         }
     });

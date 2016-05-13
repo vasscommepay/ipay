@@ -6,18 +6,21 @@ Route::group(['middleware' => 'web'], function () {
 		if($req->session()->has('username')){
 			return view('index');
 		}else{
-			Session::put('username',"ipay");
+			/*Session::put('username',"ipay");
             Session::put('session',"ipay");
             Session::put('level',"3");
             Session::put('member_id',"4");
-            Session::put('uplink_id',"3");
+            Session::put('uplink_id',"3");*/
+            Session::put('username','');
+            Session::put('session','');
+            Session::put('level','0');
+            Session::put('member_id','1');
+            Session::put('uplink_id','1');
 			return view('index');
+			//return redirect('index');
 		}	
 	});
 	Route::post('logedin','LoginC@logedin');
-	/*Route::get('trans_now', function () {
-    	return view('trans_now');
-	});*/
 	Route::get('logout',function(){
 		Auth::logout();
 		Session::flush();
@@ -37,6 +40,7 @@ Route::group(['middleware' => 'web'], function () {
 	Route::post('quickCheckout','TransactionController@quickCheckOut');
 	Route::post('addToCart','TransactionController@addToCart');
 	Route::post('checkOutCart','TransactionController@checkOutCart');
+	//Route::post('checkOutCartNon','TransactionController@checkOutCartNon');
 	Route::get('getCart','TransactionController@getCart');
 	Route::post('removeFromCart','TransactionController@removeFromCart');
 	Route::post('quickCheckout','TransactionController@quickCheckOut');
